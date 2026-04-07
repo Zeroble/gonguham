@@ -11,6 +11,14 @@ type RenderedTimelineItem = {
   placeholder?: boolean
 }
 
+type RenderedPostItem = {
+  postId: number | string
+  title: string
+  authorNickname: string
+  createdAt: string
+  placeholder?: boolean
+}
+
 function getTimelineTone(statusLabel: string) {
   if (statusLabel.includes('참여')) return 'planned'
   if (statusLabel.includes('출석')) return 'done'
@@ -106,7 +114,7 @@ export function HomePage() {
     ]
   }, [activeStudy])
 
-  const renderedPosts = useMemo(() => {
+  const renderedPosts = useMemo<RenderedPostItem[]>(() => {
     if (!activeStudy) {
       return []
     }
@@ -114,7 +122,12 @@ export function HomePage() {
     const placeholdersNeeded = Math.max(0, 7 - activeStudy.posts.length)
 
     return [
-      ...activeStudy.posts.map((post) => ({ ...post, placeholder: false })),
+      ...activeStudy.posts.map((post) => ({
+        postId: post.postId,
+        title: post.title,
+        authorNickname: post.authorNickname,
+        createdAt: post.createdAt,
+      })),
       ...Array.from({ length: placeholdersNeeded }, (_, index) => ({
         postId: `placeholder-${index}`,
         title: '오늘 스터디 끝나고 남아서 같이 복습하실 분 있나요?',
@@ -213,29 +226,27 @@ export function HomePage() {
     <section className="home-screen">
       {message ? <div className="message-banner">{message}</div> : null}
 
-      <div className="home-content-grid">
-        <aside className="study-sidebar-card">
-          <div className="surface-heading">
-            <div>
-              <h2>내가 가입한 스터디</h2>
-              <p>가입중 / 종료됨</p>
-            </div>
+      <div className="home-content">
+        <aside className="home-sidebar">
+          <div className="home-sidebar__header">
+            <h2>내가 가입한 스터디</h2>
+            <p>가입중 / 종료됨</p>
           </div>
 
-          <div className="sidebar-toggle-row">
+          <div className="home-sidebar__tabs">
             <span className="filter-chip is-active">가입중</span>
             <span className="filter-chip">종료됨</span>
           </div>
 
-          <div className="sidebar-searchbox">(아이콘) 검색 스터디 검색</div>
+          <div className="home-sidebar__search">(아이콘) 검색 스터디 검색</div>
 
-          <div className="joined-study-list">
+          <div className="home-sidebar__list">
             {dashboard?.joinedStudies.map((study) => (
               <article
                 className={
                   study.studyId === activeStudy.studyId
-                    ? 'joined-study-tile is-active'
-                    : 'joined-study-tile'
+                    ? 'home-study-card is-active'
+                    : 'home-study-card'
                 }
                 key={study.studyId}
               >
@@ -244,7 +255,8 @@ export function HomePage() {
                 >
                   {study.typeLabel}
                 </span>
-                <div className="joined-study-copy">
+
+                <div className="home-study-card__copy">
                   <strong>{study.title}</strong>
                   <span>{study.scheduleLabel}</span>
                 </div>
@@ -253,15 +265,15 @@ export function HomePage() {
           </div>
         </aside>
 
-        <section className="study-detail-card">
-          <header className="study-detail-header">
-            <div className="study-hero__copy">
+        <section className="home-detail">
+          <header className="home-detail__header">
+            <div className="home-detail__copy">
               <h2>{activeStudy.title}</h2>
-              <span>{activeStudy.description}</span>
+              <p>{activeStudy.description}</p>
               <span>{scheduleLabel}</span>
             </div>
 
-            <div className="hero-actions">
+            <div className="home-detail__actions">
               <button
                 className="soft-button"
                 onClick={() => setShowOverview(true)}
@@ -286,12 +298,12 @@ export function HomePage() {
             </div>
           </header>
 
-          <div className="study-detail-grid">
-            <section className="timeline-pane notice-panel">
+          <div className="home-detail__body">
+            <section className="timeline-column">
               <span className="section-kicker">SESSION TIMELINE</span>
 
-              <div className="timeline-viewport">
-                <div className="timeline-list">
+              <div className="home-timeline-viewport">
+                <div className="home-timeline-list">
                   {renderedTimeline.map((session, index) => {
                     const isHighlighted = index === 0 && !session.placeholder
                     const tone = getTimelineTone(session.statusLabel)
@@ -303,27 +315,27 @@ export function HomePage() {
                       (activeStudy.isLeader ? isHighlighted : canToggle)
 
                     return (
-                      <div className="timeline-row" key={session.sessionId}>
-                        <div className="timeline-row__rail" aria-hidden="true">
+                      <div className="home-timeline-row" key={session.sessionId}>
+                        <div className="home-timeline-row__rail" aria-hidden="true">
                           <span
                             className={
                               isHighlighted
-                                ? 'timeline-node is-highlighted'
-                                : 'timeline-node'
+                                ? 'home-timeline-node is-highlighted'
+                                : 'home-timeline-node'
                             }
                           />
                           {index < renderedTimeline.length - 1 ? (
-                            <span className="timeline-connector" />
+                            <span className="home-timeline-connector" />
                           ) : null}
                         </div>
 
                         <button
                           className={
                             isHighlighted
-                              ? 'timeline-card is-highlighted'
+                              ? 'home-timeline-card is-highlighted'
                               : session.placeholder
-                                ? 'timeline-card is-placeholder'
-                                : 'timeline-card'
+                                ? 'home-timeline-card is-placeholder'
+                                : 'home-timeline-card'
                           }
                           disabled={!isInteractive}
                           onClick={() => {
@@ -345,42 +357,40 @@ export function HomePage() {
                           }}
                           type="button"
                         >
-                      <div className="timeline-card__meta">
-                        <span>{session.roundLabel}</span>
-                        <span>{session.scheduledAt}</span>
+                          <div className="home-timeline-card__meta">
+                            <span>{session.roundLabel}</span>
+                            <span>{session.scheduledAt}</span>
+                          </div>
+                          <strong>{session.title}</strong>
+                          {isHighlighted || session.placeholder ? (
+                            <span className={`status-chip is-${tone}`}>
+                              {activeStudy.isLeader && isHighlighted
+                                ? '참여 예정'
+                                : session.statusLabel}
+                            </span>
+                          ) : null}
+                        </button>
                       </div>
-                      <strong>{session.title}</strong>
-                      {isHighlighted || session.placeholder ? (
-                        <span className={`status-chip is-${tone}`}>
-                          {activeStudy.isLeader && isHighlighted
-                            ? '참여 예정'
-                            : session.statusLabel}
-                        </span>
-                      ) : null}
-                    </button>
-                  </div>
-                )
+                    )
                   })}
                 </div>
-
-                <span className="scroll-indicator timeline-scroll-indicator" />
               </div>
             </section>
 
-            <aside className="board-pane">
+            <aside className="board-column">
               {activeStudy.notice ? (
-                <section className="notice-panel">
-                  <div className="surface-heading">
+                <section className="home-notice-card">
+                  <div className="home-card__header">
                     <span className="section-kicker">공지</span>
-                    <span className="muted-caption">{activeStudy.notice.createdAt}</span>
+                    <span className="home-card__meta">{activeStudy.notice.createdAt}</span>
                   </div>
                   <strong>{activeStudy.notice.title}</strong>
                   <p>{activeStudy.notice.content}</p>
                 </section>
               ) : null}
 
-              <section className="posts-panel">
-                <div className="surface-heading">
+              <section className="home-posts-card">
+                <div className="home-card__header">
                   <span className="section-kicker">게시글</span>
                   <button
                     className="soft-button"
@@ -391,14 +401,16 @@ export function HomePage() {
                   </button>
                 </div>
 
-                <div className="posts-viewport">
-                  <div className="post-list">
+                <div className="home-posts-viewport">
+                  <div className="home-post-list">
                     {renderedPosts.map((post) => (
                       <article
-                        className={post.placeholder ? 'post-row is-placeholder' : 'post-row'}
+                        className={
+                          post.placeholder ? 'home-post-row is-placeholder' : 'home-post-row'
+                        }
                         key={String(post.postId)}
                       >
-                        <div>
+                        <div className="home-post-row__copy">
                           <strong>{post.title}</strong>
                           <span>{post.authorNickname}</span>
                         </div>
@@ -406,11 +418,9 @@ export function HomePage() {
                       </article>
                     ))}
                   </div>
-
-                  <span className="scroll-indicator board-scroll-indicator" />
                 </div>
 
-                <div className="posts-divider" />
+                <div className="home-posts-divider" />
 
                 <div className="pagination-row">
                   <button className="pagination-ghost" type="button">
