@@ -30,7 +30,7 @@
 html,
 body,
 #root {
-  min-height: 100%;
+  height: 100%;
 }
 
 body {
@@ -38,6 +38,7 @@ body {
   min-width: 1440px;
   background: var(--bg);
   color: var(--text);
+  overflow: hidden;
 }
 
 a {
@@ -74,14 +75,24 @@ img {
 }
 
 .app-shell {
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
 }
 
 .page-body {
-  display: grid;
-  gap: 36px;
-  margin-top: 10px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .stack-section {
@@ -102,11 +113,14 @@ img {
 .top-summary-card {
   position: relative;
   margin: 0 auto;
+  width: 1344px;
+  height: 168px;
+  flex: 0 0 168px;
   display: grid;
   grid-template-columns: 176px minmax(0, 1fr) 282px;
   align-items: stretch;
-  gap: 28px;
-  padding: 32px 38px 26px 38px;
+  gap: 24px;
+  padding: 24px 32px;
   border-radius: 20px;
   box-shadow: none;
 }
@@ -815,6 +829,8 @@ img {
 }
 
 .home-screen {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -822,7 +838,9 @@ img {
 }
 
 .home-content {
-  width: 100%;
+  width: 1340px;
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: stretch;
   gap: 12px;
@@ -830,14 +848,15 @@ img {
 
 .home-sidebar,
 .home-detail {
-  min-height: 942px;
+  height: 100%;
+  min-height: 0;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--surface);
 }
 
 .home-sidebar {
-  flex-grow: 1;
+  flex: 0 0 340px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -888,10 +907,13 @@ img {
 
 .home-sidebar__list {
   flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 0;
+  padding-right: 4px;
 }
 
 .home-study-card {
@@ -937,7 +959,7 @@ img {
 }
 
 .home-detail {
-  flex-grow: 3;
+  flex: 0 0 988px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -987,7 +1009,8 @@ img {
 }
 
 .home-detail__body {
-  min-height: 762px;
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: stretch;
   gap: 20px;
@@ -996,6 +1019,7 @@ img {
 .timeline-column {
   flex: 0 0 320px;
   min-width: 320px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1004,7 +1028,7 @@ img {
 .board-column {
   flex: 0 0 600px;
   min-width: 600px;
-  min-height: 762px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1037,7 +1061,8 @@ img {
 }
 
 .home-timeline-viewport {
-  height: 762px;
+  flex: 1;
+  min-height: 0;
   padding-right: 8px;
 }
 
