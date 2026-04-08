@@ -1,4 +1,4 @@
-package com.gonguham.backend.dashboard
+﻿package com.gonguham.backend.dashboard
 
 import com.gonguham.backend.domain.MembershipRole
 import com.gonguham.backend.domain.MembershipStatus
@@ -37,7 +37,8 @@ class DashboardService(
                 studyId = study.id!!,
                 typeLabel = typeLabel(study.type.name),
                 title = study.title,
-                scheduleLabel = "${dayLabel(study.dayOfWeek.name)} ${study.startTime} · ${study.locationText}",
+                timeLabel = "${dayLabel(study.dayOfWeek.name)} ${study.startTime}",
+                locationLabel = study.locationText,
             )
         }
 
@@ -79,7 +80,7 @@ class DashboardService(
                         postId = it.id!!,
                         title = it.title,
                         content = it.content,
-                        authorNickname = usersById[it.authorUserId]?.nickname ?: "알 수 없음",
+                        authorNickname = usersById[it.authorUserId]?.nickname ?: "?????놁쓬",
                         createdAt = it.createdAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
                     )
                 },
@@ -88,7 +89,7 @@ class DashboardService(
                         postId = it.id!!,
                         title = it.title,
                         content = it.content,
-                        authorNickname = usersById[it.authorUserId]?.nickname ?: "알 수 없음",
+                        authorNickname = usersById[it.authorUserId]?.nickname ?: "?????놁쓬",
                         createdAt = it.createdAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
                     )
                 },
@@ -98,7 +99,7 @@ class DashboardService(
                     members.map { memberItem ->
                         AttendanceRosterItem(
                             userId = memberItem.userId,
-                            nickname = usersById[memberItem.userId]?.nickname ?: "알 수 없음",
+                            nickname = usersById[memberItem.userId]?.nickname ?: "?????놁쓬",
                             planned = participationMap[memberItem.userId]?.planned ?: false,
                             attendanceStatus = attendanceMap[memberItem.userId]?.status?.name,
                         )
@@ -121,12 +122,13 @@ class DashboardService(
     }
 
     private fun dayLabel(raw: String): String = when (raw) {
-        "MONDAY" -> "월요일"
-        "TUESDAY" -> "화요일"
-        "WEDNESDAY" -> "수요일"
-        "THURSDAY" -> "목요일"
-        "FRIDAY" -> "금요일"
-        "SATURDAY" -> "토요일"
-        else -> "일요일"
+        "MONDAY" -> "월"
+        "TUESDAY" -> "화"
+        "WEDNESDAY" -> "수"
+        "THURSDAY" -> "목"
+        "FRIDAY" -> "금"
+        "SATURDAY" -> "토"
+        else -> "일"
     }
 }
+

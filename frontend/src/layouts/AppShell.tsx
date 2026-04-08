@@ -29,7 +29,7 @@ export function AppShell() {
 
         <div className="summary-main">
           <span className="section-kicker">TODAY SUMMARY</span>
-          <h1>오늘, 2개의 스터디가 예정되어 있어요.</h1>
+          <h2>오늘, 2개의 스터디가 예정되어 있어요.</h2>
 
           <nav className="summary-tabs" aria-label="메인 탭">
             {tabs.map((tab) => (

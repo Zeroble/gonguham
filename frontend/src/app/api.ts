@@ -15,7 +15,8 @@ export type DashboardResponse = {
     studyId: number
     typeLabel: string
     title: string
-    scheduleLabel: string
+    timeLabel: string
+    locationLabel: string
   }>
   activeStudy: {
     studyId: number

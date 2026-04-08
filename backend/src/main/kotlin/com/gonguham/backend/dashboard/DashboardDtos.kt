@@ -10,7 +10,8 @@ data class JoinedStudyCard(
     val studyId: Long,
     val typeLabel: String,
     val title: String,
-    val scheduleLabel: String,
+    val timeLabel: String,
+    val locationLabel: String,
 )
 
 data class ActiveStudyPanel(

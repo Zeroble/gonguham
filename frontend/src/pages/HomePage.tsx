@@ -119,22 +119,13 @@ export function HomePage() {
       return []
     }
 
-    const placeholdersNeeded = Math.max(0, 7 - activeStudy.posts.length)
-
     return [
       ...activeStudy.posts.map((post) => ({
         postId: post.postId,
         title: post.title,
         authorNickname: post.authorNickname,
         createdAt: post.createdAt,
-      })),
-      ...Array.from({ length: placeholdersNeeded }, (_, index) => ({
-        postId: `placeholder-${index}`,
-        title: '오늘 스터디 끝나고 남아서 같이 복습하실 분 있나요?',
-        authorNickname: '김민수',
-        createdAt: '오늘 17:20',
-        placeholder: true,
-      })),
+      }))
     ]
   }, [activeStudy])
 
@@ -230,7 +221,6 @@ export function HomePage() {
         <aside className="home-sidebar">
           <div className="home-sidebar__header">
             <h2>내가 가입한 스터디</h2>
-            <p>가입중 / 종료됨</p>
           </div>
 
           <div className="home-sidebar__tabs">
@@ -258,7 +248,8 @@ export function HomePage() {
 
                 <div className="home-study-card__copy">
                   <strong>{study.title}</strong>
-                  <span>{study.scheduleLabel}</span>
+                  <span>{study.timeLabel}</span>
+                  <span>{study.locationLabel}</span>
                 </div>
               </article>
             ))}
