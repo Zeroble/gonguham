@@ -12,7 +12,7 @@ import {
 import { useApp } from '../app/useApp'
 
 export function StudySearchPage() {
-  const { sessionUserId } = useApp()
+  const { sessionUserId, showToast } = useApp()
   const [studies, setStudies] = useState<StudyCard[]>([])
   const [keyword, setKeyword] = useState('')
   const [selectedType, setSelectedType] = useState('')
@@ -20,7 +20,6 @@ export function StudySearchPage() {
   const [selectedTime, setSelectedTime] = useState('')
   const [selectedPlace, setSelectedPlace] = useState('')
   const [selectedStudy, setSelectedStudy] = useState<StudyDetail | null>(null)
-  const [message, setMessage] = useState('')
 
   const trimmedKeyword = useMemo(() => keyword.trim(), [keyword])
 
@@ -66,7 +65,7 @@ export function StudySearchPage() {
       const detail = await api.getStudyDetail(sessionUserId, studyId)
       setSelectedStudy(detail)
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '스터디 상세를 불러오지 못했어요.')
+      showToast(error instanceof Error ? error.message : '스터디 상세를 불러오지 못했어요.')
     }
   }
 
@@ -79,9 +78,9 @@ export function StudySearchPage() {
       const detail = await api.joinStudy(sessionUserId, studyId)
       setSelectedStudy(detail)
       setStudies(await api.getStudies(sessionUserId, trimmedKeyword, selectedType))
-      setMessage('스터디에 바로 참여했어요.')
+      showToast('스터디에 바로 참여했어요.')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '스터디 참여에 실패했어요.')
+      showToast(error instanceof Error ? error.message : '스터디 참여에 실패했어요.')
     }
   }
 
@@ -95,8 +94,6 @@ export function StudySearchPage() {
 
   return (
     <section className="stack-section">
-      {message ? <div className="message-banner">{message}</div> : null}
-
       <article className="page-surface search-toolbar-card">
         <div className="filter-panel-grid">
           <div className="filter-group">

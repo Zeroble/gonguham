@@ -19,7 +19,7 @@ const initialSessions = [
 ]
 
 export function StudyCreatePage() {
-  const { sessionUserId } = useApp()
+  const { sessionUserId, showToast } = useApp()
   const navigate = useNavigate()
   const [form, setForm] = useState({
     type: 'TOPIC',
@@ -40,7 +40,6 @@ export function StudyCreatePage() {
     tags: 'CS, 자료구조, 세미나, 오프라인',
   })
   const [sessions, setSessions] = useState(initialSessions)
-  const [message, setMessage] = useState('')
 
   const previewTags = useMemo(
     () =>
@@ -63,10 +62,10 @@ export function StudyCreatePage() {
         tags: previewTags,
         sessions,
       })
-      setMessage(`"${created.title}" 스터디를 개설했어요.`)
+      showToast(`"${created.title}" 스터디를 개설했어요.`)
       navigate('/app/home', { replace: true })
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '스터디 개설에 실패했어요.')
+      showToast(error instanceof Error ? error.message : '스터디 개설에 실패했어요.')
     }
   }
 
@@ -89,8 +88,6 @@ export function StudyCreatePage() {
   return (
     <section className="create-layout">
       <div className="stack-section">
-        {message ? <div className="message-banner">{message}</div> : null}
-
         <article className="page-surface form-section-card">
           <div className="section-card__header">
             <div>
@@ -327,7 +324,7 @@ export function StudyCreatePage() {
               <button
                 className="primary-button"
                 onClick={() =>
-                  setMessage('AI 커리큘럼 추천은 1차 데모에서 버튼만 제공해요.')
+                  showToast('AI 커리큘럼 추천은 1차 데모에서 버튼만 제공해요.')
                 }
                 type="button"
               >

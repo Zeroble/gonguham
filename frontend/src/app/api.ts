@@ -23,30 +23,39 @@ export type DashboardResponse = {
 }
 
 export type StudyHomePanel = {
-    studyId: number
+  studyId: number
+  title: string
+  description: string
+  locationText: string
+  isLeader: boolean
+  currentSessionId: number | null
+  attendanceSessionId: number | null
+  attendanceSessionLabel: string | null
+  sessions: Array<{
+    sessionId: number
+    roundLabel: string
     title: string
-    description: string
-    locationText: string
-    isLeader: boolean
-    currentSessionId: number | null
-    attendanceSessionId: number | null
-    attendanceSessionLabel: string | null
-    sessions: Array<{
-      sessionId: number
-      roundLabel: string
-      title: string
-      statusLabel: string
-      nodeState: string
-      scheduledAt: string
-    }>
-    notice: FeedItem | null
-    posts: FeedItem[]
-    attendanceRoster: Array<{
-      userId: number
-      nickname: string
-      planned: boolean
-      attendanceStatus: string | null
-    }>
+    statusLabel: string
+    nodeState: string
+    scheduledAt: string
+    planned: boolean
+  }>
+  notice: FeedItem | null
+  posts: FeedItem[]
+  attendanceRoster: AttendanceRosterEntry[]
+}
+
+export type AttendanceRosterEntry = {
+  userId: number
+  nickname: string
+  planned: boolean
+  attendanceStatus: string | null
+}
+
+export type SessionAttendancePanel = {
+  sessionId: number
+  sessionLabel: string
+  roster: AttendanceRosterEntry[]
 }
 
 export type FeedItem = {
@@ -167,6 +176,9 @@ export const api = {
   },
   getStudyHomePanel(userId: number, studyId: number) {
     return request<StudyHomePanel>(`/api/v1/dashboard/studies/${studyId}/panel`, userId)
+  },
+  getSessionAttendancePanel(userId: number, sessionId: number) {
+    return request<SessionAttendancePanel>(`/api/v1/sessions/${sessionId}/attendance-roster`, userId)
   },
   getStudies(userId: number, keyword = '', type = '') {
     const query = new URLSearchParams()

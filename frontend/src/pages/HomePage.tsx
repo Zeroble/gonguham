@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { api, type DashboardResponse, type StudyHomePanel } from '../app/api'
+import { api, type AttendanceRosterEntry, type DashboardResponse, type SessionAttendancePanel } from '../app/api'
 import { useApp } from '../app/useApp'
 
 type RenderedTimelineItem = {
@@ -10,6 +10,7 @@ type RenderedTimelineItem = {
   statusLabel: string
   nodeState: string
   scheduledAt: string
+  planned: boolean
   placeholder?: boolean
 }
 
@@ -43,9 +44,9 @@ function getStudyBadgeTone(label: string) {
   return 'mogak'
 }
 
-function toAttendanceMap(panel: StudyHomePanel | null | undefined) {
+function toAttendanceMap(roster: AttendanceRosterEntry[] = []) {
   return Object.fromEntries(
-    (panel?.attendanceRoster ?? []).map((member) => [
+    roster.map((member) => [
       member.userId,
       member.attendanceStatus ?? (member.planned ? 'PRESENT' : 'ABSENT'),
     ]),
@@ -53,7 +54,7 @@ function toAttendanceMap(panel: StudyHomePanel | null | undefined) {
 }
 
 export function HomePage() {
-  const { sessionUserId, refreshMe } = useApp()
+  const { sessionUserId, refreshMe, showToast } = useApp()
   const [searchParams, setSearchParams] = useSearchParams()
   const timelineViewportRef = useRef<HTMLDivElement | null>(null)
   const currentTimelineRowRef = useRef<HTMLDivElement | null>(null)
@@ -62,7 +63,7 @@ export function HomePage() {
   const [draftContent, setDraftContent] = useState('')
   const [draftType, setDraftType] = useState<'POST' | 'NOTICE'>('POST')
   const [attendanceMap, setAttendanceMap] = useState<Record<number, string>>({})
-  const [message, setMessage] = useState('')
+  const [attendancePanel, setAttendancePanel] = useState<SessionAttendancePanel | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showOverview, setShowOverview] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
@@ -125,8 +126,13 @@ export function HomePage() {
     return dashboard.studyPanels.find((panel) => panel.studyId === targetStudyId) ?? dashboard.studyPanels[0]
   }, [dashboard?.defaultStudyId, dashboard?.studyPanels, selectedStudyId])
 
+  const hasAttendanceStarted = useMemo(
+    () => activeStudy?.attendanceRoster.some((member) => member.attendanceStatus !== null) ?? false,
+    [activeStudy],
+  )
+
   useEffect(() => {
-    setAttendanceMap(toAttendanceMap(activeStudy))
+    setAttendanceMap(toAttendanceMap(activeStudy?.attendanceRoster))
   }, [activeStudy])
 
   useEffect(() => {
@@ -143,11 +149,11 @@ export function HomePage() {
         setDashboard((current) =>
           current
             ? {
-                ...current,
-                studyPanels: current.studyPanels.map((panel) =>
-                  panel.studyId === nextPanel.studyId ? nextPanel : panel,
-                ),
-              }
+              ...current,
+              studyPanels: current.studyPanels.map((panel) =>
+                panel.studyId === nextPanel.studyId ? nextPanel : panel,
+              ),
+            }
             : current,
         )
       }
@@ -230,13 +236,28 @@ export function HomePage() {
     setDashboard((current) =>
       current
         ? {
-            ...current,
-            studyPanels: current.studyPanels.map((panel) =>
-              panel.studyId === nextPanel.studyId ? nextPanel : panel,
-            ),
-          }
+          ...current,
+          studyPanels: current.studyPanels.map((panel) =>
+            panel.studyId === nextPanel.studyId ? nextPanel : panel,
+          ),
+        }
         : current,
     )
+  }
+
+  async function openAttendanceModal(sessionId: number) {
+    if (!sessionUserId) {
+      return
+    }
+
+    try {
+      const nextPanel = await api.getSessionAttendancePanel(sessionUserId, sessionId)
+      setAttendancePanel(nextPanel)
+      setAttendanceMap(toAttendanceMap(nextPanel.roster))
+      setShowAttendance(true)
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : '출석 명단을 불러오지 못했어요.')
+    }
   }
 
   async function handleParticipation(sessionId: number, planned: boolean) {
@@ -247,16 +268,16 @@ export function HomePage() {
     try {
       await api.updateParticipation(sessionUserId, sessionId, planned)
       await reload()
-      setMessage(planned ? '참여 예정으로 표시했어요.' : '참여 예정 표시를 해제했어요.')
+      showToast(planned ? '참여 예정으로 표시했어요.' : '참여 예정 표시를 해제했어요.')
     } catch (error) {
-      setMessage(
+      showToast(
         error instanceof Error ? error.message : '참여 여부를 업데이트하지 못했어요.',
       )
     }
   }
 
   async function handleAttendanceSubmit() {
-    if (!sessionUserId || !activeStudy?.attendanceSessionId) {
+    if (!sessionUserId || !attendancePanel?.sessionId) {
       return
     }
 
@@ -266,13 +287,14 @@ export function HomePage() {
         status,
       }))
 
-      await api.updateAttendance(sessionUserId, activeStudy.attendanceSessionId, entries)
+      await api.updateAttendance(sessionUserId, attendancePanel.sessionId, entries)
       await refreshMe()
       await reload()
+      setAttendancePanel(null)
       setShowAttendance(false)
-      setMessage('출석 체크를 반영했어요. 출석한 멤버에게 체크 2개가 지급됩니다.')
+      showToast('출석 체크를 반영했어요. 출석한 멤버에게 체크 2개가 지급됩니다.')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '출석 체크를 저장하지 못했어요.')
+      showToast(error instanceof Error ? error.message : '출석 체크를 저장하지 못했어요.')
     }
   }
 
@@ -292,9 +314,9 @@ export function HomePage() {
       setDraftType('POST')
       setShowComposer(false)
       await reload()
-      setMessage('게시글을 등록했어요.')
+      showToast('게시글을 등록했어요.')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '게시글 등록에 실패했어요.')
+      showToast(error instanceof Error ? error.message : '게시글 등록에 실패했어요.')
     }
   }
 
@@ -308,8 +330,6 @@ export function HomePage() {
 
   return (
     <section className="home-screen">
-      {message ? <div className="message-banner">{message}</div> : null}
-
       <div className="home-content">
         <aside className="home-sidebar">
           <div className="home-sidebar__header">
@@ -368,14 +388,14 @@ export function HomePage() {
               </button>
               <button
                 className="soft-button"
-                onClick={() => setMessage('공유 기능은 데모에서 링크 복사로 연결할 예정이에요.')}
+                onClick={() => showToast('공유 기능은 데모에서 링크 복사로 연결할 예정이에요.')}
                 type="button"
               >
                 공유
               </button>
               <button
                 className="soft-button"
-                onClick={() => setMessage('탈퇴 기능은 이번 데모 범위에서 제외했어요.')}
+                onClick={() => showToast('탈퇴 기능은 이번 데모 범위에서 제외했어요.')}
                 type="button"
               >
                 탈퇴
@@ -393,11 +413,33 @@ export function HomePage() {
                     const isHighlighted =
                       !session.placeholder &&
                       session.sessionId === activeStudy.currentSessionId
+                    const isPastSession =
+                      !session.placeholder &&
+                      !isHighlighted &&
+                      session.nodeState !== 'FUTURE'
                     const tone = getTimelineToneByState(session.nodeState)
                     const canToggle = isHighlighted
                     const isInteractive =
                       !session.placeholder &&
                       (activeStudy.isLeader ? isHighlighted : canToggle)
+                    const memberChipTone =
+                      isHighlighted && !activeStudy.isLeader
+                        ? session.planned ? 'planned' : 'missed'
+                        : tone
+                    const chipTone = activeStudy.isLeader && isHighlighted
+                      ? hasAttendanceStarted ? 'edit' : 'start'
+                      : activeStudy.isLeader && isPastSession
+                        ? 'edit'
+                        : memberChipTone
+                    const chipLabel = activeStudy.isLeader && isHighlighted
+                      ? hasAttendanceStarted ? '수정' : '시작'
+                      : activeStudy.isLeader && isPastSession
+                        ? '수정'
+                        : session.statusLabel
+                    const showChip =
+                      session.placeholder ||
+                      isHighlighted ||
+                      (activeStudy.isLeader && isPastSession)
 
                     return (
                       <div
@@ -421,8 +463,8 @@ export function HomePage() {
                                 : 'home-timeline-card'
                           }
                           onClick={() => {
-                            if (activeStudy.isLeader && isHighlighted) return setShowAttendance(true)
-                            if (isInteractive && canToggle && typeof session.sessionId === 'number') return void handleParticipation(session.sessionId, session.statusLabel !== '참여 예정')
+                            if (activeStudy.isLeader && typeof session.sessionId === 'number' && (isHighlighted || isPastSession)) return void openAttendanceModal(session.sessionId)
+                            if (isInteractive && canToggle && typeof session.sessionId === 'number') return void handleParticipation(session.sessionId, !session.planned)
                             if (isInteractive) {
                               // todo : move this into button 
 
@@ -449,11 +491,9 @@ export function HomePage() {
                             <span>{session.scheduledAt}</span>
                           </div>
                           <strong>{session.title}</strong>
-                          {isHighlighted || session.placeholder ? (
-                            <span className={`status-chip is-${tone}`}>
-                              {activeStudy.isLeader && isHighlighted
-                                ? '참여 예정'
-                                : session.statusLabel}
+                          {showChip ? (
+                            <span className={`status-chip is-${chipTone}`}>
+                              {chipLabel}
                             </span>
                           ) : null}
                         </div>
@@ -639,7 +679,10 @@ export function HomePage() {
       {showAttendance ? (
         <div
           className="modal-backdrop"
-          onClick={() => setShowAttendance(false)}
+          onClick={() => {
+            setAttendancePanel(null)
+            setShowAttendance(false)
+          }}
           role="presentation"
         >
           <article
@@ -649,11 +692,14 @@ export function HomePage() {
             <div className="modal-card__header">
               <div>
                 <span className="section-kicker">출석 체크</span>
-                <h2>{activeStudy.attendanceSessionLabel ?? '이번 회차'}</h2>
+                <h2>{attendancePanel?.sessionLabel ?? activeStudy.attendanceSessionLabel ?? '이번 회차'}</h2>
               </div>
               <button
                 className="soft-button"
-                onClick={() => setShowAttendance(false)}
+                onClick={() => {
+                  setAttendancePanel(null)
+                  setShowAttendance(false)
+                }}
                 type="button"
               >
                 닫기
@@ -661,19 +707,18 @@ export function HomePage() {
             </div>
 
             <div className="attendance-list">
-              {activeStudy.attendanceRoster.map((member) => (
+              {(attendancePanel?.roster ?? activeStudy.attendanceRoster).map((member) => (
                 <div className="attendance-row" key={member.userId}>
-                  <div>
+                  <div className="attendance-row__member">
                     <strong>{member.nickname}</strong>
-                    <span>{member.planned ? '참여 예정' : '미응답'}</span>
                   </div>
 
                   <div className="attendance-actions">
                     <button
                       className={
                         attendanceMap[member.userId] === 'PRESENT'
-                          ? 'filter-chip is-active'
-                          : 'filter-chip'
+                          ? 'attendance-chip is-present is-selected'
+                          : 'attendance-chip is-present'
                       }
                       onClick={() =>
                         setAttendanceMap((current) => ({
@@ -688,8 +733,8 @@ export function HomePage() {
                     <button
                       className={
                         attendanceMap[member.userId] === 'ABSENT'
-                          ? 'filter-chip is-active'
-                          : 'filter-chip'
+                          ? 'attendance-chip is-absent is-selected'
+                          : 'attendance-chip is-absent'
                       }
                       onClick={() =>
                         setAttendanceMap((current) => ({

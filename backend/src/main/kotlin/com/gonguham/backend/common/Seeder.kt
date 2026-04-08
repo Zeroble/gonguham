@@ -241,11 +241,17 @@ class Seeder(
             ),
         )
 
-        studySessionRepository.saveAll(
+        val mogakSessions = studySessionRepository.saveAll(
             listOf(
+                StudySession(studyId = mogakStudy.id!!, sessionNo = 1, title = "첫 집중 루틴 세팅", scheduledAt = now.minusWeeks(2), placeText = mogakStudy.locationText),
+                StudySession(studyId = mogakStudy.id!!, sessionNo = 2, title = "중간 점검과 할 일 정리", scheduledAt = now.minusWeeks(1), placeText = mogakStudy.locationText),
                 StudySession(studyId = mogakStudy.id!!, sessionNo = 3, title = "오늘 할 일 공유", scheduledAt = now.plusDays(2), placeText = mogakStudy.locationText),
-                StudySession(studyId = flashStudy.id!!, sessionNo = 1, title = "인터뷰 질문 설계", scheduledAt = now.plusDays(3), placeText = flashStudy.locationText),
+                StudySession(studyId = mogakStudy.id!!, sessionNo = 4, title = "루틴 유지 모각공", scheduledAt = now.plusWeeks(1), placeText = mogakStudy.locationText),
+                StudySession(studyId = mogakStudy.id!!, sessionNo = 5, title = "시험 전 마감 집중", scheduledAt = now.plusWeeks(2), placeText = mogakStudy.locationText),
             ),
+        )
+        studySessionRepository.save(
+            StudySession(studyId = flashStudy.id!!, sessionNo = 1, title = "인터뷰 질문 설계", scheduledAt = now.plusDays(3), placeText = flashStudy.locationText),
         )
 
         val earlyTopicSessions = studySessionRepository.saveAll(
@@ -265,8 +271,34 @@ class Seeder(
         val missedSession = extraTopicSessions.first { it.sessionNo == 7 }
         val futurePlannedSession = topicSessions.first { it.sessionNo == 11 }
         val kickoffSession = earlyTopicSessions.first { it.sessionNo == 1 }
+        val secondSession = earlyTopicSessions.first { it.sessionNo == 2 }
         val drillSession = earlyTopicSessions.first { it.sessionNo == 3 }
+        val fourthSession = earlyTopicSessions.first { it.sessionNo == 4 }
         val graphIntroSession = earlyTopicSessions.first { it.sessionNo == 5 }
+        val mogakArchiveSession = mogakSessions.first { it.sessionNo == 1 }
+        val mogakCompletedSession = mogakSessions.first { it.sessionNo == 2 }
+        val mogakCurrentSession = mogakSessions.first { it.sessionNo == 3 }
+        val mogakFutureSession = mogakSessions.first { it.sessionNo == 4 }
+
+        studySessionRepository.saveAll(
+            listOf(
+                kickoffSession,
+                secondSession,
+                drillSession,
+                fourthSession,
+                graphIntroSession,
+                archiveSession,
+                missedSession,
+                olderCompletedSession,
+                completedSession,
+            ).onEach { it.attendanceClosedAt = now.minusMinutes(30) },
+        )
+        studySessionRepository.saveAll(
+            listOf(
+                mogakArchiveSession,
+                mogakCompletedSession,
+            ).onEach { it.attendanceClosedAt = now.minusMinutes(30) },
+        )
 
         sessionParticipationRepository.saveAll(
             listOf(
@@ -283,6 +315,13 @@ class Seeder(
                 SessionParticipation(sessionId = olderCompletedSession.id!!, userId = member.id!!, planned = true, updatedAt = now.minusWeeks(2)),
                 SessionParticipation(sessionId = archiveSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(4)),
                 SessionParticipation(sessionId = missedSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(3)),
+                SessionParticipation(sessionId = mogakArchiveSession.id!!, userId = guest.id!!, planned = true, updatedAt = now.minusWeeks(2)),
+                SessionParticipation(sessionId = mogakArchiveSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(2)),
+                SessionParticipation(sessionId = mogakCompletedSession.id!!, userId = guest.id!!, planned = true, updatedAt = now.minusWeeks(1)),
+                SessionParticipation(sessionId = mogakCompletedSession.id!!, userId = leader.id!!, planned = false, updatedAt = now.minusWeeks(1)),
+                SessionParticipation(sessionId = mogakCurrentSession.id!!, userId = guest.id!!, planned = true, updatedAt = now.minusHours(8)),
+                SessionParticipation(sessionId = mogakCurrentSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusHours(2)),
+                SessionParticipation(sessionId = mogakFutureSession.id!!, userId = guest.id!!, planned = true, updatedAt = now.minusHours(1)),
             ),
         )
 
@@ -298,6 +337,10 @@ class Seeder(
                 Attendance(sessionId = missedSession.id!!, userId = leader.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(3)),
                 Attendance(sessionId = completedSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusDays(6)),
                 Attendance(sessionId = completedSession.id!!, userId = member.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusDays(6)),
+                Attendance(sessionId = mogakArchiveSession.id!!, userId = guest.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = guest.id!!, checkedAt = now.minusWeeks(2)),
+                Attendance(sessionId = mogakArchiveSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = guest.id!!, checkedAt = now.minusWeeks(2)),
+                Attendance(sessionId = mogakCompletedSession.id!!, userId = guest.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = guest.id!!, checkedAt = now.minusWeeks(1)),
+                Attendance(sessionId = mogakCompletedSession.id!!, userId = leader.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = guest.id!!, checkedAt = now.minusWeeks(1)),
             ),
         )
 

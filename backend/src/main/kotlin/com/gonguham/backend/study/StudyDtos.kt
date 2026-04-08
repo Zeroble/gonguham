@@ -90,6 +90,19 @@ data class AttendanceResult(
     val awardedUserIds: List<Long>,
 )
 
+data class SessionAttendancePanelResponse(
+    val sessionId: Long,
+    val sessionLabel: String,
+    val roster: List<SessionAttendanceRosterItem>,
+)
+
+data class SessionAttendanceRosterItem(
+    val userId: Long,
+    val nickname: String,
+    val planned: Boolean,
+    val attendanceStatus: String?,
+)
+
 data class DashboardParticipationResult(
     val sessionId: Long,
     val planned: Boolean,

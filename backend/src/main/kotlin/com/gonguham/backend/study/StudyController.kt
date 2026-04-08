@@ -63,6 +63,13 @@ class StudyController(
     ): AttendanceResult =
         studyService.updateAttendance(currentUserService.currentUser(request), sessionId, body)
 
+    @GetMapping("/sessions/{sessionId}/attendance-roster")
+    fun attendanceRoster(
+        request: HttpServletRequest,
+        @PathVariable sessionId: Long,
+    ): SessionAttendancePanelResponse =
+        studyService.attendanceRoster(currentUserService.currentUser(request), sessionId)
+
     @GetMapping("/studies/{studyId}/posts")
     fun posts(
         request: HttpServletRequest,

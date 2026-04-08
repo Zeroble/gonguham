@@ -382,15 +382,82 @@ img {
   font-size: 1.05rem;
 }
 
-.message-banner {
+.app-toast-region {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  z-index: 30;
+  width: min(calc(100vw - 32px), 520px);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.app-toast {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 50px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
   padding: 0 18px;
   border: 1px solid #c8dfd6;
   border-radius: 18px;
-  background: #ecf7f3;
+  background: rgba(236, 247, 243, 0.96);
   color: var(--green-dark);
-  display: flex;
-  align-items: center;
+  box-shadow: 0 18px 32px rgba(47, 128, 105, 0.14);
+  text-align: center;
+  animation: app-toast-slide 3000ms ease forwards;
+}
+
+@keyframes app-toast-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(-100% - 24px));
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(22px);
+  }
+
+  90% {
+    opacity: 1;
+    transform: translateY(22px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(calc(-100% - 24px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-toast {
+    animation-name: app-toast-fade;
+  }
+}
+
+@keyframes app-toast-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(8px);
+  }
+
+  90% {
+    opacity: 1;
+    transform: translateY(8px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
 
 .surface-heading,
@@ -709,6 +776,18 @@ img {
   background: var(--green);
   border-color: var(--green);
   color: #fff;
+}
+
+.status-chip.is-start {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.status-chip.is-edit {
+  background: #edf3ff;
+  border-color: #cfdcf6;
+  color: #47648f;
 }
 
 .status-chip.is-done {
@@ -1674,6 +1753,48 @@ img {
   border: 1px solid var(--border);
   border-radius: 18px;
   background: #fff;
+}
+
+.attendance-row__member {
+  display: grid;
+  gap: 4px;
+}
+
+.attendance-chip {
+  min-width: 74px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #f9f4ea;
+  color: #7d6d52;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.attendance-chip.is-present {
+  border-color: #c8e1d6;
+  color: #2f6f59;
+}
+
+.attendance-chip.is-absent {
+  border-color: #ecc8c0;
+  color: #b25549;
+}
+
+.attendance-chip.is-present.is-selected {
+  background: #2f8069;
+  border-color: #2f8069;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(47, 128, 105, 0.18);
+}
+
+.attendance-chip.is-absent.is-selected {
+  background: #d76554;
+  border-color: #d76554;
+  color: #fff;
+  box-shadow: 0 8px 16px rgba(215, 101, 84, 0.18);
 }
 
 .info-tile {

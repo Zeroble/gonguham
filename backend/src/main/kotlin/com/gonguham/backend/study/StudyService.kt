@@ -174,7 +174,7 @@ class StudyService(
         }
 
         studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(studyId)
-            .firstOrNull { it.scheduledAt.isAfter(LocalDateTime.now()) }
+            .firstOrNull { it.attendanceClosedAt == null }
             ?.let { session ->
                 if (sessionParticipationRepository.findBySessionIdAndUserId(session.id!!, user.id!!) == null) {
                     sessionParticipationRepository.save(
@@ -197,7 +197,7 @@ class StudyService(
             ResponseStatusException(HttpStatus.NOT_FOUND, "회차를 찾을 수 없습니다.")
         }
         ensureMember(session.studyId, user.id!!)
-        val currentSessionId = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(session.studyId).firstOrNull { !it.scheduledAt.isBefore(LocalDateTime.now()) }?.id
+        val currentSessionId = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(session.studyId).firstOrNull { it.attendanceClosedAt == null }?.id
         if (session.id != currentSessionId) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 회차만 참석 여부를 변경할 수 있습니다.")
         }
@@ -249,7 +249,34 @@ class StudyService(
             }
         }
 
+        session.attendanceClosedAt = LocalDateTime.now()
+        studySessionRepository.save(session)
+
         return AttendanceResult(sessionId = sessionId, awardedUserIds = awarded)
+    }
+
+    fun attendanceRoster(leader: User, sessionId: Long): SessionAttendancePanelResponse {
+        val session = studySessionRepository.findById(sessionId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "?뚯감瑜?李얠쓣 ???놁뒿?덈떎.")
+        }
+        ensureLeader(session.studyId, leader.id!!)
+        val members = studyMembershipRepository.findAllByStudyIdAndStatus(session.studyId, MembershipStatus.ACTIVE)
+        val usersById = userRepository.findAllById(members.map { it.userId }).associateBy { it.id!! }
+        val participationMap = sessionParticipationRepository.findAllBySessionId(session.id!!).associateBy { it.userId }
+        val attendanceMap = attendanceRepository.findAllBySessionId(session.id!!).associateBy { it.userId }
+
+        return SessionAttendancePanelResponse(
+            sessionId = session.id!!,
+            sessionLabel = "${session.sessionNo}회차 ${session.title}",
+            roster = members.map { member ->
+                SessionAttendanceRosterItem(
+                    userId = member.userId,
+                    nickname = usersById[member.userId]?.nickname ?: "?????놁쓬",
+                    planned = participationMap[member.userId]?.planned ?: false,
+                    attendanceStatus = attendanceMap[member.userId]?.status?.name,
+                )
+            },
+        )
     }
 
     fun posts(user: User, studyId: Long, type: PostType?): List<StudyFeedResponse> {

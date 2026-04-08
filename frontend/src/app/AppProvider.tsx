@@ -1,19 +1,27 @@
 import {
   createContext,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
 } from 'react'
 import { api, type SessionUser } from './api'
 
+type AppToast = {
+  id: number
+  message: string
+}
+
 type AppContextValue = {
   me: SessionUser | null
   sessionUserId: number | null
   isBooting: boolean
+  toast: AppToast | null
   loginDemo: () => Promise<SessionUser>
   logout: () => void
   refreshMe: () => Promise<SessionUser | null>
   replaceMe: (next: SessionUser) => void
+  showToast: (message: string) => void
 }
 
 const SESSION_KEY = 'gonguham-demo-user-id'
@@ -27,6 +35,9 @@ export function AppProvider({ children }: PropsWithChildren) {
   })
   const [me, setMe] = useState<SessionUser | null>(null)
   const [isBooting, setIsBooting] = useState(true)
+  const [toast, setToast] = useState<AppToast | null>(null)
+  const toastIdRef = useRef(0)
+  const toastTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -64,6 +75,14 @@ export function AppProvider({ children }: PropsWithChildren) {
     }
   }, [sessionUserId])
 
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current)
+      }
+    }
+  }, [])
+
   async function loginDemo() {
     const user = await api.demoLogin()
     window.localStorage.setItem(SESSION_KEY, String(user.id))
@@ -92,16 +111,31 @@ export function AppProvider({ children }: PropsWithChildren) {
     setMe(next)
   }
 
+  function showToast(message: string) {
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current)
+    }
+
+    toastIdRef.current += 1
+    setToast({ id: toastIdRef.current, message })
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null)
+      toastTimerRef.current = null
+    }, 3000)
+  }
+
   return (
     <AppContext.Provider
       value={{
         me,
         sessionUserId,
         isBooting,
+        toast,
         loginDemo,
         logout,
         refreshMe,
         replaceMe,
+        showToast,
       }}
     >
       {children}

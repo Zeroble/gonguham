@@ -9,12 +9,11 @@ import thumbPony from '../assets/gonguham/thumb-pony.png'
 const thumbs = [thumbCloud, thumbPony, thumbBangs]
 
 export function CustomizePage() {
-  const { sessionUserId, refreshMe } = useApp()
+  const { sessionUserId, refreshMe, showToast } = useApp()
   const [summary, setSummary] = useState<AvatarSummary | null>(null)
   const [items, setItems] = useState<AvatarShopItem[]>([])
   const [category, setCategory] = useState('HAIR')
   const [mode, setMode] = useState<'SHOP' | 'INVENTORY'>('SHOP')
-  const [message, setMessage] = useState('')
 
   useEffect(() => {
     if (!sessionUserId) {
@@ -69,9 +68,9 @@ export function CustomizePage() {
       await api.purchaseAvatarItem(sessionUserId, itemId)
       await refreshMe()
       await reload()
-      setMessage('아이템을 구매했어요.')
+      showToast('아이템을 구매했어요.')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '아이템 구매에 실패했어요.')
+      showToast(error instanceof Error ? error.message : '아이템 구매에 실패했어요.')
     }
   }
 
@@ -83,9 +82,9 @@ export function CustomizePage() {
     try {
       setSummary(await api.equipAvatarItem(sessionUserId, itemId))
       setItems(await api.getAvatarShop(sessionUserId, category))
-      setMessage('아이템을 착용했어요.')
+      showToast('아이템을 착용했어요.')
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '아이템 착용에 실패했어요.')
+      showToast(error instanceof Error ? error.message : '아이템 착용에 실패했어요.')
     }
   }
 
@@ -98,8 +97,6 @@ export function CustomizePage() {
             <p>지금은 헤어, 상의, 하의 3개 슬롯만 우선 구현해 두었어요.</p>
           </div>
         </div>
-
-        {message ? <div className="message-banner">{message}</div> : null}
 
         <div className="stage-canvas">
           <span className="stage-canvas__label">현재 캐릭터</span>

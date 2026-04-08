@@ -9,7 +9,7 @@ const tabs = [
 ]
 
 export function AppShell() {
-  const { isBooting, me, logout } = useApp()
+  const { isBooting, me, logout, toast } = useApp()
 
   if (isBooting) {
     return <div className="fullscreen-message">공구함을 불러오는 중입니다.</div>
@@ -21,6 +21,14 @@ export function AppShell() {
 
   return (
     <div className="app-shell">
+      {toast ? (
+        <div className="app-toast-region" aria-atomic="true" aria-live="polite">
+          <div className="app-toast" key={toast.id} role="status">
+            {toast.message}
+          </div>
+        </div>
+      ) : null}
+
       <header className="top-summary-card">
         <div className="summary-brand">
           <strong>공구함</strong>

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -35,7 +34,6 @@ class DashboardService(
         val membershipsByStudyId = memberships.associateBy { it.studyId }
         val studies = studyRepository.findAllById(memberships.map { it.studyId }).sortedBy { it.createdAt }
         val today = LocalDate.now()
-        val now = LocalDateTime.now()
         val sessions = studies.flatMap { study -> studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(study.id!!) }
 
         val joinedStudies = studies.map { study ->
@@ -51,7 +49,7 @@ class DashboardService(
         val defaultStudyId = studies.firstOrNull { it.id == selectedStudyId }?.id ?: studies.firstOrNull()?.id
         val studyPanels = studies.mapNotNull { study ->
             membershipsByStudyId[study.id!!]?.let { membership ->
-                buildStudyPanel(user, study, membership, now)
+                buildStudyPanel(user, study, membership)
             }
         }
 
@@ -70,7 +68,7 @@ class DashboardService(
         val study = studyRepository.findById(studyId).orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "스터디를 찾을 수 없습니다.")
         }
-        return buildStudyPanel(user, study, membership, LocalDateTime.now())
+        return buildStudyPanel(user, study, membership)
     }
 
     private fun typeLabel(raw: String): String = when (raw) {
@@ -91,17 +89,15 @@ class DashboardService(
 
     private fun resolveCurrentSession(
         sessions: List<com.gonguham.backend.study.StudySession>,
-        now: LocalDateTime,
-    ) = sessions.firstOrNull { !it.scheduledAt.isBefore(now) } ?: sessions.lastOrNull()
+    ) = sessions.firstOrNull { it.attendanceClosedAt == null }
 
     private fun buildStudyPanel(
         user: User,
         study: Study,
         membership: StudyMembership,
-        now: LocalDateTime,
     ): ActiveStudyPanel {
         val studySessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(study.id!!)
-        val currentSession = resolveCurrentSession(studySessions, now)
+        val currentSession = resolveCurrentSession(studySessions)
         val currentSessionId = currentSession?.id
         val orderedSessions = studySessionRepository.findAllByStudyIdOrderBySessionNoDesc(study.id!!)
         val members = studyMembershipRepository.findAllByStudyIdAndStatus(study.id!!, MembershipStatus.ACTIVE)
@@ -121,8 +117,10 @@ class DashboardService(
             sessions = orderedSessions.map { session ->
                 val attendance = attendanceRepository.findBySessionIdAndUserId(session.id!!, user.id!!)
                 val participation = sessionParticipationRepository.findBySessionIdAndUserId(session.id!!, user.id!!)
+                val planned = participation?.planned == true
                 val isCurrent = session.id == currentSessionId
-                val isFuture = session.scheduledAt.isAfter(now)
+                val isClosed = session.attendanceClosedAt != null
+                val isFuture = !isCurrent && !isClosed
                 val nodeState = when {
                     isCurrent -> "CURRENT"
                     isFuture -> "FUTURE"
@@ -134,7 +132,9 @@ class DashboardService(
                     roundLabel = "${session.sessionNo}회차",
                     title = session.title,
                     statusLabel = when {
-                        isFuture && participation?.planned == true -> "참여 예정"
+                        isCurrent && planned -> "참여 예정"
+                        isCurrent -> "불참"
+                        isFuture && planned -> "참여 예정"
                         isFuture -> "미진행"
                         attendance?.status?.name == "PRESENT" -> "출석 완료"
                         attendance?.status?.name == "ABSENT" -> "결석"
@@ -142,6 +142,7 @@ class DashboardService(
                     },
                     nodeState = nodeState,
                     scheduledAt = session.scheduledAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
+                    planned = planned,
                 )
             },
             notice = notice?.let {
