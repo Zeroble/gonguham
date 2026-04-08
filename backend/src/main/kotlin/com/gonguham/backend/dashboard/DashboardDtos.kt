@@ -2,8 +2,9 @@ package com.gonguham.backend.dashboard
 
 data class DashboardResponse(
     val todayScheduledCount: Int,
+    val defaultStudyId: Long?,
     val joinedStudies: List<JoinedStudyCard>,
-    val activeStudy: ActiveStudyPanel?,
+    val studyPanels: List<ActiveStudyPanel>,
 )
 
 data class JoinedStudyCard(
@@ -20,6 +21,7 @@ data class ActiveStudyPanel(
     val description: String,
     val locationText: String,
     val isLeader: Boolean,
+    val currentSessionId: Long?,
     val attendanceSessionId: Long?,
     val attendanceSessionLabel: String?,
     val sessions: List<TimelineSession>,
@@ -33,6 +35,7 @@ data class TimelineSession(
     val roundLabel: String,
     val title: String,
     val statusLabel: String,
+    val nodeState: String,
     val scheduledAt: String,
 )
 

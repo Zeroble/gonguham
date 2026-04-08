@@ -46,21 +46,28 @@ export function AppShell() {
           </nav>
         </div>
 
-        <div className="summary-profile">
-          <span className="summary-profile__hint">
-            커스터마이징
-            <br />
-            캐릭터가
-            <br />
-            여기 표시됨
-          </span>
-          <div className="summary-profile__identity">
-            <strong>{me.nickname}</strong>
-            <span>Lv.{me.level}</span>
+        <div className="summary-side">
+          <div className="summary-character-slot" aria-hidden="true">
+            <div className="summary-character-slot__placeholder">
+              <span>
+                커스터마이징
+                <br />
+                캐릭터가
+                <br />
+                여기 표시됨
+              </span>
+            </div>
           </div>
-          <button className="inline-text-button" onClick={logout} type="button">
-            로그아웃
-          </button>
+
+          <div className="summary-profile">
+            <div className="summary-profile__identity">
+              <strong>{me.nickname}</strong>
+              <span>Lv.{me.level}</span>
+            </div>
+            <button className="inline-text-button" onClick={logout} type="button">
+              로그아웃
+            </button>
+          </div>
         </div>
       </header>
 

@@ -232,6 +232,15 @@ class Seeder(
                 StudySession(studyId = topicStudy.id!!, sessionNo = 11, title = "최단 경로와 MST", scheduledAt = now.plusWeeks(1), placeText = topicStudy.locationText),
             ),
         )
+        val extraTopicSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = topicStudy.id!!, sessionNo = 6, title = "배열과 리스트 복습", scheduledAt = now.minusWeeks(4), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 7, title = "스택과 큐 문제 풀이", scheduledAt = now.minusWeeks(3), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 12, title = "동적 계획법 입문", scheduledAt = now.plusWeeks(2), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 13, title = "트리와 힙 정리", scheduledAt = now.plusWeeks(3), placeText = topicStudy.locationText),
+            ),
+        )
+
         studySessionRepository.saveAll(
             listOf(
                 StudySession(studyId = mogakStudy.id!!, sessionNo = 3, title = "오늘 할 일 공유", scheduledAt = now.plusDays(2), placeText = mogakStudy.locationText),
@@ -239,20 +248,54 @@ class Seeder(
             ),
         )
 
+        val earlyTopicSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = topicStudy.id!!, sessionNo = 1, title = "OT and study setup", scheduledAt = now.minusWeeks(9), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 2, title = "Array and list warmup", scheduledAt = now.minusWeeks(8), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 3, title = "Stack and queue drill", scheduledAt = now.minusWeeks(7), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 4, title = "Tree traversal basics", scheduledAt = now.minusWeeks(6), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 5, title = "Graph intro practice", scheduledAt = now.minusWeeks(5), placeText = topicStudy.locationText),
+            ),
+        )
+
         val upcomingSession = topicSessions.first { it.sessionNo == 10 }
         val completedSession = topicSessions.first { it.sessionNo == 9 }
+        val olderCompletedSession = topicSessions.first { it.sessionNo == 8 }
+        val archiveSession = extraTopicSessions.first { it.sessionNo == 6 }
+        val missedSession = extraTopicSessions.first { it.sessionNo == 7 }
+        val futurePlannedSession = topicSessions.first { it.sessionNo == 11 }
+        val kickoffSession = earlyTopicSessions.first { it.sessionNo == 1 }
+        val drillSession = earlyTopicSessions.first { it.sessionNo == 3 }
+        val graphIntroSession = earlyTopicSessions.first { it.sessionNo == 5 }
 
         sessionParticipationRepository.saveAll(
             listOf(
                 SessionParticipation(sessionId = upcomingSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusHours(5)),
                 SessionParticipation(sessionId = upcomingSession.id!!, userId = member.id!!, planned = true, updatedAt = now.minusHours(3)),
+                SessionParticipation(sessionId = futurePlannedSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusHours(1)),
+                SessionParticipation(sessionId = kickoffSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(9)),
+                SessionParticipation(sessionId = drillSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(7)),
+                SessionParticipation(sessionId = drillSession.id!!, userId = member.id!!, planned = true, updatedAt = now.minusWeeks(7)),
+                SessionParticipation(sessionId = graphIntroSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(5)),
                 SessionParticipation(sessionId = completedSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(1)),
                 SessionParticipation(sessionId = completedSession.id!!, userId = member.id!!, planned = true, updatedAt = now.minusWeeks(1)),
+                SessionParticipation(sessionId = olderCompletedSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(2)),
+                SessionParticipation(sessionId = olderCompletedSession.id!!, userId = member.id!!, planned = true, updatedAt = now.minusWeeks(2)),
+                SessionParticipation(sessionId = archiveSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(4)),
+                SessionParticipation(sessionId = missedSession.id!!, userId = leader.id!!, planned = true, updatedAt = now.minusWeeks(3)),
             ),
         )
 
         attendanceRepository.saveAll(
             listOf(
+                Attendance(sessionId = kickoffSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(9)),
+                Attendance(sessionId = drillSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(7)),
+                Attendance(sessionId = drillSession.id!!, userId = member.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(7)),
+                Attendance(sessionId = graphIntroSession.id!!, userId = leader.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(5)),
+                Attendance(sessionId = archiveSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(4)),
+                Attendance(sessionId = olderCompletedSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(2)),
+                Attendance(sessionId = olderCompletedSession.id!!, userId = member.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(2)),
+                Attendance(sessionId = missedSession.id!!, userId = leader.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = leader.id!!, checkedAt = now.minusWeeks(3)),
                 Attendance(sessionId = completedSession.id!!, userId = leader.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusDays(6)),
                 Attendance(sessionId = completedSession.id!!, userId = member.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = leader.id!!, checkedAt = now.minusDays(6)),
             ),

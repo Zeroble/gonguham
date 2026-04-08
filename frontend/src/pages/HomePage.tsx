@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { api, type DashboardResponse } from '../app/api'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { api, type DashboardResponse, type StudyHomePanel } from '../app/api'
 import { useApp } from '../app/useApp'
 
 type RenderedTimelineItem = {
@@ -7,6 +8,7 @@ type RenderedTimelineItem = {
   roundLabel: string
   title: string
   statusLabel: string
+  nodeState: string
   scheduledAt: string
   placeholder?: boolean
 }
@@ -19,12 +21,20 @@ type RenderedPostItem = {
   placeholder?: boolean
 }
 
-function getTimelineTone(statusLabel: string) {
-  if (statusLabel.includes('참여')) return 'planned'
-  if (statusLabel.includes('출석')) return 'done'
-  if (statusLabel.includes('결석')) return 'missed'
-  if (statusLabel.includes('미응답')) return 'pending'
+function getTimelineToneByState(nodeState: string) {
+  if (nodeState === 'CURRENT') return 'planned'
+  if (nodeState === 'ATTENDED') return 'done'
+  if (nodeState === 'ABSENT') return 'missed'
+  if (nodeState === 'FUTURE') return 'pending'
   return 'muted'
+}
+
+function getTimelineNodeClass(nodeState: string) {
+  if (nodeState === 'CURRENT') return 'home-timeline-node is-highlighted'
+  if (nodeState === 'ATTENDED') return 'home-timeline-node is-attended'
+  if (nodeState === 'ABSENT') return 'home-timeline-node is-absent'
+  if (nodeState === 'FUTURE') return 'home-timeline-node is-future'
+  return 'home-timeline-node'
 }
 
 function getStudyBadgeTone(label: string) {
@@ -33,8 +43,20 @@ function getStudyBadgeTone(label: string) {
   return 'mogak'
 }
 
+function toAttendanceMap(panel: StudyHomePanel | null | undefined) {
+  return Object.fromEntries(
+    (panel?.attendanceRoster ?? []).map((member) => [
+      member.userId,
+      member.attendanceStatus ?? (member.planned ? 'PRESENT' : 'ABSENT'),
+    ]),
+  )
+}
+
 export function HomePage() {
   const { sessionUserId, refreshMe } = useApp()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const timelineViewportRef = useRef<HTMLDivElement | null>(null)
+  const currentTimelineRowRef = useRef<HTMLDivElement | null>(null)
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
   const [draftTitle, setDraftTitle] = useState('')
   const [draftContent, setDraftContent] = useState('')
@@ -45,6 +67,10 @@ export function HomePage() {
   const [showOverview, setShowOverview] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
   const [showAttendance, setShowAttendance] = useState(false)
+  const selectedStudyId = useMemo(() => {
+    const value = Number(searchParams.get('studyId'))
+    return Number.isFinite(value) && value > 0 ? value : null
+  }, [searchParams])
 
   useEffect(() => {
     if (!sessionUserId) {
@@ -61,14 +87,6 @@ export function HomePage() {
 
         if (!cancelled) {
           setDashboard(next)
-          setAttendanceMap(
-            Object.fromEntries(
-              (next.activeStudy?.attendanceRoster ?? []).map((member) => [
-                member.userId,
-                member.attendanceStatus ?? (member.planned ? 'PRESENT' : 'ABSENT'),
-              ]),
-            ),
-          )
         }
       } finally {
         if (!cancelled) {
@@ -84,35 +102,109 @@ export function HomePage() {
     }
   }, [sessionUserId])
 
-  const activeStudy = dashboard?.activeStudy
+  useEffect(() => {
+    if (!dashboard?.defaultStudyId) {
+      return
+    }
+
+    if (selectedStudyId && dashboard.joinedStudies.some((study) => study.studyId === selectedStudyId)) {
+      return
+    }
+
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.set('studyId', String(dashboard.defaultStudyId))
+    setSearchParams(nextParams, { replace: true })
+  }, [dashboard?.defaultStudyId, dashboard?.joinedStudies, searchParams, selectedStudyId, setSearchParams])
+
+  const activeStudy = useMemo(() => {
+    if (!dashboard?.studyPanels.length) {
+      return null
+    }
+
+    const targetStudyId = selectedStudyId ?? dashboard.defaultStudyId
+    return dashboard.studyPanels.find((panel) => panel.studyId === targetStudyId) ?? dashboard.studyPanels[0]
+  }, [dashboard?.defaultStudyId, dashboard?.studyPanels, selectedStudyId])
+
+  useEffect(() => {
+    setAttendanceMap(toAttendanceMap(activeStudy))
+  }, [activeStudy])
+
+  useEffect(() => {
+    if (!sessionUserId || !activeStudy?.studyId) {
+      return
+    }
+
+    let cancelled = false
+
+    async function refreshStudyPanel() {
+      const nextPanel = await api.getStudyHomePanel(sessionUserId, activeStudy.studyId)
+
+      if (!cancelled) {
+        setDashboard((current) =>
+          current
+            ? {
+                ...current,
+                studyPanels: current.studyPanels.map((panel) =>
+                  panel.studyId === nextPanel.studyId ? nextPanel : panel,
+                ),
+              }
+            : current,
+        )
+      }
+    }
+
+    void refreshStudyPanel()
+
+    return () => {
+      cancelled = true
+    }
+  }, [activeStudy?.studyId, sessionUserId])
+
+  const currentTimelineSession = useMemo(() => {
+    if (!activeStudy?.sessions.length) {
+      return null
+    }
+
+    return (
+      activeStudy.sessions.find((session) => session.sessionId === activeStudy.currentSessionId) ??
+      activeStudy.sessions.find((session) => session.nodeState === 'CURRENT') ??
+      activeStudy.sessions[0]
+    )
+  }, [activeStudy])
 
   const scheduleLabel = useMemo(() => {
-    if (!activeStudy?.sessions.length) {
+    if (!currentTimelineSession) {
       return activeStudy?.locationText ?? ''
     }
 
-    return `${activeStudy.sessions[0].scheduledAt} · ${activeStudy.locationText}`
-  }, [activeStudy])
+    return `${currentTimelineSession.scheduledAt} · ${activeStudy?.locationText ?? ''}`
+  }, [activeStudy?.locationText, currentTimelineSession])
 
   const renderedTimeline = useMemo<RenderedTimelineItem[]>(() => {
     if (!activeStudy) {
       return []
     }
 
-    const placeholdersNeeded = Math.max(0, 7 - activeStudy.sessions.length)
-
     return [
-      ...activeStudy.sessions,
-      ...Array.from({ length: placeholdersNeeded }, (_, index) => ({
-        sessionId: `placeholder-${index}`,
-        roundLabel: `${activeStudy.sessions.length + index + 1}회차`,
-        title: '예정된 회차',
-        statusLabel: '준비중',
-        scheduledAt: '추후 공개',
-        placeholder: true,
-      })),
+      ...activeStudy.sessions
     ]
   }, [activeStudy])
+
+  useLayoutEffect(() => {
+    const viewport = timelineViewportRef.current
+    const currentRow = currentTimelineRowRef.current
+
+    if (!viewport || !currentRow || !activeStudy?.currentSessionId) {
+      return
+    }
+
+    const viewportRect = viewport.getBoundingClientRect()
+    const rowRect = currentRow.getBoundingClientRect()
+    const nextScrollTop = viewport.scrollTop + (rowRect.top - viewportRect.top)
+    const maxScrollTop = viewport.scrollHeight - viewport.clientHeight
+
+    viewport.scrollTop = Math.max(0, Math.min(nextScrollTop, maxScrollTop))
+  }, [activeStudy?.currentSessionId, activeStudy?.studyId, renderedTimeline.length])
 
   const renderedPosts = useMemo<RenderedPostItem[]>(() => {
     if (!activeStudy) {
@@ -130,19 +222,20 @@ export function HomePage() {
   }, [activeStudy])
 
   async function reload() {
-    if (!sessionUserId) {
+    if (!sessionUserId || !activeStudy?.studyId) {
       return
     }
 
-    const next = await api.getDashboard(sessionUserId)
-    setDashboard(next)
-    setAttendanceMap(
-      Object.fromEntries(
-        (next.activeStudy?.attendanceRoster ?? []).map((member) => [
-          member.userId,
-          member.attendanceStatus ?? (member.planned ? 'PRESENT' : 'ABSENT'),
-        ]),
-      ),
+    const nextPanel = await api.getStudyHomePanel(sessionUserId, activeStudy.studyId)
+    setDashboard((current) =>
+      current
+        ? {
+            ...current,
+            studyPanels: current.studyPanels.map((panel) =>
+              panel.studyId === nextPanel.studyId ? nextPanel : panel,
+            ),
+          }
+        : current,
     )
   }
 
@@ -239,6 +332,7 @@ export function HomePage() {
                     : 'home-study-card'
                 }
                 key={study.studyId}
+                onClick={() => setSearchParams({ studyId: String(study.studyId) })}
               >
                 <span
                   className={`study-type-badge is-${getStudyBadgeTone(study.typeLabel)}`}
@@ -293,34 +387,32 @@ export function HomePage() {
             <section className="timeline-column">
               <span className="section-kicker">SESSION TIMELINE</span>
 
-              <div className="home-timeline-viewport">
+              <div className="home-timeline-viewport" ref={timelineViewportRef}>
                 <div className="home-timeline-list">
-                  {renderedTimeline.map((session, index) => {
-                    const isHighlighted = index === 0 && !session.placeholder
-                    const tone = getTimelineTone(session.statusLabel)
-                    const canToggle =
-                      session.statusLabel === '참여 예정' ||
-                      session.statusLabel === '미응답'
+                  {renderedTimeline.map((session) => {
+                    const isHighlighted =
+                      !session.placeholder &&
+                      session.sessionId === activeStudy.currentSessionId
+                    const tone = getTimelineToneByState(session.nodeState)
+                    const canToggle = isHighlighted
                     const isInteractive =
                       !session.placeholder &&
                       (activeStudy.isLeader ? isHighlighted : canToggle)
 
                     return (
-                      <div className="home-timeline-row" key={session.sessionId}>
+                      <div
+                        className="home-timeline-row"
+                        key={session.sessionId}
+                        ref={isHighlighted ? currentTimelineRowRef : null}
+                      >
                         <div className="home-timeline-row__rail" aria-hidden="true">
                           <span
-                            className={
-                              isHighlighted
-                                ? 'home-timeline-node is-highlighted'
-                                : 'home-timeline-node'
-                            }
+                            className={getTimelineNodeClass(session.nodeState)}
                           />
-                          {index < renderedTimeline.length - 1 ? (
-                            <span className="home-timeline-connector" />
-                          ) : null}
+                          <span className="home-timeline-connector" />
                         </div>
 
-                        <button
+                        <div
                           className={
                             isHighlighted
                               ? 'home-timeline-card is-highlighted'
@@ -328,25 +420,29 @@ export function HomePage() {
                                 ? 'home-timeline-card is-placeholder'
                                 : 'home-timeline-card'
                           }
-                          disabled={!isInteractive}
                           onClick={() => {
-                            if (session.placeholder) {
-                              return
-                            }
+                            if (activeStudy.isLeader && isHighlighted) return setShowAttendance(true)
+                            if (isInteractive && canToggle && typeof session.sessionId === 'number') return void handleParticipation(session.sessionId, session.statusLabel !== '참여 예정')
+                            if (isInteractive) {
+                              // todo : move this into button 
 
-                            if (activeStudy.isLeader && isHighlighted) {
-                              setShowAttendance(true)
-                              return
-                            }
+                              // if (session.placeholder) {
+                              //   return
+                              // }
 
-                            if (canToggle && typeof session.sessionId === 'number') {
-                              void handleParticipation(
-                                session.sessionId,
-                                session.statusLabel !== '참여 예정',
-                              )
+                              // if (activeStudy.isLeader && isHighlighted) {
+                              //   setShowAttendance(true)
+                              //   return
+                              // }
+
+                              // if (canToggle && typeof session.sessionId === 'number') {
+                              //   void handleParticipation(
+                              //     session.sessionId,
+                              //     session.statusLabel !== '참여 예정',
+                              //   )
+                              // }
                             }
                           }}
-                          type="button"
                         >
                           <div className="home-timeline-card__meta">
                             <span>{session.roundLabel}</span>
@@ -360,7 +456,7 @@ export function HomePage() {
                                 : session.statusLabel}
                             </span>
                           ) : null}
-                        </button>
+                        </div>
                       </div>
                     )
                   })}
@@ -413,15 +509,24 @@ export function HomePage() {
 
                 <div className="home-posts-divider" />
 
-                <div className="pagination-row">
-                  <button className="pagination-ghost" type="button">
-                    이전
-                  </button>
-                  <span className="pagination-badge is-active">1</span>
-                  <span className="pagination-badge">2</span>
-                  <span className="pagination-badge">3</span>
-                  <button className="pagination-ghost" type="button">
-                    다음
+                <div className="pagination-row pagination-row--posts">
+                  <div className="pagination-pages">
+                    <button className="pagination-ghost" type="button">
+                      이전
+                    </button>
+                    <span className="pagination-badge is-active">1</span>
+                    <span className="pagination-badge">2</span>
+                    <span className="pagination-badge">3</span>
+                    <button className="pagination-ghost" type="button">
+                      다음
+                    </button>
+                  </div>
+                  <button
+                    className="soft-button"
+                    onClick={() => setShowComposer(true)}
+                    type="button"
+                  >
+                    글쓰기
                   </button>
                 </div>
               </section>

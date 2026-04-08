@@ -11,6 +11,7 @@ export type SessionUser = {
 
 export type DashboardResponse = {
   todayScheduledCount: number
+  defaultStudyId: number | null
   joinedStudies: Array<{
     studyId: number
     typeLabel: string
@@ -18,12 +19,16 @@ export type DashboardResponse = {
     timeLabel: string
     locationLabel: string
   }>
-  activeStudy: {
+  studyPanels: StudyHomePanel[]
+}
+
+export type StudyHomePanel = {
     studyId: number
     title: string
     description: string
     locationText: string
     isLeader: boolean
+    currentSessionId: number | null
     attendanceSessionId: number | null
     attendanceSessionLabel: string | null
     sessions: Array<{
@@ -31,6 +36,7 @@ export type DashboardResponse = {
       roundLabel: string
       title: string
       statusLabel: string
+      nodeState: string
       scheduledAt: string
     }>
     notice: FeedItem | null
@@ -41,7 +47,6 @@ export type DashboardResponse = {
       planned: boolean
       attendanceStatus: string | null
     }>
-  } | null
 }
 
 export type FeedItem = {
@@ -156,8 +161,12 @@ export const api = {
       body: { nickname },
     })
   },
-  getDashboard(userId: number) {
-    return request<DashboardResponse>('/api/v1/dashboard', userId)
+  getDashboard(userId: number, studyId?: number | null) {
+    const suffix = studyId ? `?studyId=${studyId}` : ''
+    return request<DashboardResponse>(`/api/v1/dashboard${suffix}`, userId)
+  },
+  getStudyHomePanel(userId: number, studyId: number) {
+    return request<StudyHomePanel>(`/api/v1/dashboard/studies/${studyId}/panel`, userId)
   },
   getStudies(userId: number, keyword = '', type = '') {
     const query = new URLSearchParams()

@@ -197,6 +197,7 @@ interface StudyMembershipRepository : JpaRepository<StudyMembership, Long> {
 
 interface StudySessionRepository : JpaRepository<StudySession, Long> {
     fun findAllByStudyIdOrderBySessionNoAsc(studyId: Long): List<StudySession>
+    fun findAllByStudyIdOrderBySessionNoDesc(studyId: Long): List<StudySession>
 }
 
 interface SessionParticipationRepository : JpaRepository<SessionParticipation, Long> {

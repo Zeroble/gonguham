@@ -197,6 +197,10 @@ class StudyService(
             ResponseStatusException(HttpStatus.NOT_FOUND, "회차를 찾을 수 없습니다.")
         }
         ensureMember(session.studyId, user.id!!)
+        val currentSessionId = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(session.studyId).firstOrNull { !it.scheduledAt.isBefore(LocalDateTime.now()) }?.id
+        if (session.id != currentSessionId) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 회차만 참석 여부를 변경할 수 있습니다.")
+        }
         val participation = sessionParticipationRepository.findBySessionIdAndUserId(sessionId, user.id!!)
             ?: SessionParticipation(sessionId = sessionId, userId = user.id!!, planned = planned, updatedAt = LocalDateTime.now())
         participation.planned = planned
