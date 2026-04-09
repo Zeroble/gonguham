@@ -2011,9 +2011,14 @@ img {
 }
 
 .profile-modal__hero {
-  display: grid;
+  display: flex;
   grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
   gap: 18px;
+}
+
+.profile-modal__hero > div.avatar-preview {
+  flex: 1;
+  border : 1px solid var(--border);
 }
 
 .profile-modal__avatar-panel,
@@ -2048,6 +2053,7 @@ img {
 
 .profile-modal__summary {
   display: grid;
+  flex: 3;
   gap: 16px;
 }
 
@@ -2121,7 +2127,7 @@ img {
 .profile-modal__progress-meta {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
 }
 

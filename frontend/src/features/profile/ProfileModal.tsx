@@ -92,6 +92,15 @@ export function ProfileModal({ userId, onClose }: ProfileModalProps) {
     () => (profile ? draftToRenderState(toAvatarDraft(profile)) : null),
     [profile],
   )
+  const progressCurrentChecks = profile
+    ? Math.max(0, profile.stats.totalEarnedChecks - profile.levelProgress.currentLevelStartTotalChecks)
+    : 0
+  const progressTargetChecks = profile
+    ? Math.max(
+      1,
+      profile.levelProgress.nextLevelTargetTotalChecks - profile.levelProgress.currentLevelStartTotalChecks,
+    )
+    : 1
   const statCards = useMemo(() => {
     if (!profile) {
       return []
@@ -201,16 +210,11 @@ export function ProfileModal({ userId, onClose }: ProfileModalProps) {
         ) : profile && renderState ? (
           <>
             <section className="profile-modal__hero">
-              <div className="profile-modal__avatar-panel">
-                <AvatarPreview
-                  className="profile-modal__avatar"
-                  size="summary"
-                  state={renderState}
-                />
-                <p className="profile-modal__avatar-note">
-                  아바타 변경은 커스터마이즈 화면에서 계속할 수 있어요.
-                </p>
-              </div>
+              <AvatarPreview
+                className="profile-modal__avatar"
+                size="summary"
+                state={renderState}
+              />
 
               <div className="profile-modal__summary">
                 <div className="profile-modal__identity">
@@ -282,7 +286,7 @@ export function ProfileModal({ userId, onClose }: ProfileModalProps) {
 
                 <div className="profile-modal__progress-meta">
                   <span>
-                    {profile.levelProgress.currentLevelStartTotalChecks} / {profile.levelProgress.nextLevelTargetTotalChecks} 체크
+                    {progressCurrentChecks} / {progressTargetChecks} 체크
                   </span>
                   <strong>{profile.levelProgress.progressPercent}%</strong>
                 </div>

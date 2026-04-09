@@ -275,7 +275,7 @@ export function StudyCreatePage() {
     }
 
     if (!form.title.trim()) {
-      showToast('?ㅽ꽣???쒕ぉ???낅젰?댁＜?몄슂.')
+      showToast('제목을 입력해주세요')
       return
     }
 
@@ -295,12 +295,12 @@ export function StudyCreatePage() {
     }
 
     if (normalizedForm.endTime <= normalizedForm.startTime) {
-      showToast('醫낅즺 ?쒓컙? ?쒖옉 ?쒓컙蹂대떎 ??뼱???⑸땲??')
+      showToast('시작일을 종료일 이전으로 설정해주세요.')
       return
     }
 
     if (normalizedForm.maxMembers < 2) {
-      showToast('紐⑥쭛 ?몄썝? 2紐??댁긽?댁뼱???⑸땲??')
+      showToast('최대 멤버수를 2명 이상으로 설정해주세요.')
       return
     }
 
