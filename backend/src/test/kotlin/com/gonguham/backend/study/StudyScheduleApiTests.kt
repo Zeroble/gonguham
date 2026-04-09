@@ -10,10 +10,12 @@ import com.gonguham.backend.domain.StudyStatus
 import com.gonguham.backend.domain.StudyType
 import com.gonguham.backend.user.UserRepository
 import java.time.DayOfWeek
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -29,6 +31,7 @@ class StudyScheduleApiTests @Autowired constructor(
     private val studyRepository: StudyRepository,
     private val studyMembershipRepository: StudyMembershipRepository,
     private val studySessionRepository: StudySessionRepository,
+    private val attendanceRepository: AttendanceRepository,
     private val userRepository: UserRepository,
 ) : PostgresIntegrationTest() {
     @Test
@@ -104,6 +107,91 @@ class StudyScheduleApiTests @Autowired constructor(
         }
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+    }
+
+    @Test
+    fun `leader cannot open attendance roster earlier than 30 minutes before scheduled time`() {
+        val leader = userRepository.findById(1L).orElseThrow()
+        val currentSession = currentOpenRegularSession(1L)
+        currentSession.scheduledAt = LocalDateTime.now().plusMinutes(31)
+        studySessionRepository.save(currentSession)
+
+        val exception = assertFailsWith<ResponseStatusException> {
+            studyService.attendanceRoster(leader, currentSession.id!!)
+        }
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+        assertEquals("예정 시간 30분 전부터 스터디를 시작할 수 있어요.", exception.reason)
+    }
+
+    @Test
+    fun `leader can open attendance roster within 30 minutes before scheduled time`() {
+        val leader = userRepository.findById(1L).orElseThrow()
+        val currentSession = currentOpenRegularSession(1L)
+        currentSession.scheduledAt = LocalDateTime.now().plusMinutes(29)
+        studySessionRepository.save(currentSession)
+
+        val panel = studyService.attendanceRoster(leader, currentSession.id!!)
+
+        assertEquals(currentSession.id, panel.sessionId)
+        assertTrue(panel.roster.isNotEmpty())
+    }
+
+    @Test
+    fun `leader can submit attendance within 30 minutes before scheduled time`() {
+        val leader = userRepository.findById(1L).orElseThrow()
+        val currentSession = currentOpenRegularSession(1L)
+        currentSession.scheduledAt = LocalDateTime.now().plusMinutes(29)
+        studySessionRepository.save(currentSession)
+        val roster = studyService.attendanceRoster(leader, currentSession.id!!).roster
+        assertTrue(roster.size >= 2)
+
+        val result = studyService.updateAttendance(
+            leader,
+            currentSession.id!!,
+            AttendanceRequest(
+                entries = roster.take(2).mapIndexed { index, member ->
+                    AttendanceEntryRequest(
+                        userId = member.userId,
+                        status = if (index == 0) "PRESENT" else "ABSENT",
+                    )
+                },
+            ),
+        )
+
+        val savedSession = studySessionRepository.findById(currentSession.id!!).orElseThrow()
+        val presentAttendance = attendanceRepository.findBySessionIdAndUserId(currentSession.id!!, roster[0].userId)
+        val absentAttendance = attendanceRepository.findBySessionIdAndUserId(currentSession.id!!, roster[1].userId)
+
+        assertEquals(currentSession.id, result.sessionId)
+        assertTrue(savedSession.attendanceClosedAt != null)
+        assertEquals("PRESENT", presentAttendance?.status?.name)
+        assertEquals("ABSENT", absentAttendance?.status?.name)
+    }
+
+    @Test
+    fun `leader can still edit attendance for closed past session`() {
+        val leader = userRepository.findById(1L).orElseThrow()
+        val completedSession = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(1L)
+            .first { it.sessionType == SessionType.REGULAR && it.attendanceClosedAt != null }
+        val member = studyService.attendanceRoster(leader, completedSession.id!!).roster.first()
+
+        studyService.updateAttendance(
+            leader,
+            completedSession.id!!,
+            AttendanceRequest(
+                entries = listOf(
+                    AttendanceEntryRequest(
+                        userId = member.userId,
+                        status = "ABSENT",
+                    ),
+                ),
+            ),
+        )
+
+        val updatedAttendance = attendanceRepository.findBySessionIdAndUserId(completedSession.id!!, member.userId)
+
+        assertEquals("ABSENT", updatedAttendance?.status?.name)
     }
 
     @Test
@@ -232,4 +320,8 @@ class StudyScheduleApiTests @Autowired constructor(
             studyMembershipRepository.findAllByStudyIdAndStatus(2L, MembershipStatus.ACTIVE).isEmpty(),
         )
     }
+
+    private fun currentOpenRegularSession(studyId: Long): StudySession =
+        studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(studyId)
+            .first { it.sessionType == SessionType.REGULAR && it.attendanceClosedAt == null }
 }

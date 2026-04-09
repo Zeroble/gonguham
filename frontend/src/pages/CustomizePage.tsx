@@ -91,7 +91,7 @@ export function CustomizePage() {
   } = useApp()
   const [summary, setSummary] = useState<AvatarSummary | null>(avatarSummary)
   const [shopItemsByCategory, setShopItemsByCategory] = useState<Partial<Record<ShopCategory, AvatarShopItem[]>>>({})
-  const [category, setCategory] = useState<CustomizeCategory>('HAIR')
+  const [category, setCategory] = useState<CustomizeCategory>('BODY')
   const [mode, setMode] = useState<'SHOP' | 'INVENTORY'>('SHOP')
   const [draft, setDraft] = useState<AvatarDraft>(() => summaryToDraft(avatarSummary))
   const [pendingPurchases, setPendingPurchases] = useState<PendingPurchaseCart>({})

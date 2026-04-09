@@ -19,12 +19,16 @@ const POSTS_PER_PAGE = 5
 const POST_PAGINATION_WINDOW = 5
 const BREAK_TITLE = '쉬어가는 회차'
 
+const LEADER_START_WINDOW_MS = 30 * 60 * 1000
+const LEADER_START_WINDOW_TOAST = '예정 시간 30분 전부터 스터디를 시작할 수 있어요.'
+
 type RenderedTimelineItem = {
   sessionId: number | string
   roundLabel: string
   title: string
   nodeState: string
   scheduledAt: string
+  scheduledAtValue: string
   planned: boolean
   sessionType: string
   placeholder?: boolean
@@ -123,6 +127,15 @@ function buildSessionEditorDrafts(sessions: StudyHomePanel['sessions']): Session
 
 function buildDefaultEditableSessionTitle(index: number) {
   return `${index + 1}회차 주제`
+}
+
+function canLeaderStartSession(scheduledAtValue: string) {
+  const scheduledAt = new Date(scheduledAtValue).getTime()
+  if (Number.isNaN(scheduledAt)) {
+    return false
+  }
+
+  return Date.now() >= scheduledAt - LEADER_START_WINDOW_MS
 }
 
 export function HomePage() {
@@ -880,6 +893,8 @@ export function HomePage() {
                       !session.placeholder &&
                       !isBreak &&
                       (activeStudy.isLeader ? (isHighlighted || isPastSession) : canToggle)
+                    const canLeaderOpenHighlightedSession =
+                      isHighlighted && canLeaderStartSession(session.scheduledAtValue)
                     const memberChipTone =
                       isBreak
                         ? 'break'
@@ -931,7 +946,18 @@ export function HomePage() {
                           className={cardClassName}
                           onClick={() => {
                             if (isBreak || session.placeholder) return
-                            if (activeStudy.isLeader && typeof session.sessionId === 'number' && (isHighlighted || isPastSession)) return void openAttendanceModal(session.sessionId)
+                            if (activeStudy.isLeader && typeof session.sessionId === 'number') {
+                              if (isPastSession) {
+                                return void openAttendanceModal(session.sessionId)
+                              }
+                              if (isHighlighted) {
+                                if (!canLeaderOpenHighlightedSession) {
+                                  showToast(LEADER_START_WINDOW_TOAST)
+                                  return
+                                }
+                                return void openAttendanceModal(session.sessionId)
+                              }
+                            }
                             if (isInteractive && canToggle && typeof session.sessionId === 'number') return void handleParticipation(session.sessionId, !session.planned)
                           }}
                         >

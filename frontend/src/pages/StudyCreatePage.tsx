@@ -48,15 +48,15 @@ function buildDefaultDate(offsetDays: number) {
 }
 
 const initialForm: StudyFormState = {
-  type: 'TOPIC',
+  type: 'MOGAKGONG',
   title: '',
   description: '',
-  daysOfWeek: ['TUESDAY'],
-  startTime: '18:30',
-  endTime: '20:00',
+  daysOfWeek: [],
+  startTime: '05:00',
+  endTime: '06:00',
   startDate: buildDefaultDate(7),
   endDate: buildDefaultDate(67),
-  maxMembers: 8,
+  maxMembers: 4,
   locationType: 'OFFLINE',
   locationText: '',
   rulesText: '',
@@ -112,7 +112,7 @@ function buildDefaultSessionTitle(index: number, type: StudyType) {
     return `${index + 1}회차`
   }
 
-  return `${index + 1}회차 주제`
+  return `${index + 1}회차`
 }
 
 function sortSessions(sessions: DraftSession[]) {
@@ -593,7 +593,7 @@ export function StudyCreatePage() {
                 placeholder={
                   normalizedForm.locationType === 'ONLINE'
                     ? '예: Google Meet 링크'
-                    : '예: 인천공항 3층 모임방 B'
+                    : '예: 나눔관 301'
                 }
                 value={form.locationText}
               />
@@ -601,7 +601,7 @@ export function StudyCreatePage() {
           </div>
         </article>
 
-        {form.type === 'TOPIC' ? (
+        {form.type === 'TOPIC' || form.type === 'MOGAKGONG' ? (
           <article className="page-surface form-section-card">
             <div className="section-card__header">
               <div>

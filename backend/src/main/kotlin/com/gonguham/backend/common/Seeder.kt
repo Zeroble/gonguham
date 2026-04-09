@@ -492,6 +492,26 @@ class Seeder(
             defaultAppearance = defaultAppearance,
             avatarDefaults = avatarDefaults,
         )
+        val jihun = createSeedUser(
+            email = "jihun@gonguham.app",
+            nickname = "지훈",
+            totalEarnedChecks = 26,
+            currentChecks = 13,
+            createdAt = now.minusDays(21),
+            bodyAssetKey = "body-11",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
+        val eunchae = createSeedUser(
+            email = "eunchae@gonguham.app",
+            nickname = "은채",
+            totalEarnedChecks = 19,
+            currentChecks = 8,
+            createdAt = now.minusDays(17),
+            bodyAssetKey = "body-14",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
 
         val featuredHair = items.first { it.assetKey == "hair-03-c" }
         val featuredTop = items.first { it.assetKey == "top-03" }
@@ -600,6 +620,72 @@ class Seeder(
                 createdAt = now.minusDays(5),
             ),
         )
+        val onboardingLab = studyRepository.save(
+            Study(
+                leaderUserId = yuna.id!!,
+                type = StudyType.TOPIC,
+                title = "모바일 온보딩 해부 모임",
+                description = "회원가입과 첫 사용 경험을 뜯어보며 이탈 포인트를 줄이는 방법을 함께 실험하는 스터디입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.MONDAY),
+                startTime = LocalTime.of(20, 0),
+                endTime = LocalTime.of(21, 30),
+                startDate = LocalDate.now().minusWeeks(1),
+                endDate = LocalDate.now().plusWeeks(6),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 6,
+                locationType = LocationType.ONLINE,
+                locationText = "디스코드",
+                rulesText = "매주 한 서비스의 온보딩 화면을 가져와 개선 포인트를 세 가지 이상 정리합니다.",
+                suppliesText = "캡처 화면, 가입 흐름 메모, 인상 깊었던 문구를 준비해 주세요.",
+                cautionText = "비판보다 관찰을 먼저 하고, 해결책 제안은 근거와 함께 정리합니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(9),
+            ),
+        )
+        val interviewClinic = studyRepository.save(
+            Study(
+                leaderUserId = jihun.id!!,
+                type = StudyType.FLASH,
+                title = "기술면접 말하기 클리닉",
+                description = "짧은 답변을 또렷하게 말하는 연습과 꼬리 질문 대응을 함께 다듬는 취업 준비 스터디입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.THURSDAY),
+                startTime = LocalTime.of(21, 0),
+                endTime = LocalTime.of(22, 20),
+                startDate = LocalDate.now().minusWeeks(1),
+                endDate = LocalDate.now().plusWeeks(5),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 6,
+                locationType = LocationType.ONLINE,
+                locationText = "구글 밋",
+                rulesText = "답변은 90초 안에 마무리하고, 피드백은 바로 한 줄 요약으로 남깁니다.",
+                suppliesText = "자기소개, 프로젝트 트러블슈팅 사례, 자주 막히는 질문 한 개를 준비해 주세요.",
+                cautionText = "답을 길게 늘이지 않고, 핵심 문장부터 먼저 말하는 연습에 집중합니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(8),
+            ),
+        )
+        val paperClub = studyRepository.save(
+            Study(
+                leaderUserId = eunchae.id!!,
+                type = StudyType.TOPIC,
+                title = "아침 논문 읽기 모임",
+                description = "출근 전 1시간 동안 논문 초록과 실험 설계를 빠르게 읽고 핵심만 남기는 가벼운 아침 스터디입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.WEDNESDAY),
+                startTime = LocalTime.of(7, 30),
+                endTime = LocalTime.of(8, 40),
+                startDate = LocalDate.now().minusWeeks(2),
+                endDate = LocalDate.now().plusWeeks(8),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 5,
+                locationType = LocationType.ONLINE,
+                locationText = "줌",
+                rulesText = "논문 전체를 번역하려 하지 않고, 오늘의 질문 하나에 답하는 데 집중합니다.",
+                suppliesText = "초록 하이라이트, 궁금한 용어, 다시 읽고 싶은 그림 한 장을 준비해 주세요.",
+                cautionText = "아침 스터디라 녹화는 하지 않고 정시 시작, 정시 종료를 지킵니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(11),
+            ),
+        )
 
         studyTagRepository.saveAll(
             listOf(
@@ -612,6 +698,15 @@ class Seeder(
                 StudyTag(studyId = designCircle.id!!, name = "독서"),
                 StudyTag(studyId = portfolioClub.id!!, name = "취업"),
                 StudyTag(studyId = portfolioClub.id!!, name = "포트폴리오"),
+                StudyTag(studyId = onboardingLab.id!!, name = "온보딩"),
+                StudyTag(studyId = onboardingLab.id!!, name = "UX"),
+                StudyTag(studyId = onboardingLab.id!!, name = "모바일"),
+                StudyTag(studyId = interviewClinic.id!!, name = "면접"),
+                StudyTag(studyId = interviewClinic.id!!, name = "말하기"),
+                StudyTag(studyId = interviewClinic.id!!, name = "취업"),
+                StudyTag(studyId = paperClub.id!!, name = "논문"),
+                StudyTag(studyId = paperClub.id!!, name = "아침"),
+                StudyTag(studyId = paperClub.id!!, name = "읽기"),
             ),
         )
 
@@ -630,6 +725,18 @@ class Seeder(
                 StudyMembership(studyId = portfolioClub.id!!, userId = daniel.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(5)),
                 StudyMembership(studyId = portfolioClub.id!!, userId = minho.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(4)),
                 StudyMembership(studyId = portfolioClub.id!!, userId = yuna.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(4)),
+                StudyMembership(studyId = onboardingLab.id!!, userId = yuna.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(9)),
+                StudyMembership(studyId = onboardingLab.id!!, userId = sora.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(8)),
+                StudyMembership(studyId = onboardingLab.id!!, userId = eunchae.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(8)),
+                StudyMembership(studyId = onboardingLab.id!!, userId = hana.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(7)),
+                StudyMembership(studyId = interviewClinic.id!!, userId = jihun.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(8)),
+                StudyMembership(studyId = interviewClinic.id!!, userId = minho.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(7)),
+                StudyMembership(studyId = interviewClinic.id!!, userId = daniel.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(7)),
+                StudyMembership(studyId = interviewClinic.id!!, userId = yuna.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(6)),
+                StudyMembership(studyId = paperClub.id!!, userId = eunchae.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(11)),
+                StudyMembership(studyId = paperClub.id!!, userId = hana.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(10)),
+                StudyMembership(studyId = paperClub.id!!, userId = jihun.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(10)),
+                StudyMembership(studyId = paperClub.id!!, userId = sora.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(9)),
             ),
         )
 
@@ -663,6 +770,28 @@ class Seeder(
                 StudySession(studyId = portfolioClub.id!!, sessionNo = 3, title = "오퍼 회고 미니 세션", scheduledAt = now.plusDays(16).withHour(19).withMinute(0).withSecond(0).withNano(0), placeText = portfolioClub.locationText),
             ),
         )
+        val onboardingLabSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = onboardingLab.id!!, sessionNo = 1, title = "첫 화면 이탈 포인트 수집", scheduledAt = now.minusDays(5).withHour(20).withMinute(0).withSecond(0).withNano(0), placeText = onboardingLab.locationText),
+                StudySession(studyId = onboardingLab.id!!, sessionNo = 2, title = "가입 플로우 문장 다듬기", scheduledAt = now.plusDays(2).withHour(20).withMinute(0).withSecond(0).withNano(0), placeText = onboardingLab.locationText, noticeText = "최근 써본 앱 하나의 회원가입 화면을 캡처해 와 주세요."),
+                StudySession(studyId = onboardingLab.id!!, sessionNo = 3, title = "실패 경험 줄이는 패턴", scheduledAt = now.plusDays(9).withHour(20).withMinute(0).withSecond(0).withNano(0), placeText = onboardingLab.locationText),
+            ),
+        )
+        val interviewClinicSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = interviewClinic.id!!, sessionNo = 1, title = "자기소개 90초 압축", scheduledAt = now.minusDays(6).withHour(21).withMinute(0).withSecond(0).withNano(0), placeText = interviewClinic.locationText),
+                StudySession(studyId = interviewClinic.id!!, sessionNo = 2, title = "트러블슈팅 말하기", scheduledAt = now.plusDays(1).withHour(21).withMinute(0).withSecond(0).withNano(0), placeText = interviewClinic.locationText, noticeText = "가장 설명하기 어려웠던 프로젝트 상황을 짧게 정리해 와 주세요."),
+                StudySession(studyId = interviewClinic.id!!, sessionNo = 3, title = "협업 경험 질문 실전", scheduledAt = now.plusDays(8).withHour(21).withMinute(0).withSecond(0).withNano(0), placeText = interviewClinic.locationText),
+            ),
+        )
+        val paperClubSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = paperClub.id!!, sessionNo = 1, title = "추천 시스템 논문 훑기", scheduledAt = now.minusDays(15).withHour(7).withMinute(30).withSecond(0).withNano(0), placeText = paperClub.locationText),
+                StudySession(studyId = paperClub.id!!, sessionNo = 2, title = "초록만으로 핵심 잡기", scheduledAt = now.minusDays(8).withHour(7).withMinute(30).withSecond(0).withNano(0), placeText = paperClub.locationText),
+                StudySession(studyId = paperClub.id!!, sessionNo = 3, title = "실험 설계 읽는 법", scheduledAt = now.plusDays(6).withHour(7).withMinute(30).withSecond(0).withNano(0), placeText = paperClub.locationText, noticeText = "그림이나 표 하나를 골라 왜 중요한지 메모해 와 주세요."),
+                StudySession(studyId = paperClub.id!!, sessionNo = 4, title = "레퍼런스 따라가기", scheduledAt = now.plusDays(13).withHour(7).withMinute(30).withSecond(0).withNano(0), placeText = paperClub.locationText),
+            ),
+        )
 
         studySessionRepository.saveAll(
             listOf(
@@ -671,6 +800,10 @@ class Seeder(
                 sprintClubSessions[0],
                 sprintClubSessions[1],
                 designCircleSessions[0],
+                onboardingLabSessions[0],
+                interviewClinicSessions[0],
+                paperClubSessions[0],
+                paperClubSessions[1],
             ).onEach { it.attendanceClosedAt = now.minusHours(12) },
         )
 
@@ -700,6 +833,26 @@ class Seeder(
                 SessionParticipation(sessionId = portfolioClubSessions[0].id!!, userId = daniel.id!!, planned = true, updatedAt = now.minusHours(4)),
                 SessionParticipation(sessionId = portfolioClubSessions[0].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusHours(3)),
                 SessionParticipation(sessionId = portfolioClubSessions[0].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusHours(2)),
+                SessionParticipation(sessionId = onboardingLabSessions[0].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusDays(5)),
+                SessionParticipation(sessionId = onboardingLabSessions[0].id!!, userId = sora.id!!, planned = true, updatedAt = now.minusDays(5)),
+                SessionParticipation(sessionId = onboardingLabSessions[0].id!!, userId = eunchae.id!!, planned = true, updatedAt = now.minusDays(5)),
+                SessionParticipation(sessionId = onboardingLabSessions[0].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(5)),
+                SessionParticipation(sessionId = onboardingLabSessions[1].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusHours(9)),
+                SessionParticipation(sessionId = onboardingLabSessions[1].id!!, userId = sora.id!!, planned = true, updatedAt = now.minusHours(8)),
+                SessionParticipation(sessionId = onboardingLabSessions[1].id!!, userId = eunchae.id!!, planned = true, updatedAt = now.minusHours(7)),
+                SessionParticipation(sessionId = interviewClinicSessions[0].id!!, userId = jihun.id!!, planned = true, updatedAt = now.minusDays(6)),
+                SessionParticipation(sessionId = interviewClinicSessions[0].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusDays(6)),
+                SessionParticipation(sessionId = interviewClinicSessions[0].id!!, userId = daniel.id!!, planned = true, updatedAt = now.minusDays(6)),
+                SessionParticipation(sessionId = interviewClinicSessions[1].id!!, userId = jihun.id!!, planned = true, updatedAt = now.minusHours(5)),
+                SessionParticipation(sessionId = interviewClinicSessions[1].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusHours(4)),
+                SessionParticipation(sessionId = paperClubSessions[0].id!!, userId = eunchae.id!!, planned = true, updatedAt = now.minusDays(15)),
+                SessionParticipation(sessionId = paperClubSessions[0].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(15)),
+                SessionParticipation(sessionId = paperClubSessions[0].id!!, userId = jihun.id!!, planned = true, updatedAt = now.minusDays(15)),
+                SessionParticipation(sessionId = paperClubSessions[1].id!!, userId = eunchae.id!!, planned = true, updatedAt = now.minusDays(8)),
+                SessionParticipation(sessionId = paperClubSessions[1].id!!, userId = sora.id!!, planned = true, updatedAt = now.minusDays(8)),
+                SessionParticipation(sessionId = paperClubSessions[1].id!!, userId = hana.id!!, planned = false, updatedAt = now.minusDays(8)),
+                SessionParticipation(sessionId = paperClubSessions[2].id!!, userId = eunchae.id!!, planned = true, updatedAt = now.minusHours(6)),
+                SessionParticipation(sessionId = paperClubSessions[2].id!!, userId = jihun.id!!, planned = true, updatedAt = now.minusHours(5)),
             ),
         )
 
@@ -719,6 +872,18 @@ class Seeder(
                 Attendance(sessionId = designCircleSessions[0].id!!, userId = sora.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = sora.id!!, checkedAt = now.minusDays(7)),
                 Attendance(sessionId = designCircleSessions[0].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = sora.id!!, checkedAt = now.minusDays(7)),
                 Attendance(sessionId = designCircleSessions[0].id!!, userId = yuna.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = sora.id!!, checkedAt = now.minusDays(7)),
+                Attendance(sessionId = onboardingLabSessions[0].id!!, userId = yuna.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = yuna.id!!, checkedAt = now.minusDays(5)),
+                Attendance(sessionId = onboardingLabSessions[0].id!!, userId = sora.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = yuna.id!!, checkedAt = now.minusDays(5)),
+                Attendance(sessionId = onboardingLabSessions[0].id!!, userId = eunchae.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = yuna.id!!, checkedAt = now.minusDays(5)),
+                Attendance(sessionId = onboardingLabSessions[0].id!!, userId = hana.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = yuna.id!!, checkedAt = now.minusDays(5)),
+                Attendance(sessionId = interviewClinicSessions[0].id!!, userId = jihun.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = jihun.id!!, checkedAt = now.minusDays(6)),
+                Attendance(sessionId = interviewClinicSessions[0].id!!, userId = minho.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = jihun.id!!, checkedAt = now.minusDays(6)),
+                Attendance(sessionId = interviewClinicSessions[0].id!!, userId = daniel.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = jihun.id!!, checkedAt = now.minusDays(6)),
+                Attendance(sessionId = paperClubSessions[0].id!!, userId = eunchae.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = eunchae.id!!, checkedAt = now.minusDays(15)),
+                Attendance(sessionId = paperClubSessions[0].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = eunchae.id!!, checkedAt = now.minusDays(15)),
+                Attendance(sessionId = paperClubSessions[0].id!!, userId = jihun.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = eunchae.id!!, checkedAt = now.minusDays(15)),
+                Attendance(sessionId = paperClubSessions[1].id!!, userId = eunchae.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = eunchae.id!!, checkedAt = now.minusDays(8)),
+                Attendance(sessionId = paperClubSessions[1].id!!, userId = sora.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = eunchae.id!!, checkedAt = now.minusDays(8)),
             ),
         )
 
@@ -729,6 +894,9 @@ class Seeder(
                 CheckLedger(userId = sora.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = designCircleSessions[0].id!!, createdAt = now.minusDays(7)),
                 CheckLedger(userId = yuna.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = sprintClubSessions[1].id!!, createdAt = now.minusDays(13)),
                 CheckLedger(userId = hana.id!!, changeType = CheckChangeType.SPEND, amount = -15, reason = CheckReason.ITEM_PURCHASE, refType = "ITEM", refId = featuredTop.id!!, createdAt = now.minusDays(7)),
+                CheckLedger(userId = yuna.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = onboardingLabSessions[0].id!!, createdAt = now.minusDays(5)),
+                CheckLedger(userId = jihun.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = interviewClinicSessions[0].id!!, createdAt = now.minusDays(6)),
+                CheckLedger(userId = eunchae.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = paperClubSessions[1].id!!, createdAt = now.minusDays(8)),
             ),
         )
 
@@ -756,6 +924,24 @@ class Seeder(
                 Post(studyId = portfolioClub.id!!, authorUserId = yuna.id!!, type = PostType.POST, title = "서사 구조 메모", content = "프로덕트 케이스 스터디를 정리할 때 쓸 수 있는 간단한 전개 틀을 적어봤어요.", createdAt = now.minusHours(2), updatedAt = now.minusHours(2)),
             ),
         )
+        val onboardingPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = onboardingLab.id!!, authorUserId = yuna.id!!, type = PostType.NOTICE, title = "이번 주엔 가입 완료 화면까지 같이 볼게요", content = "첫 화면만 보지 말고, 가입이 끝난 뒤 다음 행동으로 이어지는 흐름까지 캡처해 와 주세요.", createdAt = now.minusHours(6), updatedAt = now.minusHours(6)),
+                Post(studyId = onboardingLab.id!!, authorUserId = sora.id!!, type = PostType.POST, title = "이탈 포인트 메모 양식 공유", content = "문구, 필수 입력, 에러 경험, 완료 후 다음 행동까지 한 번에 적을 수 있는 템플릿을 올렸어요.", createdAt = now.minusHours(4), updatedAt = now.minusHours(4)),
+            ),
+        )
+        val interviewPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = interviewClinic.id!!, authorUserId = jihun.id!!, type = PostType.NOTICE, title = "이번 주 질문은 트러블슈팅 중심입니다", content = "상황, 원인, 해결, 배운 점 순서로 말해보는 연습을 할 예정이에요.", createdAt = now.minusHours(5), updatedAt = now.minusHours(5)),
+                Post(studyId = interviewClinic.id!!, authorUserId = minho.id!!, type = PostType.POST, title = "90초 답변 초안 공유", content = "자기소개와 프로젝트 소개를 각각 90초 안으로 줄인 버전을 올립니다.", createdAt = now.minusHours(3), updatedAt = now.minusHours(3)),
+            ),
+        )
+        val paperPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = paperClub.id!!, authorUserId = eunchae.id!!, type = PostType.NOTICE, title = "다음 주엔 그림 하나만 깊게 읽습니다", content = "표나 그래프 한 장만 골라 왜 중요한지 설명해 보는 시간으로 갈게요.", createdAt = now.minusHours(8), updatedAt = now.minusHours(8)),
+                Post(studyId = paperClub.id!!, authorUserId = jihun.id!!, type = PostType.POST, title = "초록 읽을 때 남긴 질문", content = "용어를 다 이해하지 못해도 중심 문제와 가설만 먼저 잡는 방식이 도움이 됐어요.", createdAt = now.minusHours(6), updatedAt = now.minusHours(6)),
+            ),
+        )
 
         postCommentRepository.saveAll(
             listOf(
@@ -764,6 +950,12 @@ class Seeder(
                 PostComment(postId = sprintPosts[1].id!!, authorUserId = hana.id!!, content = "회고 읽고 나니 마지막 구간에서 왜 흔들렸는지 바로 보였어요.", createdAt = now.minusHours(8), updatedAt = now.minusHours(8)),
                 PostComment(postId = designPosts[1].id!!, authorUserId = yuna.id!!, content = "두 번째 질문은 모바일 온보딩 리뷰에 딱 맞는 것 같아요.", createdAt = now.minusHours(4), updatedAt = now.minusHours(4)),
                 PostComment(postId = portfolioPosts[1].id!!, authorUserId = minho.id!!, content = "이 틀 그대로 세션 전에 한 번 써봐도 될 것 같아요.", createdAt = now.minusHours(1), updatedAt = now.minusHours(1)),
+                PostComment(postId = onboardingPosts[1].id!!, authorUserId = eunchae.id!!, content = "이 양식 덕분에 어디서 막혔는지 설명하기 훨씬 쉬워졌어요.", createdAt = now.minusHours(3), updatedAt = now.minusHours(3)),
+                PostComment(postId = onboardingPosts[1].id!!, authorUserId = yuna.id!!, content = "다음엔 완료 화면 이후 추천 행동도 같이 적어보면 좋겠어요.", createdAt = now.minusHours(2), updatedAt = now.minusHours(2)),
+                PostComment(postId = interviewPosts[1].id!!, authorUserId = daniel.id!!, content = "첫 문장을 더 짧게 끊으니까 훨씬 또렷하게 들렸어요.", createdAt = now.minusHours(2), updatedAt = now.minusHours(2)),
+                PostComment(postId = interviewPosts[1].id!!, authorUserId = yuna.id!!, content = "경험 설명 뒤에 배운 점을 붙이니 마무리가 좋아졌어요.", createdAt = now.minusHours(1), updatedAt = now.minusHours(1)),
+                PostComment(postId = paperPosts[1].id!!, authorUserId = hana.id!!, content = "용어를 다 몰라도 질문부터 잡자는 방식이 마음이 편했어요.", createdAt = now.minusHours(5), updatedAt = now.minusHours(5)),
+                PostComment(postId = paperPosts[1].id!!, authorUserId = sora.id!!, content = "그림 한 장만 깊게 보는 방식은 디자인 리서치 읽을 때도 써먹을 수 있겠네요.", createdAt = now.minusHours(4), updatedAt = now.minusHours(4)),
             ),
         )
     }

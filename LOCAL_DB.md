@@ -21,6 +21,27 @@ This starts PostgreSQL on `localhost:5432` with:
 - username: `gonguham`
 - password: `gonguham`
 
+## Quick reset
+
+If you want to wipe the local PostgreSQL volume and recreate all seed data in one command:
+
+```powershell
+.\scripts\reset-local-db.ps1
+```
+
+The script will:
+
+- stop any `backend` `bootRun` process running from this workspace
+- recreate the PostgreSQL container and volume
+- restart the backend
+- print a quick snapshot of seeded users and studies
+
+If you only want to reset the DB without restarting the backend:
+
+```powershell
+.\scripts\reset-local-db.ps1 -NoBackendRestart
+```
+
 ## 2. Optional environment overrides
 
 If you want different credentials, copy `backend/.env.example` and export your own values:
@@ -56,3 +77,8 @@ Tests now boot against PostgreSQL as well, so schema and constraint behavior sta
 - `guest@gonguham.app / gonguham123!`
 - `hana@gonguham.app / gonguham123!`
 - `minho@gonguham.app / gonguham123!`
+- `sora@gonguham.app / gonguham123!`
+- `daniel@gonguham.app / gonguham123!`
+- `yuna@gonguham.app / gonguham123!`
+- `jihun@gonguham.app / gonguham123!`
+- `eunchae@gonguham.app / gonguham123!`

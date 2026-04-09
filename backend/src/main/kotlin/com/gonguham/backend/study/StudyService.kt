@@ -28,6 +28,9 @@ import org.springframework.web.server.ResponseStatusException
 
 private const val BREAK_TITLE = "쉬어가는 회차"
 
+private const val LEADER_START_WINDOW_MINUTES = 30L
+private const val LEADER_START_WINDOW_MESSAGE = "예정 시간 30분 전부터 스터디를 시작할 수 있어요."
+
 private data class PlannedSession(
     val title: String,
     val scheduledAt: LocalDateTime,
@@ -352,6 +355,7 @@ class StudyService(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "휴차 회차는 출석 체크를 진행할 수 없습니다.")
         }
         ensureLeader(session.studyId, leader.id!!)
+        ensureLeaderCanManageOpenAttendance(session)
         val awarded = mutableListOf<Long>()
 
         request.entries.forEach { entry ->
@@ -401,6 +405,7 @@ class StudyService(
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "휴차 회차는 출석 명단을 확인할 수 없습니다.")
         }
         ensureLeader(session.studyId, leader.id!!)
+        ensureLeaderCanManageOpenAttendance(session)
         val members = studyMembershipRepository.findAllByStudyIdAndStatus(session.studyId, MembershipStatus.ACTIVE)
         val usersById = userRepository.findAllById(members.map { it.userId }).associateBy { it.id!! }
         val participationMap = sessionParticipationRepository.findAllBySessionId(session.id!!).associateBy { it.userId }
@@ -626,6 +631,24 @@ class StudyService(
 
     private fun resolveOpenRegularSession(sessions: List<StudySession>): StudySession? =
         sessions.firstOrNull { it.sessionType == SessionType.REGULAR && it.attendanceClosedAt == null }
+
+    private fun ensureLeaderCanManageOpenAttendance(session: StudySession) {
+        if (session.attendanceClosedAt != null) {
+            return
+        }
+
+        val currentSession = resolveOpenRegularSession(
+            studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(session.studyId),
+        ) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?꾩옱 吏꾪뻾 ???뚯감???놁뒿?덈떎.")
+
+        if (session.id != currentSession.id) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?꾩옱 ?뚯감留? ?ㅽ꽣???쒖옉???덉뒿?덈떎.")
+        }
+
+        if (LocalDateTime.now().isBefore(session.scheduledAt.minusMinutes(LEADER_START_WINDOW_MINUTES))) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, LEADER_START_WINDOW_MESSAGE)
+        }
+    }
 
     private fun getStudy(studyId: Long): Study = studyRepository.findById(studyId).orElseThrow {
         ResponseStatusException(HttpStatus.NOT_FOUND, "스터디를 찾을 수 없습니다.")
