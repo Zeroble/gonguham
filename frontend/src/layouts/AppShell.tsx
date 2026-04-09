@@ -135,7 +135,7 @@ export function AppShell() {
             src={gonguhamLogoSmall}
             alt="공구함"
           />
-          <span>공부 같이할 사람 구함</span>
+          <span style={{ textAlign: "center", color: "black" }}><strong>공</strong>부 같이할 사람 <strong>구함</strong></span>
         </div>
 
         <div className="summary-main">

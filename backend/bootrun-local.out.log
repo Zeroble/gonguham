@@ -60544,3 +60544,5130 @@ This generated password is for development use only. Your security configuration
         users u1_0 
     where
         u1_0.id=?
+2026-04-10T03:38:24.408+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+2026-04-10T03:38:24.563+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:38:24.567+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:38:24.570+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.574+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.576+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.577+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.578+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.580+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.581+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.583+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.584+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.585+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.587+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.588+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.589+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:38:24.855+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:38:24.859+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:38:24.885+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    where
+        s1_0.id in (?)
+2026-04-10T03:38:24.889+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:38:24.893+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:38:24.897+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:38:24.899+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no desc
+2026-04-10T03:38:24.900+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:38:24.903+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id in (?, ?, ?, ?, ?)
+2026-04-10T03:38:24.908+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:38:24.911+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:38:24.916+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.921+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.925+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.927+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.928+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.929+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.930+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.931+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.933+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=?
+2026-04-10T03:38:24.934+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=?
+2026-04-10T03:38:24.974+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:38:24.977+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:38:24.979+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    where
+        s1_0.id in (?)
+2026-04-10T03:38:24.980+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:38:24.982+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:38:24.983+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:38:24.984+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no desc
+2026-04-10T03:38:24.985+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:38:24.987+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id in (?, ?, ?, ?, ?)
+2026-04-10T03:38:24.989+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:38:24.990+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:38:24.992+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.993+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.994+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.994+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.995+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.996+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.997+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:38:24.998+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:38:24.999+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=?
+2026-04-10T03:38:25.000+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=?
+2026-04-10T03:38:25.191+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:38:25.195+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:38:25.196+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:38:25.197+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:38:25.199+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:24.389+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:24.396+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.id=?
+2026-04-10T03:40:24.400+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:24.402+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:24.405+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:24.431+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    update
+        session_participations 
+    set
+        planned=?,
+        session_id=?,
+        updated_at=?,
+        user_id=? 
+    where
+        id=?
+2026-04-10T03:40:24.459+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:24.462+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:24.478+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    where
+        s1_0.id in (?)
+2026-04-10T03:40:24.480+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:24.482+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:24.483+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:24.484+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no desc
+2026-04-10T03:40:24.485+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:24.487+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id in (?, ?, ?, ?, ?)
+2026-04-10T03:40:24.489+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:24.490+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:24.491+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:24.493+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:24.494+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:24.494+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:24.495+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:24.496+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:24.497+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:24.497+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:24.498+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=?
+2026-04-10T03:40:24.499+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=?
+2026-04-10T03:40:24.548+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:24.551+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:24.551+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:24.552+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:24.554+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.163+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.165+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.id=?
+2026-04-10T03:40:25.166+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:25.167+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:25.168+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.170+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    update
+        session_participations 
+    set
+        planned=?,
+        session_id=?,
+        updated_at=?,
+        user_id=? 
+    where
+        id=?
+2026-04-10T03:40:25.182+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.184+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:25.187+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    where
+        s1_0.id in (?)
+2026-04-10T03:40:25.188+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:25.190+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:25.191+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:25.192+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no desc
+2026-04-10T03:40:25.192+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:25.195+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id in (?, ?, ?, ?, ?)
+2026-04-10T03:40:25.196+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:25.197+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:25.198+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.199+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.200+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.200+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.201+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.202+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.202+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.203+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.204+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=?
+2026-04-10T03:40:25.205+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=?
+2026-04-10T03:40:25.220+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.223+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:25.224+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:25.225+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.226+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.915+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.916+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.id=?
+2026-04-10T03:40:25.917+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:25.919+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:25.919+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.920+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    update
+        session_participations 
+    set
+        planned=?,
+        session_id=?,
+        updated_at=?,
+        user_id=? 
+    where
+        id=?
+2026-04-10T03:40:25.934+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.936+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:25.955+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    where
+        s1_0.id in (?)
+2026-04-10T03:40:25.957+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:25.958+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:25.959+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:25.960+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no desc
+2026-04-10T03:40:25.961+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:25.963+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id in (?, ?, ?, ?, ?)
+2026-04-10T03:40:25.965+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:25.966+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:25.967+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.968+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.968+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.969+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.970+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.970+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.971+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=? 
+        and a1_0.user_id=?
+2026-04-10T03:40:25.972+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=? 
+        and sp1_0.user_id=?
+2026-04-10T03:40:25.973+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sp1_0.id,
+        sp1_0.planned,
+        sp1_0.session_id,
+        sp1_0.updated_at,
+        sp1_0.user_id 
+    from
+        session_participations sp1_0 
+    where
+        sp1_0.session_id=?
+2026-04-10T03:40:25.973+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.session_id=?
+2026-04-10T03:40:25.986+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.988+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:25.989+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:25.990+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:25.991+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:29.030+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:29.032+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:29.033+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:29.034+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:29.035+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.775+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.777+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:30.778+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:30.778+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.779+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.858+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.861+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.863+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=?
+2026-04-10T03:40:30.878+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id in (?, ?, ?, ?) 
+        and ss1_0.session_type=? 
+        and ss1_0.attendance_closed_at is not null 
+    order by
+        ss1_0.scheduled_at desc
+2026-04-10T03:40:30.883+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.user_id=?
+2026-04-10T03:40:30.886+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        count(p1_0.id) 
+    from
+        posts p1_0 
+    where
+        p1_0.author_user_id=?
+2026-04-10T03:40:30.889+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        count(pc1_0.id) 
+    from
+        post_comments pc1_0 
+    where
+        pc1_0.author_user_id=?
+2026-04-10T03:40:30.891+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:30.893+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.895+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.896+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.897+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.899+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.900+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.901+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.903+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.904+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.905+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.906+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.909+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.910+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.934+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.936+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:30.938+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=?
+2026-04-10T03:40:30.940+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id in (?, ?, ?, ?) 
+        and ss1_0.session_type=? 
+        and ss1_0.attendance_closed_at is not null 
+    order by
+        ss1_0.scheduled_at desc
+2026-04-10T03:40:30.941+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        a1_0.id,
+        a1_0.checked_at,
+        a1_0.checked_by_user_id,
+        a1_0.session_id,
+        a1_0.status,
+        a1_0.user_id 
+    from
+        attendances a1_0 
+    where
+        a1_0.user_id=?
+2026-04-10T03:40:30.942+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(p1_0.id) 
+    from
+        posts p1_0 
+    where
+        p1_0.author_user_id=?
+2026-04-10T03:40:30.943+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(pc1_0.id) 
+    from
+        post_comments pc1_0 
+    where
+        pc1_0.author_user_id=?
+2026-04-10T03:40:30.944+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:30.945+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.946+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.947+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.948+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.949+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.950+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.952+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.953+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.954+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.955+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.956+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.957+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:30.958+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.id=?
+2026-04-10T03:40:34.298+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:34.299+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:34.300+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:34.301+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:34.303+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:35.685+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:35.687+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.689+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0
+2026-04-10T03:40:35.691+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.692+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.693+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.693+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.694+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.694+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.695+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.696+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.698+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        st1_0.id,
+        st1_0.name,
+        st1_0.study_id 
+    from
+        study_tags st1_0 
+    where
+        st1_0.study_id in (?, ?, ?, ?, ?, ?, ?)
+2026-04-10T03:40:35.699+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.701+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.702+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.703+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.703+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.704+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.705+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.713+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:35.715+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.717+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0
+2026-04-10T03:40:35.718+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.718+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.719+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.720+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.721+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.721+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.722+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.722+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:35.724+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        st1_0.id,
+        st1_0.name,
+        st1_0.study_id 
+    from
+        study_tags st1_0 
+    where
+        st1_0.study_id in (?, ?, ?, ?, ?, ?, ?)
+2026-04-10T03:40:35.725+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.726+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.727+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.727+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.728+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.729+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:35.729+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:44.799+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.799+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.800+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.800+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.800+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.812+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.816+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.816+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.816+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.816+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.816+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.816+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.819+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.819+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.819+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.819+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.819+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.819+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.821+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.821+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.821+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.821+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.821+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.822+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.825+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.826+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.827+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.827+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.828+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.828+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.829+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-9] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.829+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.839+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.839+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.839+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.840+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.840+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.840+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.841+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.841+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.842+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.842+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.842+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.842+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.842+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.842+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.843+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.843+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.843+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.843+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.843+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.844+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.844+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.844+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.844+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.845+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-3] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.846+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.847+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:44.848+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.848+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        uai1_0.id,
+        uai1_0.avatar_item_id,
+        uai1_0.purchased_at,
+        uai1_0.user_id 
+    from
+        user_avatar_items uai1_0 
+    where
+        uai1_0.user_id=?
+2026-04-10T03:40:44.849+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.849+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        ap1_0.id,
+        ap1_0.body_asset_key,
+        ap1_0.equipped_bottom_item_id,
+        ap1_0.equipped_eyebrow_item_id,
+        ap1_0.equipped_eyelash_item_id,
+        ap1_0.equipped_hair_item_id,
+        ap1_0.equipped_mouth_item_id,
+        ap1_0.equipped_pupil_item_id,
+        ap1_0.equipped_shoes_item_id,
+        ap1_0.equipped_top_item_id,
+        ap1_0.eyebrow_asset_key,
+        ap1_0.eyelash_asset_key,
+        ap1_0.mouth_asset_key,
+        ap1_0.pupil_asset_key,
+        ap1_0.user_id 
+    from
+        avatar_profiles ap1_0 
+    where
+        ap1_0.user_id=?
+2026-04-10T03:40:44.849+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-6] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:44.850+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-10] org.hibernate.SQL                        : 
+    select
+        ai1_0.id,
+        ai1_0.asset_key,
+        ai1_0.category,
+        ai1_0.is_default,
+        ai1_0.name,
+        ai1_0.price_checks,
+        ai1_0.rarity 
+    from
+        avatar_items ai1_0 
+    where
+        ai1_0.category=? 
+    order by
+        ai1_0.price_checks,
+        ai1_0.name
+2026-04-10T03:40:51.539+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:51.541+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:51.543+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:51.545+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:51.547+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:51.626+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:51.627+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:51.629+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+        and p1_0.type=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:51.630+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:51.631+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:52.812+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:52.814+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.816+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0
+2026-04-10T03:40:52.818+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.819+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.819+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.820+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.821+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.822+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.822+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.823+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:52.825+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        st1_0.id,
+        st1_0.name,
+        st1_0.study_id 
+    from
+        study_tags st1_0 
+    where
+        st1_0.study_id in (?, ?, ?, ?, ?, ?, ?)
+2026-04-10T03:40:52.827+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.829+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.830+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.831+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.832+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.835+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:52.836+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-4] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.094+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:53.096+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.user_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.099+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0
+2026-04-10T03:40:53.102+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.102+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.103+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.104+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.104+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.105+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.105+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.106+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        dow1_0.study_id,
+        dow1_0.day_of_week 
+    from
+        study_days_of_week dow1_0 
+    where
+        dow1_0.study_id=?
+2026-04-10T03:40:53.109+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        st1_0.id,
+        st1_0.name,
+        st1_0.study_id 
+    from
+        study_tags st1_0 
+    where
+        st1_0.study_id in (?, ?, ?, ?, ?, ?, ?)
+2026-04-10T03:40:53.111+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.112+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.112+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.113+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.114+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.115+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:53.115+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-1] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:40:55.903+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:55.905+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        dow1_0.study_id,
+        dow1_0.day_of_week,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    left join
+        study_days_of_week dow1_0 
+            on s1_0.id=dow1_0.study_id 
+    where
+        s1_0.id=?
+2026-04-10T03:40:55.908+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:40:55.909+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        st1_0.id,
+        st1_0.name,
+        st1_0.study_id 
+    from
+        study_tags st1_0 
+    where
+        st1_0.study_id=?
+2026-04-10T03:40:55.910+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:40:55.912+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:40:55.913+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:40:55.915+09:00 DEBUG 64948 --- [gonguham-backend] [nio-8080-exec-5] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?
+2026-04-10T03:41:03.086+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:41:03.088+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        s1_0.id,
+        s1_0.caution_text,
+        s1_0.created_at,
+        dow1_0.study_id,
+        dow1_0.day_of_week,
+        s1_0.description,
+        s1_0.end_date,
+        s1_0.end_time,
+        s1_0.leader_user_id,
+        s1_0.location_text,
+        s1_0.location_type,
+        s1_0.max_members,
+        s1_0.repeat_type,
+        s1_0.rules_text,
+        s1_0.start_date,
+        s1_0.start_time,
+        s1_0.status,
+        s1_0.supplies_text,
+        s1_0.title,
+        s1_0.type 
+    from
+        studies s1_0 
+    left join
+        study_days_of_week dow1_0 
+            on s1_0.id=dow1_0.study_id 
+    where
+        s1_0.id=?
+2026-04-10T03:41:03.090+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.current_checks,
+        u1_0.email,
+        u1_0.level,
+        u1_0.nickname,
+        u1_0.password_hash,
+        u1_0.profile_image_url,
+        u1_0.total_earned_checks 
+    from
+        users u1_0 
+    where
+        u1_0.id=?
+2026-04-10T03:41:03.092+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        st1_0.id,
+        st1_0.name,
+        st1_0.study_id 
+    from
+        study_tags st1_0 
+    where
+        st1_0.study_id=?
+2026-04-10T03:41:03.093+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        ss1_0.id,
+        ss1_0.attendance_closed_at,
+        ss1_0.notice_text,
+        ss1_0.place_text,
+        ss1_0.scheduled_at,
+        ss1_0.session_no,
+        ss1_0.session_type,
+        ss1_0.study_id,
+        ss1_0.title 
+    from
+        study_sessions ss1_0 
+    where
+        ss1_0.study_id=? 
+    order by
+        ss1_0.session_no
+2026-04-10T03:41:03.095+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.author_user_id,
+        p1_0.content,
+        p1_0.created_at,
+        p1_0.study_id,
+        p1_0.title,
+        p1_0.type,
+        p1_0.updated_at 
+    from
+        posts p1_0 
+    where
+        p1_0.study_id=? 
+    order by
+        p1_0.created_at desc
+2026-04-10T03:41:03.097+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        sm1_0.id,
+        sm1_0.joined_at,
+        sm1_0.role,
+        sm1_0.status,
+        sm1_0.study_id,
+        sm1_0.user_id 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.user_id=?
+2026-04-10T03:41:03.098+09:00 DEBUG 64948 --- [gonguham-backend] [io-8080-exec-11] org.hibernate.SQL                        : 
+    select
+        count(sm1_0.id) 
+    from
+        study_memberships sm1_0 
+    where
+        sm1_0.study_id=? 
+        and sm1_0.status=?

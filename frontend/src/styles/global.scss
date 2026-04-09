@@ -142,9 +142,7 @@ img {
 }
 
 .summary-brand__logo {
-  width: 100%;
-  max-width: 152px;
-  height: auto;
+  height: 80PX;
   object-fit: contain;
 }
 
@@ -2747,7 +2745,6 @@ img {
 }
 
 .study-overview-sheet__schedule span {
-  min-height: 32px;
   padding: 0 12px;
   border: 1px solid #dbe9e3;
   border-radius: 999px;
