@@ -1,47 +1,20 @@
-### 작업 지침 
-- 수정 시 한글이 깨지지 않도록 유의합니다. 
-- 전체적인 구조 수정이 필요할때 사용자의 확인을 받습니다. 
-- 가능한 효율적인 아키텍쳐를 유지해야합니다. 
-- 문제의 일시적 해결을 위한 임시변통식 해결을 원하지 않습니다. 
-- 문제 해결 이후 레거시 코드가 남지 않도록 주의합니다.  
-- 구조상 필요 없는 코드를 남기지 않습니다. 
-
 # 공구함
 
-성공회대 스터디 모집/참여 서비스 `공구함` 프로젝트입니다.
+성공회대 스터디 모집/참여 서비스 `공구함` 저장소입니다.
 
-현재 공모전 제출용 MVP를 기준으로 개발 중이며, 백엔드는 `Spring Boot (Kotlin)`, 프론트엔드는 `React + TypeScript + SCSS`로 구성되어 있습니다. 디자인 소스는 연결된 Figma 시안을 기준으로 하며, 현재 프론트는 `PC only` 화면을 우선 구현하고 있습니다.
+현재 이 저장소는 공모전 제출용 MVP를 기준으로 계속 개발 중인 모노레포이며, 프론트엔드와 백엔드가 한 저장소 안에 함께 들어 있습니다. 예전 문서에 있던 데모 로그인 중심 설명과 달리, 지금은 이메일/비밀번호 기반 회원가입·로그인, PostgreSQL + Flyway 기반 로컬 DB, 자동 시드 데이터까지 연결된 상태입니다.
 
-## 프로젝트 목표
+## 현재 상태 요약
 
-- 빠르게 스터디를 찾고 바로 참여할 수 있는 흐름
-- 내 스터디의 세션 타임라인에서 참여 여부를 표시하는 흐름
-- 스터디장이 회차별 출석을 체크하고 체크를 지급하는 흐름
-- 출석으로 모은 체크로 커스터마이징 아이템을 구매/장착하는 흐름
-
-## 현재 구현 범위
-
-### 프론트엔드
-
-- 랜딩 페이지
-- 내 스터디 메인 화면
-- 스터디 찾기
-- 스터디 만들기
-- 커스터마이징
-- React Router 기반 페이지 전환
-- 데모 로그인 세션 관리
-
-### 백엔드
-
-- 데모 로그인
-- 내 정보 조회
-- 대시보드 조회
-- 스터디 목록 / 상세 / 생성 / 즉시 참여
-- 회차 참여 여부 업데이트
-- 회차 출석 체크
-- 게시글 / 공지 작성
-- 아바타 상점 / 구매 / 장착
-- 체크 적립 및 레벨 계산
+- 이메일/비밀번호 회원가입, 로그인, 로그아웃
+- 서버 세션 + 쿠키 기반 인증
+- 스터디 목록 조회, 필터 검색, 상세 조회, 즉시 참여
+- 스터디 생성, 회차 자동 생성, 리더의 회차 수정
+- 참여 예정 표시, 출석 체크, 체크 보상 지급
+- 공지/게시글/댓글 작성 및 조회
+- 프로필 모달, 닉네임 수정, 레벨/출석 통계 조회
+- 아바타 상점, 인벤토리, 커스터마이징, 체크 소모형 구매
+- PostgreSQL + Flyway + Seeder + Testcontainers 기반 로컬/테스트 환경
 
 ## 기술 스택
 
@@ -52,174 +25,234 @@
 - Spring Web MVC
 - Spring Data JPA
 - Spring Security
-- Spring OAuth2 Client
+- Bean Validation
 - PostgreSQL
 - Flyway
+- Testcontainers
 
 ### Frontend
 
 - React 19
 - TypeScript 5
 - Vite 5
-- React Router
+- React Router 7
 - SCSS
+- ESLint
 
-## 디렉토리 구조
+## 디렉터리 구조
 
 ```text
 GONGUHAM/
-├─ backend/   # Spring Boot API 서버
-└─ frontend/  # React 웹 클라이언트
+├─ backend/                  # Spring Boot API 서버
+├─ frontend/                 # React 웹 클라이언트
+├─ scripts/reset-local-db.ps1
+├─ docker-compose.local.yml  # 로컬 PostgreSQL 실행용 compose
+└─ LOCAL_DB.md               # 로컬 DB 상세 가이드
 ```
 
-백엔드 주요 패키지:
+### 백엔드 주요 패키지
 
-- `auth` : 데모 로그인 응답
-- `user` : 사용자 프로필
-- `dashboard` : 메인 화면 집계 데이터
-- `study` : 스터디, 회차, 참여, 출석, 게시글
-- `avatar` : 상점, 구매, 장착
-- `common` : 시드 데이터, 공통 설정, 현재 사용자 처리
+- `auth`: 회원가입, 로그인, 로그아웃, 세션 사용자 조회
+- `dashboard`: 내 스터디 대시보드와 홈 패널 데이터
+- `study`: 스터디, 회차, 참여 예정, 출석, 게시글/댓글
+- `avatar`: 상점, 구매, 장착, 외형 저장
+- `user`: 내 정보, 프로필, 닉네임 수정
+- `common`: 시드 데이터, 공통 설정, 현재 사용자 처리
 
-프론트 주요 영역:
+### 프론트엔드 주요 영역
 
-- `src/layouts` : 공통 셸
-- `src/pages` : 화면 단위 페이지
-- `src/app` : API, 라우터, 전역 상태
-- `src/styles` : 전역 SCSS
-- `src/assets/gonguham` : 디자인 반영 이미지 에셋
+- `src/pages`: 랜딩, 홈, 스터디 검색, 스터디 생성, 커스터마이징
+- `src/layouts`: 앱 공통 셸과 대시보드 컨텍스트
+- `src/features`: 아바타, 프로필, 스터디 상세 UI
+- `src/app`: API 클라이언트, 라우터, 앱 전역 상태
+- `src/styles`: 전역 SCSS
+
+## 화면/기능 기준 구현 범위
+
+### 랜딩
+
+- 로그인/회원가입 탭 전환
+- 인증 성공 시 `/app/home`으로 이동
+
+### 내 스터디
+
+- 오늘 요약과 가입한 스터디 목록
+- 스터디별 세션 타임라인
+- 회차별 참여 예정 표시
+- 공지/게시글/댓글 흐름
+- 리더 전용 출석 체크
+- 리더 전용 회차 수정
+- 스터디 탈퇴 / 스터디 종료
+
+### 스터디 찾기
+
+- 유형, 요일, 시간, 장소 필터
+- 키워드 검색
+- 스터디 상세 모달
+- 즉시 참여 후 대시보드 갱신
+
+### 스터디 만들기
+
+- `TOPIC`, `MOGAKGONG`, `FLASH` 타입 지원
+- 일정 범위 기반 회차 자동 생성
+- 회차별 제목/타입 수정
+- 태그, 규칙, 준비물, 장소 입력
+
+### 커스터마이징 / 프로필
+
+- 아바타 미리보기
+- 카테고리별 상점/인벤토리 조회
+- 체크로 아이템 구매 후 저장
+- 프로필 통계 조회
+- 본인 프로필 닉네임 수정
 
 ## 실행 환경
-
-권장 환경:
 
 - Java 21
 - Node.js 20+
 - npm
+- Docker Desktop 또는 Docker Engine
 
-## 로컬 실행
+## 빠른 시작
 
-### 1. 백엔드 실행
+### 1. 로컬 PostgreSQL 실행
+
+저장소 루트에서:
 
 ```powershell
-cd C:\Users\dlals\Desktop\GONGUHAM\backend
+docker compose -f docker-compose.local.yml up -d
+```
+
+기본 로컬 DB 설정:
+
+- host: `localhost`
+- port: `5432`
+- database: `gonguham`
+- username: `gonguham`
+- password: `gonguham`
+
+다른 DB를 쓰고 싶다면 아래 환경 변수를 덮어쓸 수 있습니다.
+
+```powershell
+$env:GONGUHAM_DB_URL="jdbc:postgresql://localhost:5432/gonguham"
+$env:GONGUHAM_DB_USERNAME="gonguham"
+$env:GONGUHAM_DB_PASSWORD="gonguham"
+```
+
+### 2. 백엔드 실행
+
+```powershell
+cd backend
 .\gradlew.bat bootRun
 ```
 
-기본 주소:
+- 기본 Spring profile: `local`
+- 기본 주소: `http://localhost:8080`
+- 헬스 체크: `GET http://localhost:8080/api/v1/health`
 
-- `http://localhost:8080`
+빈 데이터베이스에서 처음 실행하면 Flyway가 스키마를 적용한 뒤 Seeder가 데모 데이터를 자동으로 적재합니다.
 
-헬스체크:
-
-- `GET /api/v1/health`
-
-### 2. 프론트엔드 실행
+### 3. 프론트엔드 실행
 
 ```powershell
-cd C:\Users\dlals\Desktop\GONGUHAM\frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-프론트는 기본적으로 아래 API 주소를 바라봅니다.
+- 기본 개발 서버: `http://localhost:5173`
+- 기본 API 주소: `http://localhost:8080`
 
-- `http://localhost:8080`
-
-필요하면 `frontend/.env`에 아래 값을 지정할 수 있습니다.
+필요하면 `frontend/.env`에 아래 값을 둘 수 있습니다.
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080
 ```
+
+현재 백엔드 CORS 허용 origin은 `http://localhost:5173`으로 설정되어 있습니다.
+
+## 인증 방식
+
+현재 인증은 서버 세션 기반입니다.
+
+- `POST /api/v1/auth/signup`
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/logout`
+- `GET /api/v1/me`
+
+프론트엔드는 모든 API 요청에 `credentials: 'include'`를 사용해 쿠키를 함께 보내며, 백엔드는 세션의 `AUTH_USER_ID` 값을 기준으로 현재 사용자를 식별합니다.
+
+즉, 예전 README에 적혀 있던 `demo-login`, `localStorage` 사용자 ID 저장, `X-Demo-User-Id` 헤더 방식은 더 이상 현재 코드와 맞지 않습니다.
+
+## 시드 데이터 / 데모 계정
+
+빈 로컬 DB에서 백엔드를 실행하면 아래 데이터가 자동으로 생성됩니다.
+
+- 데모 사용자
+- 스터디/회차
+- 참여 예정/출석 데이터
+- 게시글/댓글
+- 아바타 기본 아이템 및 상점 데이터
+
+공통 비밀번호:
+
+- `gonguham123!`
+
+주요 계정:
+
+- `leader@gonguham.app`
+- `member@gonguham.app`
+- `guest@gonguham.app`
+- `hana@gonguham.app`
+- `minho@gonguham.app`
+- `sora@gonguham.app`
+- `daniel@gonguham.app`
+- `yuna@gonguham.app`
+- `jihun@gonguham.app`
+- `eunchae@gonguham.app`
+
+로컬 DB를 초기화하고 시드 데이터를 다시 만들고 싶다면:
+
+```powershell
+.\scripts\reset-local-db.ps1
+```
+
+백엔드 재시작 없이 DB만 초기화하려면:
+
+```powershell
+.\scripts\reset-local-db.ps1 -NoBackendRestart
+```
+
+더 자세한 DB 실행/초기화 흐름은 [`LOCAL_DB.md`](./LOCAL_DB.md)를 참고하세요.
 
 ## 검증 명령어
 
 ### Backend
 
 ```powershell
-cd C:\Users\dlals\Desktop\GONGUHAM\backend
+cd backend
 .\gradlew.bat test
 ```
+
+백엔드 테스트는 Testcontainers 기반 PostgreSQL 환경에서 동작하며, 인증, 프로필, 아바타, 스터디 일정/게시글 관련 시나리오를 포함합니다.
 
 ### Frontend
 
 ```powershell
-cd C:\Users\dlals\Desktop\GONGUHAM\frontend
+cd frontend
 npm run build
 npm run lint
 ```
 
-## 인증 / 데모 동작 방식
-
-현재는 실제 카카오 OAuth 연동 전 단계입니다.
-
-- 랜딩 페이지의 로그인 버튼은 `데모 로그인`으로 동작합니다.
-- 백엔드는 `POST /api/v1/auth/demo-login`으로 세션용 사용자를 만듭니다.
-- 프론트는 로그인한 사용자 ID를 `localStorage`에 저장합니다.
-- API는 `X-Demo-User-Id` 헤더를 기준으로 현재 사용자를 식별합니다.
-- 헤더가 없으면 기본 사용자 ID `1`을 사용합니다.
-
-즉, 현재 상태는 공모전 시연과 기능 개발을 위한 임시 인증 구조입니다.
-
-## 데이터베이스 및 시드 데이터
-
-- 로컬 기본 DB는 PostgreSQL입니다.
-- Flyway가 스키마를 관리합니다.
-- 시작 시 `Seeder`가 데모 사용자, 스터디, 회차, 게시글, 아바타 아이템을 주입합니다.
-
-데모 흐름 예시:
-
-1. 로그인
-2. 스터디 찾기
-3. 즉시 참여
-4. 내 스터디에서 참여 예정 표시
-5. 스터디장이 출석 체크
-6. 체크 획득
-7. 커스터마이징 아이템 구매 / 장착
-
 ## 현재 제약사항
 
-- 실제 카카오 로그인 미연동
-- 실제 운영 DB 미연동
-- 반응형 미지원, PC 화면 우선
-- 피그마 기반 화면 정합성을 계속 미세 조정 중
+- 소셜 로그인(OAuth)은 아직 연결되어 있지 않습니다.
+- 프론트엔드는 현재 데스크톱 화면을 우선 기준으로 구현 중입니다.
+- 백엔드 CORS origin이 로컬 개발 주소(`http://localhost:5173`)에 맞춰 고정되어 있습니다.
 
-## 페이지 로딩 성능 메모
-
-현재 페이지 로딩이 다소 느리게 느껴질 수 있는 이유는 아래와 같습니다.
-
-- 랜딩 화면에서 큰 PNG 에셋을 바로 불러옵니다.
-  - `frontend/src/assets/gonguham/landing-bg.png`: 약 1.86MB
-  - `frontend/src/assets/gonguham/landing-content.png`: 약 370KB
-  - 배경 blur 효과까지 함께 적용되어 첫 렌더링 비용이 큽니다.
-- 앱 진입 시 API 호출이 직렬로 이어집니다.
-  - `AppProvider`에서 먼저 `GET /api/v1/me`
-  - 이후 `HomePage`에서 `GET /api/v1/dashboard`
-  - 즉, 새로고침 기준으로 한 번에 끝나지 않고 최소 2번 왕복합니다.
-- 대시보드 API 조립 비용이 가볍지 않습니다.
-  - 스터디별 세션 조회
-  - 활성 스터디 세션 재조회
-  - 세션별 참여/출석 상태 조회
-  - 현재는 MVP 구조라 데이터가 늘수록 응답 시간이 늘어날 수 있습니다.
-
-즉, 현재 속도는 완전히 비정상은 아니지만, 최적화 전 MVP 단계의 병목이 반영된 상태입니다.
-
-### 우선 개선 후보
-
-- 랜딩 이미지를 `webp` 등으로 압축하고 blur 비용 줄이기
-- 홈 첫 진입 시 사용자 정보와 대시보드 정보를 한 번에 받도록 API 또는 부팅 흐름 단순화
-- 대시보드 백엔드 쿼리 구조를 정리해서 반복 조회 줄이기
-
-## 다음 작업 후보
-
-- 카카오 OAuth 실연동
-- MySQL 또는 PostgreSQL 전환
-- 프론트 디자인 정합성 추가 보정
-- 관리자 기능 / 알림 기능 확장
-- 커스터마이징 실제 캐릭터 렌더링 고도화
-
-## 참고
+## 참고 파일
 
 - 백엔드 진입점: `backend/src/main/kotlin/com/gonguham/backend/BackendApplication.kt`
 - 프론트 라우터: `frontend/src/app/router.tsx`
-- 메인 화면: `frontend/src/pages/HomePage.tsx`
+- 메인 홈 화면: `frontend/src/pages/HomePage.tsx`
+- 로컬 DB 가이드: `LOCAL_DB.md`
