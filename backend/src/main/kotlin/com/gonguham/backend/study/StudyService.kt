@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,6 +33,13 @@ private data class PlannedSession(
     val scheduledAt: LocalDateTime,
     val sessionType: SessionType,
     val placeText: String?,
+)
+
+private data class PlannedSessionUpdate(
+    val source: StudySession,
+    val title: String,
+    val scheduledAt: LocalDateTime,
+    val sessionType: SessionType,
 )
 
 @Service
@@ -94,6 +102,7 @@ class StudyService(
             type = studyTypeLabel(study.type.name),
             title = study.title,
             description = study.description,
+            leaderUserId = leader.id!!,
             leaderNickname = leader.nickname,
             daysOfWeek = study.daysOfWeek.sortedBy { it.value }.map { it.name },
             dayLabel = dayLabel(study.daysOfWeek),
@@ -189,6 +198,40 @@ class StudyService(
             },
         )
         return studyDetail(user, study.id!!)
+    }
+
+    @Transactional
+    fun updateStudySessions(
+        user: User,
+        studyId: Long,
+        request: UpdateStudySessionsRequest,
+    ): UpdateStudySessionsResult {
+        ensureLeader(studyId, user.id!!)
+        val study = getStudy(studyId)
+        val existingSessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(studyId)
+        val normalizedUpdates = normalizeSessionUpdates(study, existingSessions, request)
+
+        normalizedUpdates.forEachIndexed { index, update ->
+            update.source.sessionNo = index + 1
+            update.source.title = if (update.sessionType == SessionType.BREAK) BREAK_TITLE else update.title
+            update.source.scheduledAt = update.scheduledAt
+            update.source.sessionType = update.sessionType
+            if (update.source.placeText.isNullOrBlank()) {
+                update.source.placeText = study.locationText
+            }
+        }
+
+        study.repeatType =
+            if (normalizedUpdates.count { it.sessionType == SessionType.REGULAR } <= 1) {
+                RepeatType.ONCE
+            } else {
+                RepeatType.WEEKLY
+            }
+
+        studyRepository.save(study)
+        studySessionRepository.saveAll(normalizedUpdates.map { it.source })
+
+        return UpdateStudySessionsResult(studyId = studyId)
     }
 
     @Transactional
@@ -361,6 +404,7 @@ class StudyService(
 
         return PostDetailResponse(
             postId = post.id!!,
+            authorUserId = post.authorUserId,
             type = post.type.name,
             title = post.title,
             content = post.content,
@@ -479,6 +523,67 @@ class StudyService(
         }
     }
 
+    private fun normalizeSessionUpdates(
+        study: Study,
+        existingSessions: List<StudySession>,
+        request: UpdateStudySessionsRequest,
+    ): List<PlannedSessionUpdate> {
+        if (request.sessions.size != existingSessions.size) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "모든 회차 정보를 함께 보내주세요.")
+        }
+
+        if (request.sessions.map { it.sessionId }.toSet().size != existingSessions.size) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "회차 정보가 중복되거나 누락되었습니다.")
+        }
+
+        val existingById = existingSessions.associateBy { it.id!! }
+        val normalized = request.sessions.map { session ->
+            val existing = existingById[session.sessionId]
+                ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "존재하지 않는 회차가 포함되어 있습니다.")
+            val parsedScheduledAt = try {
+                LocalDateTime.parse(session.scheduledAt)
+            } catch (_: DateTimeParseException) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?뚯감 ?좎쭨 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎.")
+            }
+
+            PlannedSessionUpdate(
+                source = existing,
+                title = if (session.sessionType == SessionType.BREAK) BREAK_TITLE else session.title.trim(),
+                scheduledAt = parsedScheduledAt,
+                sessionType = session.sessionType,
+            )
+        }.sortedBy { it.scheduledAt }
+
+        if (normalized.none { it.sessionType == SessionType.REGULAR }) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "吏꾪뻾 ?뚯감??理쒖냼 1媛??댁긽 ?덉뼱???⑸땲??")
+        }
+
+        normalized.forEach { update ->
+            val scheduledDate = update.scheduledAt.toLocalDate()
+            val scheduledDateChanged = update.source.scheduledAt.toLocalDate() != scheduledDate
+            if (scheduledDateChanged && (scheduledDate.isBefore(study.startDate) || scheduledDate.isAfter(study.endDate))) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?뚯감 ?좎쭨???댁쁺 湲곌컙 ?덉뿉 ?덉뼱???⑸땲??")
+            }
+            if (update.sessionType == SessionType.REGULAR && update.title.isBlank()) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "吏꾪뻾 ?뚯감 ?쒕ぉ???낅젰?댁＜?몄슂.")
+            }
+
+            val sourceTitle =
+                if (update.source.sessionType == SessionType.BREAK) BREAK_TITLE else update.source.title
+            val sourceScheduledAt = update.source.scheduledAt.truncatedTo(ChronoUnit.MINUTES)
+            val changed =
+                sourceTitle != update.title ||
+                    sourceScheduledAt != update.scheduledAt ||
+                    update.source.sessionType != update.sessionType
+
+            if (update.source.attendanceClosedAt != null && changed) {
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "완료된 회차는 수정할 수 없습니다.")
+            }
+        }
+
+        return normalized
+    }
+
     private fun resolveOpenRegularSession(sessions: List<StudySession>): StudySession? =
         sessions.firstOrNull { it.sessionType == SessionType.REGULAR && it.attendanceClosedAt == null }
 
@@ -508,6 +613,7 @@ class StudyService(
         val author = userRepository.findById(authorUserId).orElseThrow()
         return StudyFeedResponse(
             postId = id!!,
+            authorUserId = authorUserId,
             type = type.name,
             title = title,
             content = content,
@@ -519,6 +625,7 @@ class StudyService(
     private fun PostComment.toResponse(authorNickname: String): PostCommentResponse =
         PostCommentResponse(
             commentId = id!!,
+            authorUserId = authorUserId,
             authorNickname = authorNickname,
             content = content,
             createdAt = formatDateTime(createdAt),

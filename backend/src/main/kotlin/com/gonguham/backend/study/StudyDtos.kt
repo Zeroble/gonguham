@@ -24,6 +24,7 @@ data class StudyDetailResponse(
     val type: String,
     val title: String,
     val description: String,
+    val leaderUserId: Long,
     val leaderNickname: String,
     val daysOfWeek: List<String>,
     val dayLabel: String,
@@ -50,6 +51,7 @@ data class StudyDetailSession(
 
 data class StudyFeedResponse(
     val postId: Long,
+    val authorUserId: Long,
     val type: String,
     val title: String,
     val content: String,
@@ -59,6 +61,7 @@ data class StudyFeedResponse(
 
 data class PostDetailResponse(
     val postId: Long,
+    val authorUserId: Long,
     val type: String,
     val title: String,
     val content: String,
@@ -69,6 +72,7 @@ data class PostDetailResponse(
 
 data class PostCommentResponse(
     val commentId: Long,
+    val authorUserId: Long,
     val authorNickname: String,
     val content: String,
     val createdAt: String,
@@ -98,6 +102,21 @@ data class CreateStudySessionRequest(
     val scheduledAt: String,
     val sessionType: SessionType,
     val placeText: String? = null,
+)
+
+data class UpdateStudySessionsRequest(
+    val sessions: List<UpdateStudySessionRequest>,
+)
+
+data class UpdateStudySessionRequest(
+    val sessionId: Long,
+    val title: String,
+    val scheduledAt: String,
+    val sessionType: SessionType,
+)
+
+data class UpdateStudySessionsResult(
+    val studyId: Long,
 )
 
 data class UpdateParticipationRequest(

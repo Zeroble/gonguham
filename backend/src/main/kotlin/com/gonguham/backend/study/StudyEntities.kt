@@ -209,7 +209,9 @@ class PostComment(
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 )
 
-interface StudyRepository : JpaRepository<Study, Long>
+interface StudyRepository : JpaRepository<Study, Long> {
+    fun countByLeaderUserId(userId: Long): Long
+}
 
 interface StudyTagRepository : JpaRepository<StudyTag, Long> {
     fun findAllByStudyIdIn(studyIds: Collection<Long>): List<StudyTag>
@@ -217,6 +219,7 @@ interface StudyTagRepository : JpaRepository<StudyTag, Long> {
 }
 
 interface StudyMembershipRepository : JpaRepository<StudyMembership, Long> {
+    fun findAllByUserId(userId: Long): List<StudyMembership>
     fun findAllByUserIdAndStatus(userId: Long, status: MembershipStatus): List<StudyMembership>
     fun findAllByStudyIdAndStatus(studyId: Long, status: MembershipStatus): List<StudyMembership>
     fun findByStudyIdAndUserId(studyId: Long, userId: Long): StudyMembership?
@@ -224,6 +227,10 @@ interface StudyMembershipRepository : JpaRepository<StudyMembership, Long> {
 }
 
 interface StudySessionRepository : JpaRepository<StudySession, Long> {
+    fun findAllByStudyIdInAndSessionTypeAndAttendanceClosedAtIsNotNullOrderByScheduledAtDesc(
+        studyIds: Collection<Long>,
+        sessionType: SessionType,
+    ): List<StudySession>
     fun findAllByStudyIdOrderBySessionNoAsc(studyId: Long): List<StudySession>
     fun findAllByStudyIdOrderBySessionNoDesc(studyId: Long): List<StudySession>
 }
@@ -236,13 +243,16 @@ interface SessionParticipationRepository : JpaRepository<SessionParticipation, L
 interface AttendanceRepository : JpaRepository<Attendance, Long> {
     fun findAllBySessionId(sessionId: Long): List<Attendance>
     fun findBySessionIdAndUserId(sessionId: Long, userId: Long): Attendance?
+    fun findAllByUserId(userId: Long): List<Attendance>
 }
 
 interface PostRepository : JpaRepository<Post, Long> {
+    fun countByAuthorUserId(userId: Long): Long
     fun findAllByStudyIdAndTypeOrderByCreatedAtDesc(studyId: Long, type: PostType): List<Post>
     fun findAllByStudyIdOrderByCreatedAtDesc(studyId: Long): List<Post>
 }
 
 interface PostCommentRepository : JpaRepository<PostComment, Long> {
+    fun countByAuthorUserId(userId: Long): Long
     fun findAllByPostIdOrderByCreatedAtAsc(postId: Long): List<PostComment>
 }

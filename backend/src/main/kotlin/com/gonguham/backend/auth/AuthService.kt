@@ -31,7 +31,7 @@ class AuthService(
             userRepository.save(user)
         }
 
-        return user.toResponse()
+        return user.toResponse(levelPolicy)
     }
 
     companion object {
@@ -39,11 +39,11 @@ class AuthService(
     }
 }
 
-fun User.toResponse(): SessionUserResponse = SessionUserResponse(
+fun User.toResponse(levelPolicy: LevelPolicy): SessionUserResponse = SessionUserResponse(
     id = id!!,
     nickname = nickname,
     currentChecks = currentChecks,
     totalEarnedChecks = totalEarnedChecks,
-    level = level,
+    level = levelPolicy.levelFor(totalEarnedChecks),
     profileImageUrl = profileImageUrl,
 )

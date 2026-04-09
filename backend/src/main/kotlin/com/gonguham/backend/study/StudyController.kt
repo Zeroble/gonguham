@@ -40,6 +40,14 @@ class StudyController(
     ): StudyDetailResponse =
         studyService.createStudy(currentUserService.currentUser(request), body)
 
+    @PatchMapping("/studies/{studyId}/sessions")
+    fun updateSessions(
+        request: HttpServletRequest,
+        @PathVariable studyId: Long,
+        @RequestBody body: UpdateStudySessionsRequest,
+    ): UpdateStudySessionsResult =
+        studyService.updateStudySessions(currentUserService.currentUser(request), studyId, body)
+
     @PostMapping("/studies/{studyId}/join")
     fun join(
         request: HttpServletRequest,

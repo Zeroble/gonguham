@@ -2,10 +2,12 @@ package com.gonguham.backend.study
 
 import com.gonguham.backend.dashboard.DashboardService
 import com.gonguham.backend.domain.LocationType
+import com.gonguham.backend.domain.RepeatType
 import com.gonguham.backend.domain.SessionType
 import com.gonguham.backend.domain.StudyType
 import com.gonguham.backend.user.UserRepository
 import java.time.DayOfWeek
+import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
@@ -95,6 +97,101 @@ class StudyScheduleApiTests @Autowired constructor(
 
         val exception = assertFailsWith<ResponseStatusException> {
             studyService.updateParticipation(leader, breakSession.id!!, true)
+        }
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+    }
+
+    @Test
+    fun `leader can edit upcoming study sessions from timeline editor`() {
+        val leader = userRepository.findById(1L).orElseThrow()
+        val sessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(1L)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+        val breakSession = sessions.first { it.sessionType == SessionType.BREAK }
+        val twelfthSession = sessions.first { it.sessionNo == 12 }
+        val thirteenthSession = sessions.first { it.sessionNo == 13 }
+
+        val result = studyService.updateStudySessions(
+            leader,
+            1L,
+            UpdateStudySessionsRequest(
+                sessions = sessions.map { session ->
+                    when (session.id) {
+                        breakSession.id -> UpdateStudySessionRequest(
+                            sessionId = session.id!!,
+                            title = "unused",
+                            scheduledAt = breakSession.scheduledAt.plusDays(1).format(formatter),
+                            sessionType = SessionType.BREAK,
+                        )
+                        twelfthSession.id -> UpdateStudySessionRequest(
+                            sessionId = session.id!!,
+                            title = "동적 계획법 실전",
+                            scheduledAt = thirteenthSession.scheduledAt.format(formatter),
+                            sessionType = SessionType.REGULAR,
+                        )
+                        thirteenthSession.id -> UpdateStudySessionRequest(
+                            sessionId = session.id!!,
+                            title = "트리와 힙 마무리",
+                            scheduledAt = twelfthSession.scheduledAt.format(formatter),
+                            sessionType = SessionType.REGULAR,
+                        )
+                        else -> UpdateStudySessionRequest(
+                            sessionId = session.id!!,
+                            title = session.title,
+                            scheduledAt = session.scheduledAt.format(formatter),
+                            sessionType = session.sessionType,
+                        )
+                    }
+                },
+            ),
+        )
+
+        val updatedStudy = studyRepository.findById(result.studyId).orElseThrow()
+        val updatedSessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(result.studyId)
+        val movedTwelfth = updatedSessions.first { it.id == thirteenthSession.id }
+        val movedThirteenth = updatedSessions.first { it.id == twelfthSession.id }
+        val movedBreak = updatedSessions.first { it.id == breakSession.id }
+
+        assertEquals(1L, result.studyId)
+        assertEquals("트리와 힙 마무리", movedTwelfth.title)
+        assertEquals("동적 계획법 실전", movedThirteenth.title)
+        assertEquals(12, movedTwelfth.sessionNo)
+        assertEquals(13, movedThirteenth.sessionNo)
+        assertEquals("쉬어가는 회차", movedBreak.title)
+        assertEquals(RepeatType.WEEKLY, updatedStudy.repeatType)
+    }
+
+    @Test
+    fun `completed session cannot be edited from timeline editor`() {
+        val leader = userRepository.findById(1L).orElseThrow()
+        val sessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(1L)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+        val completedSession = sessions.first { it.attendanceClosedAt != null }
+
+        val exception = assertFailsWith<ResponseStatusException> {
+            studyService.updateStudySessions(
+                leader,
+                1L,
+                UpdateStudySessionsRequest(
+                    sessions = sessions.map { session ->
+                        if (session.id == completedSession.id) {
+                            UpdateStudySessionRequest(
+                                sessionId = session.id!!,
+                                title = "수정된 완료 회차",
+                                scheduledAt = session.scheduledAt.format(formatter),
+                                sessionType = session.sessionType,
+                            )
+                        } else {
+                            UpdateStudySessionRequest(
+                                sessionId = session.id!!,
+                                title = session.title,
+                                scheduledAt = session.scheduledAt.format(formatter),
+                                sessionType = session.sessionType,
+                            )
+                        }
+                    },
+                ),
+            )
         }
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)

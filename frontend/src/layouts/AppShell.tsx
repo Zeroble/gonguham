@@ -1,7 +1,15 @@
+import { useEffect, useEffectEvent, useState } from 'react'
 import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { api, type DashboardResponse } from '../app/api'
 import { useApp } from '../app/useApp'
 import { AvatarPreview } from '../features/avatar/AvatarPreview'
 import { summaryToRenderState } from '../features/avatar/avatarCatalog'
+import { ProfileModal } from '../features/profile/ProfileModal'
+import { ProfileNameButton } from '../features/profile/ProfileNameButton'
+import {
+  buildAppShellStudySummary,
+  type AppShellOutletContext,
+} from './appShellDashboard'
 
 const tabs = [
   { to: '/app/home', label: '내 스터디' },
@@ -11,9 +19,95 @@ const tabs = [
 ]
 
 export function AppShell() {
-  const { avatarSummary, isBooting, me, logout, toast } = useApp()
+  const {
+    activeProfileUserId,
+    avatarSummary,
+    closeProfile,
+    isBooting,
+    me,
+    logout,
+    sessionUserId,
+    showToast,
+    toast,
+  } = useApp()
   const location = useLocation()
   const isHomeRoute = location.pathname === '/app/home'
+  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
+  const [isDashboardLoading, setIsDashboardLoading] = useState(false)
+
+  const handleDashboardLoadError = useEffectEvent((error: unknown) => {
+    showToast(error instanceof Error ? error.message : '대시보드를 불러오지 못했어요.')
+  })
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadDashboard() {
+      if (!sessionUserId) {
+        if (!cancelled) {
+          setDashboard(null)
+          setIsDashboardLoading(false)
+        }
+        return
+      }
+
+      if (!cancelled) {
+        setIsDashboardLoading(true)
+      }
+
+      try {
+        const nextDashboard = await api.getDashboard(sessionUserId)
+
+        if (!cancelled) {
+          setDashboard(nextDashboard)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setDashboard(null)
+          handleDashboardLoadError(error)
+        }
+      } finally {
+        if (!cancelled) {
+          setIsDashboardLoading(false)
+        }
+      }
+    }
+
+    void loadDashboard()
+
+    return () => {
+      cancelled = true
+    }
+  }, [sessionUserId])
+
+  async function refreshDashboard() {
+    if (!sessionUserId) {
+      setDashboard(null)
+      setIsDashboardLoading(false)
+      return
+    }
+
+    setIsDashboardLoading(true)
+
+    try {
+      const nextDashboard = await api.getDashboard(sessionUserId)
+      setDashboard(nextDashboard)
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : '대시보드를 불러오지 못했어요.')
+    } finally {
+      setIsDashboardLoading(false)
+    }
+  }
+
+  const studySummary = dashboard
+    ? buildAppShellStudySummary(dashboard)
+    : '오늘 스터디를 확인하고 있어요.'
+
+  const outletContext: AppShellOutletContext = {
+    dashboard,
+    isDashboardLoading,
+    refreshDashboard,
+  }
 
   if (isBooting) {
     return <div className="fullscreen-message">공구함을 불러오는 중입니다.</div>
@@ -41,7 +135,7 @@ export function AppShell() {
 
         <div className="summary-main">
           <span className="section-kicker">TODAY SUMMARY</span>
-          <h2>오늘, 2개의 스터디가 예정되어 있어요.</h2>
+          <h2>{studySummary}</h2>
 
           <nav className="summary-tabs" aria-label="메인 탭">
             {tabs.map((tab) => (
@@ -69,7 +163,11 @@ export function AppShell() {
 
           <div className="summary-profile">
             <div className="summary-profile__identity">
-              <strong>{me.nickname}</strong>
+              <ProfileNameButton
+                className="profile-name-button is-summary"
+                nickname={me.nickname}
+                userId={me.id}
+              />
               <span>Lv.{me.level}</span>
             </div>
             <button className="inline-text-button" onClick={logout} type="button">
@@ -80,8 +178,12 @@ export function AppShell() {
       </header>
 
       <main className={isHomeRoute ? 'page-body is-home-route' : 'page-body'}>
-        <Outlet />
+        <Outlet context={outletContext} />
       </main>
+
+      {activeProfileUserId ? (
+        <ProfileModal onClose={closeProfile} userId={activeProfileUserId} />
+      ) : null}
     </div>
   )
 }

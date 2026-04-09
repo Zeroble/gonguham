@@ -151,17 +151,21 @@ class DashboardService(
                 }
                 TimelineSession(
                     sessionId = session.id!!,
+                    sessionNo = session.sessionNo,
                     roundLabel = "${session.sessionNo}회차",
                     title = session.title,
                     nodeState = nodeState,
                     scheduledAt = session.scheduledAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
+                    scheduledAtValue = session.scheduledAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")),
                     planned = planned,
                     sessionType = session.sessionType.name,
+                    editable = !isClosed,
                 )
             },
             notice = notice?.let {
                 FeedItem(
                     postId = it.id!!,
+                    authorUserId = it.authorUserId,
                     title = it.title,
                     content = it.content,
                     authorNickname = usersById[it.authorUserId]?.nickname ?: "?????놁쓬",
@@ -171,6 +175,7 @@ class DashboardService(
             posts = posts.map {
                 FeedItem(
                     postId = it.id!!,
+                    authorUserId = it.authorUserId,
                     title = it.title,
                     content = it.content,
                     authorNickname = usersById[it.authorUserId]?.nickname ?: "?????놁쓬",

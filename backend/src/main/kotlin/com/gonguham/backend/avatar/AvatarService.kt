@@ -4,6 +4,7 @@ import com.gonguham.backend.auth.SessionUserResponse
 import com.gonguham.backend.auth.toResponse
 import com.gonguham.backend.check.CheckLedger
 import com.gonguham.backend.check.CheckLedgerRepository
+import com.gonguham.backend.common.support.LevelPolicy
 import com.gonguham.backend.domain.AvatarCategory
 import com.gonguham.backend.domain.CheckChangeType
 import com.gonguham.backend.domain.CheckReason
@@ -24,13 +25,14 @@ class AvatarService(
     private val avatarProfileRepository: AvatarProfileRepository,
     private val checkLedgerRepository: CheckLedgerRepository,
     private val userRepository: UserRepository,
+    private val levelPolicy: LevelPolicy,
 ) {
     fun summary(user: User): AvatarSummaryResponse {
         val profile = ensureProfile(user.id!!)
         return AvatarSummaryResponse(
             currentChecks = user.currentChecks,
             totalEarnedChecks = user.totalEarnedChecks,
-            level = user.level,
+            level = levelPolicy.levelFor(user.totalEarnedChecks),
             appearance = AvatarAppearanceResponse(
                 bodyAssetKey = profile.bodyAssetKey,
                 pupilAssetKey = resolveAppearanceAssetKey(
@@ -93,7 +95,7 @@ class AvatarService(
     fun purchase(user: User, itemId: Long): SessionUserResponse {
         val item = findItem(itemId)
         if (userAvatarItemRepository.existsByUserIdAndAvatarItemId(user.id!!, itemId)) {
-            return user.toResponse()
+            return user.toResponse(levelPolicy)
         }
         if (user.currentChecks < item.priceChecks) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "체크가 부족합니다.")
@@ -113,7 +115,7 @@ class AvatarService(
                 createdAt = LocalDateTime.now(),
             ),
         )
-        return user.toResponse()
+        return user.toResponse(levelPolicy)
     }
 
     @Transactional

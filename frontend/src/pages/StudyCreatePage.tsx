@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 import { api, type CreateStudySessionInput } from '../app/api'
 import {
   DAY_PICKER_OPTIONS,
@@ -10,6 +10,7 @@ import {
   STUDY_TYPE_PICKER_OPTIONS,
 } from '../app/display'
 import { useApp } from '../app/useApp'
+import { type AppShellOutletContext } from '../layouts/appShellDashboard'
 
 type StudyType = 'TOPIC' | 'MOGAKGONG' | 'FLASH'
 type SessionType = 'REGULAR' | 'BREAK'
@@ -38,23 +39,29 @@ type DraftSession = CreateStudySessionInput & {
 const BREAK_TITLE = '쉬어가는 회차'
 const DAY_ORDER: string[] = DAY_PICKER_OPTIONS.map((option) => option.value)
 const JS_DAY_TO_VALUE = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY']
-const TOPIC_TITLE_TEMPLATES = ['OT', '핵심 개념 정리', '문제 풀이', '응용 실습', '리뷰와 회고']
+
+function buildDefaultDate(offsetDays: number) {
+  const date = new Date()
+  date.setHours(0, 0, 0, 0)
+  date.setDate(date.getDate() + offsetDays)
+  return formatDateKey(date)
+}
 
 const initialForm: StudyFormState = {
   type: 'TOPIC',
-  title: '자료구조 같이 끝내는 주제 스터디',
-  description: '기초 개념부터 문제 풀이까지 차근차근 가는 주제형 스터디입니다.',
+  title: '',
+  description: '',
   daysOfWeek: ['TUESDAY'],
   startTime: '18:30',
   endTime: '20:00',
-  startDate: '2026-04-15',
-  endDate: '2026-06-24',
+  startDate: buildDefaultDate(7),
+  endDate: buildDefaultDate(67),
   maxMembers: 8,
   locationType: 'OFFLINE',
-  locationText: '인천공항 3층 모임방 B',
-  rulesText: '결석 예정은 하루 전까지 게시판에 올려주세요.',
-  suppliesText: '노트북, 교재, 필기구를 챙겨주세요.',
-  tags: 'CS, 자료구조, 오프라인',
+  locationText: '',
+  rulesText: '',
+  suppliesText: '',
+  tags: '',
 }
 
 function sortDaysOfWeek(daysOfWeek: string[]) {
@@ -105,7 +112,7 @@ function buildDefaultSessionTitle(index: number, type: StudyType) {
     return `${index + 1}회차`
   }
 
-  return TOPIC_TITLE_TEMPLATES[index] ?? `${index + 1}회차 주제`
+  return `${index + 1}회차 주제`
 }
 
 function sortSessions(sessions: DraftSession[]) {
@@ -124,16 +131,6 @@ function buildAutoSessions(form: StudyFormState): DraftSession[] {
   }))
 }
 
-function formatScheduledAtLabel(scheduledAt: string) {
-  if (!scheduledAt) {
-    return '일정을 입력하세요'
-  }
-
-  const date = scheduledAt.slice(5, 10).replace('-', '.')
-  const time = scheduledAt.slice(11, 16)
-  return `${date} ${time}`
-}
-
 function isScheduleReady(form: StudyFormState) {
   return (
     Boolean(form.startDate) &&
@@ -144,14 +141,30 @@ function isScheduleReady(form: StudyFormState) {
   )
 }
 
+function normalizeStudyForm(form: StudyFormState): StudyFormState {
+  if (form.type !== 'FLASH' || !form.startDate) {
+    return form
+  }
+
+  const flashDay = getDayValueFromDate(form.startDate)
+
+  return {
+    ...form,
+    endDate: form.startDate,
+    daysOfWeek: flashDay ? [flashDay] : form.daysOfWeek,
+  }
+}
+
 export function StudyCreatePage() {
   const { sessionUserId, showToast } = useApp()
+  const { refreshDashboard } = useOutletContext<AppShellOutletContext>()
   const navigate = useNavigate()
   const [form, setForm] = useState(initialForm)
   const [sessions, setSessions] = useState<DraftSession[]>(() => buildAutoSessions(initialForm))
   const [sessionsDirty, setSessionsDirty] = useState(false)
 
-  const scheduleReady = useMemo(() => isScheduleReady(form), [form])
+  const normalizedForm = useMemo(() => normalizeStudyForm(form), [form])
+  const scheduleReady = useMemo(() => isScheduleReady(normalizedForm), [normalizedForm])
   const previewTags = useMemo(
     () =>
       form.tags
@@ -160,78 +173,44 @@ export function StudyCreatePage() {
         .filter(Boolean),
     [form.tags],
   )
-  const daySummary = useMemo(() => formatDaysOfWeek(form.daysOfWeek), [form.daysOfWeek])
-  const flashDaySummary = useMemo(() => {
-    const flashDay = form.daysOfWeek[0] ?? getDayValueFromDate(form.startDate)
-    return flashDay ? getDayLabel(flashDay) : '미정'
-  }, [form.daysOfWeek, form.startDate])
-  const regularSessionCount = useMemo(
-    () => sessions.filter((session) => session.sessionType === 'REGULAR').length,
-    [sessions],
+  const daySummary = useMemo(
+    () => formatDaysOfWeek(normalizedForm.daysOfWeek),
+    [normalizedForm.daysOfWeek],
   )
-  const breakSessionCount = sessions.length - regularSessionCount
+  const flashDaySummary = useMemo(() => {
+    const flashDay =
+      normalizedForm.daysOfWeek[0] ?? getDayValueFromDate(normalizedForm.startDate)
+    return flashDay ? getDayLabel(flashDay) : '미정'
+  }, [normalizedForm.daysOfWeek, normalizedForm.startDate])
+  const autoSessions = useMemo(
+    () => (scheduleReady ? buildAutoSessions(normalizedForm) : []),
+    [normalizedForm, scheduleReady],
+  )
+  const visibleSessions = useMemo(() => {
+    if (!scheduleReady) {
+      return normalizedForm.type !== 'TOPIC' || !sessionsDirty ? [] : sessions
+    }
+
+    if (normalizedForm.type !== 'TOPIC') {
+      return autoSessions
+    }
+
+    return sessionsDirty ? sessions : autoSessions
+  }, [autoSessions, normalizedForm.type, scheduleReady, sessions, sessionsDirty])
+  const regularSessionCount = useMemo(
+    () => visibleSessions.filter((session) => session.sessionType === 'REGULAR').length,
+    [visibleSessions],
+  )
+  const breakSessionCount = visibleSessions.length - regularSessionCount
   const periodSummary = useMemo(() => {
-    if (!form.startDate || !form.endDate) {
+    if (!normalizedForm.startDate || !normalizedForm.endDate) {
       return '미정'
     }
 
-    return form.startDate === form.endDate
-      ? form.startDate
-      : `${form.startDate} ~ ${form.endDate}`
-  }, [form.endDate, form.startDate])
-
-  useEffect(() => {
-    if (form.type !== 'FLASH' || !form.startDate) {
-      return
-    }
-
-    const flashDay = getDayValueFromDate(form.startDate)
-
-    setForm((current) => {
-      const nextDays = flashDay ? [flashDay] : current.daysOfWeek
-      const shouldSyncDays =
-        current.daysOfWeek.length !== nextDays.length ||
-        current.daysOfWeek.some((day, index) => day !== nextDays[index])
-
-      if (current.endDate === current.startDate && !shouldSyncDays) {
-        return current
-      }
-
-      return {
-        ...current,
-        endDate: current.startDate,
-        daysOfWeek: nextDays,
-      }
-    })
-  }, [form.startDate, form.type])
-
-  useEffect(() => {
-    if (!scheduleReady) {
-      if (form.type !== 'TOPIC' || !sessionsDirty) {
-        setSessions([])
-      }
-      return
-    }
-
-    if (form.type !== 'TOPIC') {
-      setSessions(buildAutoSessions(form))
-      setSessionsDirty(false)
-      return
-    }
-
-    if (!sessionsDirty) {
-      setSessions(buildAutoSessions(form))
-    }
-  }, [
-    form.daysOfWeek,
-    form.endDate,
-    form.locationText,
-    form.startDate,
-    form.startTime,
-    form.type,
-    scheduleReady,
-    sessionsDirty,
-  ])
+    return normalizedForm.startDate === normalizedForm.endDate
+      ? normalizedForm.startDate
+      : `${normalizedForm.startDate} ~ ${normalizedForm.endDate}`
+  }, [normalizedForm.endDate, normalizedForm.startDate])
 
   function toggleDay(dayOfWeek: string) {
     setForm((current) => {
@@ -247,7 +226,7 @@ export function StudyCreatePage() {
   }
 
   function regenerateSessions() {
-    setSessions(buildAutoSessions(form))
+    setSessions(buildAutoSessions(normalizedForm))
     setSessionsDirty(false)
   }
 
@@ -255,7 +234,7 @@ export function StudyCreatePage() {
     setSessionsDirty(true)
     setSessions((current) =>
       sortSessions(
-        current.map((session) =>
+        (sessionsDirty ? current : visibleSessions).map((session) =>
           session.id === sessionId ? { ...session, ...patch } : session,
         ),
       ),
@@ -265,7 +244,7 @@ export function StudyCreatePage() {
   function handleSessionTypeChange(sessionId: string, nextType: SessionType) {
     setSessionsDirty(true)
     setSessions((current) =>
-      current.map((session, index) => {
+      (sessionsDirty ? current : visibleSessions).map((session, index) => {
         if (session.id !== sessionId) {
           return session
         }
@@ -282,7 +261,7 @@ export function StudyCreatePage() {
           ...session,
           title:
             session.title === BREAK_TITLE
-              ? buildDefaultSessionTitle(index, form.type)
+              ? buildDefaultSessionTitle(index, normalizedForm.type)
               : session.title,
           sessionType: 'REGULAR',
         }
@@ -295,7 +274,12 @@ export function StudyCreatePage() {
       return
     }
 
-    if (!form.daysOfWeek.length) {
+    if (!form.title.trim()) {
+      showToast('?ㅽ꽣???쒕ぉ???낅젰?댁＜?몄슂.')
+      return
+    }
+
+    if (!normalizedForm.daysOfWeek.length) {
       showToast('요일을 하나 이상 선택해주세요.')
       return
     }
@@ -305,41 +289,62 @@ export function StudyCreatePage() {
       return
     }
 
-    if (!sessions.length) {
+    if (!visibleSessions.length) {
       showToast('생성할 회차가 없습니다.')
       return
     }
 
-    if (form.type === 'TOPIC' && regularSessionCount === 0) {
+    if (normalizedForm.endTime <= normalizedForm.startTime) {
+      showToast('醫낅즺 ?쒓컙? ?쒖옉 ?쒓컙蹂대떎 ??뼱???⑸땲??')
+      return
+    }
+
+    if (normalizedForm.maxMembers < 2) {
+      showToast('紐⑥쭛 ?몄썝? 2紐??댁긽?댁뼱???⑸땲??')
+      return
+    }
+
+    if (
+      visibleSessions.some(
+        (session) =>
+          session.sessionType === 'REGULAR' && !session.title.trim(),
+      )
+    ) {
+      showToast('吏꾪뻾 ?뚯감 ?쒕ぉ???낅젰?댁＜?몄슂.')
+      return
+    }
+
+    if (normalizedForm.type === 'TOPIC' && regularSessionCount === 0) {
       showToast('진행 회차를 최소 1개 이상 남겨주세요.')
       return
     }
 
     try {
       const created = await api.createStudy(sessionUserId, {
-        type: form.type,
+        type: normalizedForm.type,
         title: form.title,
         description: form.description,
-        daysOfWeek: form.daysOfWeek,
-        startTime: form.startTime,
-        endTime: form.endTime,
-        startDate: form.startDate,
-        endDate: form.endDate,
-        maxMembers: Number(form.maxMembers),
-        locationType: form.locationType,
-        locationText: form.locationText,
-        rulesText: form.rulesText,
-        suppliesText: form.suppliesText,
+        daysOfWeek: normalizedForm.daysOfWeek,
+        startTime: normalizedForm.startTime,
+        endTime: normalizedForm.endTime,
+        startDate: normalizedForm.startDate,
+        endDate: normalizedForm.endDate,
+        maxMembers: Number(normalizedForm.maxMembers),
+        locationType: normalizedForm.locationType,
+        locationText: normalizedForm.locationText,
+        rulesText: normalizedForm.rulesText,
+        suppliesText: normalizedForm.suppliesText,
         cautionText: '',
         tags: previewTags,
-        sessions: sortSessions(sessions).map((session) => ({
+        sessions: sortSessions(visibleSessions).map((session) => ({
           title:
             session.sessionType === 'BREAK' ? BREAK_TITLE : session.title.trim(),
           scheduledAt: session.scheduledAt,
           sessionType: session.sessionType,
-          placeText: form.locationText,
+          placeText: normalizedForm.locationText,
         })),
       })
+      await refreshDashboard()
       showToast(`"${created.title}" 스터디를 개설했어요.`)
       navigate('/app/home', { replace: true })
     } catch (error) {
@@ -371,10 +376,17 @@ export function StudyCreatePage() {
                     }
                     key={option.value}
                     onClick={() =>
-                      setForm((current) => ({
-                        ...current,
-                        type: option.value as StudyType,
-                      }))
+                      setForm((current) => {
+                        const nextType = option.value as StudyType
+                        if (nextType !== 'TOPIC') {
+                          setSessionsDirty(false)
+                        }
+
+                        return {
+                          ...current,
+                          type: nextType,
+                        }
+                      })
                     }
                     type="button"
                   >
@@ -391,6 +403,7 @@ export function StudyCreatePage() {
                 onChange={(event) =>
                   setForm((current) => ({ ...current, title: event.target.value }))
                 }
+                placeholder="예: 자료구조 같이 끝내는 주제 스터디"
                 value={form.title}
               />
             </label>
@@ -405,6 +418,7 @@ export function StudyCreatePage() {
                     description: event.target.value,
                   }))
                 }
+                placeholder="예: 기초 개념부터 문제 풀이까지 차근차근 가는 주제형 스터디입니다."
                 value={form.description}
               />
             </label>
@@ -525,7 +539,7 @@ export function StudyCreatePage() {
               <div className="field-block">
                 <span className="field-label">자동 계산</span>
                 <div className="schedule-summary-card">
-                  <strong>총 {sessions.length}회차 진행</strong>
+                  <strong>총 {visibleSessions.length}회차 진행</strong>
                 </div>
               </div>
             </div>
@@ -577,7 +591,7 @@ export function StudyCreatePage() {
                   }))
                 }
                 placeholder={
-                  form.locationType === 'ONLINE'
+                  normalizedForm.locationType === 'ONLINE'
                     ? '예: Google Meet 링크'
                     : '예: 인천공항 3층 모임방 B'
                 }
@@ -613,7 +627,7 @@ export function StudyCreatePage() {
             ) : null}
 
             <div className="session-plan-list">
-              {sessions.map((session, index) => {
+              {visibleSessions.map((session, index) => {
                 const isBreak = session.sessionType === 'BREAK'
 
                 return (
@@ -628,7 +642,6 @@ export function StudyCreatePage() {
                     <div className="session-plan-card__header">
                       <div>
                         <span className="field-label">{index + 1}회차</span>
-                        <strong>{formatScheduledAtLabel(session.scheduledAt)}</strong>
                       </div>
 
                       <div className="filter-chip-row">
@@ -712,6 +725,7 @@ export function StudyCreatePage() {
                     suppliesText: event.target.value,
                   }))
                 }
+                placeholder="예: 노트북, 교재, 필기구를 챙겨주세요."
                 value={form.suppliesText}
               />
             </label>
@@ -726,6 +740,7 @@ export function StudyCreatePage() {
                     rulesText: event.target.value,
                   }))
                 }
+                placeholder="예: 결석 예정은 하루 전까지 게시판에 올려주세요."
                 value={form.rulesText}
               />
             </label>
@@ -748,8 +763,8 @@ export function StudyCreatePage() {
       <aside className="page-surface preview-panel create-preview-panel">
         <div className="section-card__header">
           <div>
-            <h2>개설 요약</h2>
-            <p>길게 내려보지 않아도 핵심 정보가 한눈에 들어오도록 압축했어요.</p>
+            <h2>개설하기</h2>
+            {/* <p>길게 내려보지 않아도 핵심 정보가 한눈에 들어오도록 압축했어요.</p> */}
           </div>
         </div>
 
@@ -773,7 +788,7 @@ export function StudyCreatePage() {
             <div className="create-preview-summary__item">
               <span>장소</span>
               <strong>
-                {form.locationType === 'ONLINE' ? '온라인' : '오프라인'} / {form.locationText}
+                {normalizedForm.locationType === 'ONLINE' ? '온라인' : '오프라인'} / {normalizedForm.locationText}
               </strong>
             </div>
             <div className="create-preview-summary__item">

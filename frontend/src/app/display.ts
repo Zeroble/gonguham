@@ -16,6 +16,7 @@ export const DAY_FILTER_OPTIONS = [
   { label: '목', value: 'THURSDAY' },
   { label: '금', value: 'FRIDAY' },
   { label: '토', value: 'SATURDAY' },
+  { label: '일', value: 'SUNDAY' },
 ] as const
 
 export const DAY_PICKER_OPTIONS = DAY_FILTER_OPTIONS
@@ -78,8 +79,12 @@ export function formatDaysOfWeek(daysOfWeek: string[]) {
     .join('·')
 }
 
-export function matchesDayFilter(daysOfWeek: string[], filter: string) {
-  return filter ? daysOfWeek.includes(filter) : true
+export function matchesDayFilter(daysOfWeek: string[], filters: string[]) {
+  if (!filters.length) {
+    return true
+  }
+
+  return filters.some((filter) => daysOfWeek.includes(filter))
 }
 
 export function matchesPlaceFilter(locationLabel: string, filter: string) {

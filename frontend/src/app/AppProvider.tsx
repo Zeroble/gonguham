@@ -16,12 +16,15 @@ type AppContextValue = {
   me: SessionUser | null
   avatarSummary: AvatarSummary | null
   sessionUserId: number | null
+  activeProfileUserId: number | null
   isBooting: boolean
   toast: AppToast | null
   loginDemo: () => Promise<SessionUser>
   logout: () => void
   refreshMe: () => Promise<SessionUser | null>
   refreshAvatarSummary: () => Promise<AvatarSummary | null>
+  openProfile: (userId: number) => void
+  closeProfile: () => void
   replaceMe: (next: SessionUser) => void
   replaceAvatarSummary: (next: AvatarSummary | null) => void
   showToast: (message: string) => void
@@ -36,6 +39,7 @@ export function AppProvider({ children }: PropsWithChildren) {
     const raw = window.localStorage.getItem(SESSION_KEY)
     return raw ? Number(raw) : null
   })
+  const [activeProfileUserId, setActiveProfileUserId] = useState<number | null>(null)
   const [me, setMe] = useState<SessionUser | null>(null)
   const [avatarSummary, setAvatarSummary] = useState<AvatarSummary | null>(null)
   const [isBooting, setIsBooting] = useState(true)
@@ -67,6 +71,7 @@ export function AppProvider({ children }: PropsWithChildren) {
         if (!cancelled) {
           setSessionUserId(null)
           window.localStorage.removeItem(SESSION_KEY)
+          setActiveProfileUserId(null)
           setMe(null)
           setAvatarSummary(null)
         }
@@ -106,6 +111,7 @@ export function AppProvider({ children }: PropsWithChildren) {
   function logout() {
     window.localStorage.removeItem(SESSION_KEY)
     setSessionUserId(null)
+    setActiveProfileUserId(null)
     setMe(null)
     setAvatarSummary(null)
   }
@@ -136,6 +142,14 @@ export function AppProvider({ children }: PropsWithChildren) {
     setAvatarSummary(next)
   }
 
+  function openProfile(userId: number) {
+    setActiveProfileUserId(userId)
+  }
+
+  function closeProfile() {
+    setActiveProfileUserId(null)
+  }
+
   function showToast(message: string) {
     if (toastTimerRef.current !== null) {
       window.clearTimeout(toastTimerRef.current)
@@ -155,12 +169,15 @@ export function AppProvider({ children }: PropsWithChildren) {
         me,
         avatarSummary,
         sessionUserId,
+        activeProfileUserId,
         isBooting,
         toast,
         loginDemo,
         logout,
         refreshMe,
         refreshAvatarSummary,
+        openProfile,
+        closeProfile,
         replaceMe,
         replaceAvatarSummary,
         showToast,

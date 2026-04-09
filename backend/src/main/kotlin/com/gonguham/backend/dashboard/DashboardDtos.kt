@@ -32,16 +32,20 @@ data class ActiveStudyPanel(
 
 data class TimelineSession(
     val sessionId: Long,
+    val sessionNo: Int,
     val roundLabel: String,
     val title: String,
     val nodeState: String,
     val scheduledAt: String,
+    val scheduledAtValue: String,
     val planned: Boolean,
     val sessionType: String,
+    val editable: Boolean,
 )
 
 data class FeedItem(
     val postId: Long,
+    val authorUserId: Long,
     val title: String,
     val content: String,
     val authorNickname: String,

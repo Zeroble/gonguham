@@ -33,12 +33,15 @@ export type StudyHomePanel = {
   attendanceSessionLabel: string | null
   sessions: Array<{
     sessionId: number
+    sessionNo: number
     roundLabel: string
     title: string
     nodeState: string
     scheduledAt: string
+    scheduledAtValue: string
     planned: boolean
     sessionType: string
+    editable: boolean
   }>
   notice: FeedItem | null
   posts: FeedItem[]
@@ -60,6 +63,7 @@ export type SessionAttendancePanel = {
 
 export type FeedItem = {
   postId: number
+  authorUserId: number
   type: string
   title: string
   content: string
@@ -69,6 +73,7 @@ export type FeedItem = {
 
 export type PostComment = {
   commentId: number
+  authorUserId: number
   authorNickname: string
   content: string
   createdAt: string
@@ -76,6 +81,7 @@ export type PostComment = {
 
 export type PostDetail = {
   postId: number
+  authorUserId: number
   type: string
   title: string
   content: string
@@ -103,6 +109,7 @@ export type StudyDetail = {
   type: string
   title: string
   description: string
+  leaderUserId: number
   leaderNickname: string
   daysOfWeek: string[]
   dayLabel: string
@@ -179,11 +186,46 @@ export type SaveAvatarAppearanceRequest = {
   bodyAssetKey: string
 }
 
+export type UserProfile = {
+  userId: number
+  nickname: string
+  level: number
+  levelProgress: {
+    currentLevelStartTotalChecks: number
+    nextLevelTargetTotalChecks: number
+    remainingChecksToNextLevel: number
+    progressPercent: number
+  }
+  stats: {
+    activeStudyCount: number
+    currentChecks: number
+    consecutiveAttendanceCount: number
+    totalAttendanceCount: number
+    recentTwoWeekAttendanceRatePercent: number
+    recentTwoWeekAttendedCount: number
+    recentTwoWeekSessionCount: number
+    totalEarnedChecks: number
+    totalPostCount: number
+    totalCommentCount: number
+  }
+  avatar: {
+    appearance: AvatarAppearance
+    equipped: AvatarSummary['equipped']
+  }
+}
+
 export type CreateStudySessionInput = {
   title: string
   scheduledAt: string
   sessionType: 'REGULAR' | 'BREAK'
   placeText?: string | null
+}
+
+export type UpdateStudySessionInput = {
+  sessionId: number
+  title: string
+  scheduledAt: string
+  sessionType: 'REGULAR' | 'BREAK'
 }
 
 export type CreateStudyInput = {
@@ -264,6 +306,9 @@ export const api = {
   getMe(userId: number) {
     return request<SessionUser>('/api/v1/me', userId)
   },
+  getUserProfile(userId: number, targetUserId: number) {
+    return request<UserProfile>(`/api/v1/users/${targetUserId}/profile`, userId)
+  },
   updateNickname(userId: number, nickname: string) {
     return request<SessionUser>('/api/v1/me', userId, {
       method: 'PATCH',
@@ -302,6 +347,12 @@ export const api = {
       body,
     })
   },
+  updateStudySessions(userId: number, studyId: number, sessions: UpdateStudySessionInput[]) {
+    return request<{ studyId: number }>(`/api/v1/studies/${studyId}/sessions`, userId, {
+      method: 'PATCH',
+      body: { sessions },
+    })
+  },
   updateParticipation(userId: number, sessionId: number, planned: boolean) {
     return request<{ sessionId: number; planned: boolean }>(`/api/v1/sessions/${sessionId}/participation`, userId, {
       method: 'PATCH',
@@ -321,6 +372,10 @@ export const api = {
         body: { entries },
       },
     )
+  },
+  getStudyPosts(userId: number, studyId: number, type?: 'POST' | 'NOTICE') {
+    const suffix = type ? `?type=${type}` : ''
+    return request<FeedItem[]>(`/api/v1/studies/${studyId}/posts${suffix}`, userId)
   },
   createPost(userId: number, studyId: number, body: { type: 'POST' | 'NOTICE'; title: string; content: string }) {
     return request<FeedItem>(`/api/v1/studies/${studyId}/posts`, userId, {

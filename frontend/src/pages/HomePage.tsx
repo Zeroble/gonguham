@@ -1,13 +1,21 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import {
   api,
   type AttendanceRosterEntry,
-  type DashboardResponse,
+  type FeedItem,
   type PostDetail,
   type SessionAttendancePanel,
+  type StudyHomePanel,
+  type UpdateStudySessionInput,
 } from '../app/api'
 import { useApp } from '../app/useApp'
+import { ProfileNameButton } from '../features/profile/ProfileNameButton'
+import { type AppShellOutletContext } from '../layouts/appShellDashboard'
+
+const POSTS_PER_PAGE = 5
+const POST_PAGINATION_WINDOW = 5
+const BREAK_TITLE = '쉬어가는 회차'
 
 type RenderedTimelineItem = {
   sessionId: number | string
@@ -22,10 +30,38 @@ type RenderedTimelineItem = {
 
 type RenderedPostItem = {
   postId: number | string
+  authorUserId: number | null
   title: string
   authorNickname: string
   createdAt: string
   placeholder?: boolean
+}
+
+type SessionEditorDraft = UpdateStudySessionInput & {
+  editable: boolean
+}
+
+function toRenderedPosts(posts: FeedItem[]) {
+  return posts.map((post) => ({
+    postId: post.postId,
+    authorUserId: post.authorUserId,
+    title: post.title,
+    authorNickname: post.authorNickname,
+    createdAt: post.createdAt,
+  }))
+}
+
+function buildPaginationWindow(totalPages: number, currentPage: number) {
+  if (totalPages <= POST_PAGINATION_WINDOW) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  let start = Math.max(1, currentPage - Math.floor(POST_PAGINATION_WINDOW / 2))
+  const end = Math.min(totalPages, start + POST_PAGINATION_WINDOW - 1)
+
+  start = Math.max(1, end - POST_PAGINATION_WINDOW + 1)
+
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index)
 }
 
 function getTimelineToneByState(nodeState: string) {
@@ -65,62 +101,59 @@ function toAttendanceMap(roster: AttendanceRosterEntry[] = []) {
   )
 }
 
+function sortSessionEditorDrafts(sessions: SessionEditorDraft[]) {
+  return [...sessions].sort((left, right) => left.scheduledAt.localeCompare(right.scheduledAt))
+}
+
+function buildSessionEditorDrafts(sessions: StudyHomePanel['sessions']): SessionEditorDraft[] {
+  return sortSessionEditorDrafts(
+    sessions.map((session) => ({
+      sessionId: session.sessionId,
+      title: session.sessionType === 'BREAK' ? BREAK_TITLE : session.title,
+      scheduledAt: session.scheduledAtValue,
+      sessionType: session.sessionType as 'REGULAR' | 'BREAK',
+      editable: session.editable,
+    })),
+  )
+}
+
+function buildDefaultEditableSessionTitle(index: number) {
+  return `${index + 1}회차 주제`
+}
+
 export function HomePage() {
   const { sessionUserId, refreshMe, showToast } = useApp()
+  const { dashboard, isDashboardLoading, refreshDashboard } =
+    useOutletContext<AppShellOutletContext>()
   const [searchParams, setSearchParams] = useSearchParams()
   const timelineViewportRef = useRef<HTMLDivElement | null>(null)
   const currentTimelineRowRef = useRef<HTMLDivElement | null>(null)
+  const postListRequestTokenRef = useRef(0)
   const postRequestTokenRef = useRef(0)
-  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
   const [draftTitle, setDraftTitle] = useState('')
   const [draftContent, setDraftContent] = useState('')
   const [draftType, setDraftType] = useState<'POST' | 'NOTICE'>('POST')
+  const [studyPosts, setStudyPosts] = useState<RenderedPostItem[]>([])
+  const [postPage, setPostPage] = useState(1)
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null)
   const [postDetail, setPostDetail] = useState<PostDetail | null>(null)
   const [commentDraft, setCommentDraft] = useState('')
   const [attendanceMap, setAttendanceMap] = useState<Record<number, string>>({})
   const [attendancePanel, setAttendancePanel] = useState<SessionAttendancePanel | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [sessionDrafts, setSessionDrafts] = useState<SessionEditorDraft[]>([])
+  const [isPostsLoading, setIsPostsLoading] = useState(false)
   const [isPostDetailLoading, setIsPostDetailLoading] = useState(false)
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
+  const [isSessionSaving, setIsSessionSaving] = useState(false)
   const [showOverview, setShowOverview] = useState(false)
   const [showPostModal, setShowPostModal] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
   const [showAttendance, setShowAttendance] = useState(false)
+  const [showSessionEditor, setShowSessionEditor] = useState(false)
   const selectedStudyId = useMemo(() => {
     const value = Number(searchParams.get('studyId'))
     return Number.isFinite(value) && value > 0 ? value : null
   }, [searchParams])
-
-  useEffect(() => {
-    if (!sessionUserId) {
-      return
-    }
-
-    let cancelled = false
-
-    async function fetchDashboard() {
-      setIsLoading(true)
-
-      try {
-        const next = await api.getDashboard(sessionUserId)
-
-        if (!cancelled) {
-          setDashboard(next)
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false)
-        }
-      }
-    }
-
-    void fetchDashboard()
-
-    return () => {
-      cancelled = true
-    }
-  }, [sessionUserId])
 
   useEffect(() => {
     if (!dashboard?.defaultStudyId) {
@@ -153,37 +186,6 @@ export function HomePage() {
   useEffect(() => {
     setAttendanceMap(toAttendanceMap(activeStudy?.attendanceRoster))
   }, [activeStudy])
-
-  useEffect(() => {
-    if (!sessionUserId || !activeStudy?.studyId) {
-      return
-    }
-
-    let cancelled = false
-
-    async function refreshStudyPanel() {
-      const nextPanel = await api.getStudyHomePanel(sessionUserId, activeStudy.studyId)
-
-      if (!cancelled) {
-        setDashboard((current) =>
-          current
-            ? {
-              ...current,
-              studyPanels: current.studyPanels.map((panel) =>
-                panel.studyId === nextPanel.studyId ? nextPanel : panel,
-              ),
-            }
-            : current,
-        )
-      }
-    }
-
-    void refreshStudyPanel()
-
-    return () => {
-      cancelled = true
-    }
-  }, [activeStudy?.studyId, sessionUserId])
 
   const currentTimelineSession = useMemo(() => {
     if (!activeStudy?.sessions.length) {
@@ -218,6 +220,13 @@ export function HomePage() {
     ]
   }, [activeStudy])
 
+  const sessionDraftRegularCount = useMemo(
+    () => sessionDrafts.filter((session) => session.sessionType === 'REGULAR').length,
+    [sessionDrafts],
+  )
+
+  const sessionDraftBreakCount = sessionDrafts.length - sessionDraftRegularCount
+
   useLayoutEffect(() => {
     const viewport = timelineViewportRef.current
     const currentRow = currentTimelineRowRef.current
@@ -234,52 +243,126 @@ export function HomePage() {
     viewport.scrollTop = Math.max(0, Math.min(nextScrollTop, maxScrollTop))
   }, [activeStudy?.currentSessionId, activeStudy?.studyId, renderedTimeline.length])
 
-  const renderedPosts = useMemo<RenderedPostItem[]>(() => {
-    if (!activeStudy) {
-      return []
-    }
+  const totalPostPages = useMemo(
+    () => Math.max(1, Math.ceil(studyPosts.length / POSTS_PER_PAGE)),
+    [studyPosts.length],
+  )
 
-    return [
-      ...activeStudy.posts.map((post) => ({
-        postId: post.postId,
-        title: post.title,
-        authorNickname: post.authorNickname,
-        createdAt: post.createdAt,
-      }))
-    ]
-  }, [activeStudy])
+  const visiblePostPages = useMemo(
+    () => buildPaginationWindow(totalPostPages, postPage),
+    [postPage, totalPostPages],
+  )
+
+  const pagedPosts = useMemo(() => {
+    const startIndex = (postPage - 1) * POSTS_PER_PAGE
+    return studyPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
+  }, [postPage, studyPosts])
+
+  const shouldShowLeadingFirstPage = visiblePostPages.length > 0 && visiblePostPages[0] > 1
+  const shouldShowLeadingEllipsis = visiblePostPages.length > 0 && visiblePostPages[0] > 2
+  const shouldShowTrailingLastPage =
+    visiblePostPages.length > 0 && visiblePostPages[visiblePostPages.length - 1] < totalPostPages
+  const shouldShowTrailingEllipsis =
+    visiblePostPages.length > 0 && visiblePostPages[visiblePostPages.length - 1] < totalPostPages - 1
 
   const selectedPostSummary = useMemo(
-    () => renderedPosts.find((post) => typeof post.postId === 'number' && post.postId === selectedPostId) ?? null,
-    [renderedPosts, selectedPostId],
+    () => studyPosts.find((post) => typeof post.postId === 'number' && post.postId === selectedPostId) ?? null,
+    [selectedPostId, studyPosts],
   )
 
   useEffect(() => {
+    postListRequestTokenRef.current += 1
+    setStudyPosts([])
+    setPostPage(1)
     postRequestTokenRef.current += 1
+    setSessionDrafts([])
     setSelectedPostId(null)
     setPostDetail(null)
     setCommentDraft('')
+    setIsPostsLoading(false)
     setIsPostDetailLoading(false)
     setIsCommentSubmitting(false)
+    setIsSessionSaving(false)
     setShowPostModal(false)
+    setShowSessionEditor(false)
   }, [activeStudy?.studyId])
 
-  async function reload() {
+  useEffect(() => {
+    setPostPage((currentPage) => Math.min(currentPage, totalPostPages))
+  }, [totalPostPages])
+
+  useEffect(() => {
     if (!sessionUserId || !activeStudy?.studyId) {
       return
     }
 
-    const nextPanel = await api.getStudyHomePanel(sessionUserId, activeStudy.studyId)
-    setDashboard((current) =>
-      current
-        ? {
-          ...current,
-          studyPanels: current.studyPanels.map((panel) =>
-            panel.studyId === nextPanel.studyId ? nextPanel : panel,
-          ),
+    let cancelled = false
+
+    async function fetchStudyPosts() {
+      const requestToken = ++postListRequestTokenRef.current
+      setIsPostsLoading(true)
+
+      try {
+        const posts = await api.getStudyPosts(sessionUserId, activeStudy.studyId, 'POST')
+
+        if (cancelled || requestToken !== postListRequestTokenRef.current) {
+          return
         }
-        : current,
-    )
+
+        setStudyPosts(toRenderedPosts(posts))
+        setPostPage(1)
+      } catch (error) {
+        if (cancelled || requestToken !== postListRequestTokenRef.current) {
+          return
+        }
+
+        showToast(error instanceof Error ? error.message : '게시글 목록을 불러오지 못했어요.')
+      } finally {
+        if (!cancelled && requestToken === postListRequestTokenRef.current) {
+          setIsPostsLoading(false)
+        }
+      }
+    }
+
+    void fetchStudyPosts()
+
+    return () => {
+      cancelled = true
+    }
+  }, [activeStudy?.studyId, sessionUserId, showToast])
+
+  async function reload() {
+    await refreshDashboard()
+  }
+
+  async function loadStudyPosts(studyId: number, page = 1) {
+    if (!sessionUserId) {
+      return
+    }
+
+    const requestToken = ++postListRequestTokenRef.current
+    setIsPostsLoading(true)
+
+    try {
+      const posts = await api.getStudyPosts(sessionUserId, studyId, 'POST')
+
+      if (requestToken !== postListRequestTokenRef.current) {
+        return
+      }
+
+      setStudyPosts(toRenderedPosts(posts))
+      setPostPage(page)
+    } catch (error) {
+      if (requestToken !== postListRequestTokenRef.current) {
+        return
+      }
+
+      showToast(error instanceof Error ? error.message : '게시글 목록을 불러오지 못했어요.')
+    } finally {
+      if (requestToken === postListRequestTokenRef.current) {
+        setIsPostsLoading(false)
+      }
+    }
   }
 
   function closePostModal() {
@@ -349,6 +432,100 @@ export function HomePage() {
     }
   }
 
+  function openSessionEditor() {
+    if (!activeStudy?.isLeader) {
+      return
+    }
+
+    setSessionDrafts(buildSessionEditorDrafts(activeStudy.sessions))
+    setShowSessionEditor(true)
+  }
+
+  function closeSessionEditor() {
+    if (isSessionSaving) {
+      return
+    }
+
+    setShowSessionEditor(false)
+    setSessionDrafts([])
+  }
+
+  function updateSessionDraft(sessionId: number, patch: Partial<SessionEditorDraft>) {
+    setSessionDrafts((current) =>
+      sortSessionEditorDrafts(
+        current.map((session) =>
+          session.sessionId === sessionId ? { ...session, ...patch } : session,
+        ),
+      ),
+    )
+  }
+
+  function handleSessionDraftTypeChange(sessionId: number, nextType: 'REGULAR' | 'BREAK') {
+    setSessionDrafts((current) =>
+      sortSessionEditorDrafts(
+        current.map((session, index) => {
+          if (session.sessionId !== sessionId || !session.editable) {
+            return session
+          }
+
+          if (nextType === 'BREAK') {
+            return {
+              ...session,
+              title: BREAK_TITLE,
+              sessionType: 'BREAK',
+            }
+          }
+
+          return {
+            ...session,
+            title:
+              session.title === BREAK_TITLE
+                ? buildDefaultEditableSessionTitle(index)
+                : session.title,
+            sessionType: 'REGULAR',
+          }
+        }),
+      ),
+    )
+  }
+
+  async function handleSessionEditorSave() {
+    if (!sessionUserId || !activeStudy?.isLeader) {
+      return
+    }
+
+    if (
+      sessionDrafts.some(
+        (session) => session.sessionType === 'REGULAR' && !session.title.trim(),
+      )
+    ) {
+      showToast('吏꾪뻾 ?뚯감 ?쒕ぉ???낅젰?댁＜?몄슂.')
+      return
+    }
+
+    try {
+      setIsSessionSaving(true)
+      await api.updateStudySessions(
+        sessionUserId,
+        activeStudy.studyId,
+        sessionDrafts.map((session) => ({
+          sessionId: session.sessionId,
+          title: session.sessionType === 'BREAK' ? BREAK_TITLE : session.title.trim(),
+          scheduledAt: session.scheduledAt,
+          sessionType: session.sessionType,
+        })),
+      )
+      await reload()
+      setShowSessionEditor(false)
+      setSessionDrafts([])
+      showToast('회차 정보를 수정했어요.')
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : '회차 정보를 수정하지 못했어요.')
+    } finally {
+      setIsSessionSaving(false)
+    }
+  }
+
   async function handleParticipation(sessionId: number, planned: boolean) {
     if (!sessionUserId) {
       return
@@ -403,6 +580,7 @@ export function HomePage() {
       setDraftType('POST')
       setShowComposer(false)
       await reload()
+      await loadStudyPosts(activeStudy.studyId, 1)
       showToast('게시글을 등록했어요.')
     } catch (error) {
       showToast(error instanceof Error ? error.message : '게시글 등록에 실패했어요.')
@@ -429,8 +607,12 @@ export function HomePage() {
     }
   }
 
-  if (isLoading) {
+  if (isDashboardLoading && !dashboard) {
     return <div className="page-surface empty-surface">대시보드를 불러오는 중입니다.</div>
+  }
+
+  if (!dashboard) {
+    return <div className="page-surface empty-surface">대시보드를 불러오지 못했어요.</div>
   }
 
   if (!activeStudy) {
@@ -445,12 +627,12 @@ export function HomePage() {
             <h2>내가 가입한 스터디</h2>
           </div>
 
-          <div className="home-sidebar__tabs">
+          {/* <div className="home-sidebar__tabs">
             <span className="filter-chip is-active">가입중</span>
             <span className="filter-chip">종료됨</span>
-          </div>
+          </div> */}
 
-          <div className="home-sidebar__search">(아이콘) 검색 스터디 검색</div>
+          {/* <div className="home-sidebar__search">(아이콘) 검색 스터디 검색</div> */}
 
           <div className="home-sidebar__list">
             {dashboard?.joinedStudies.map((study) => (
@@ -514,7 +696,14 @@ export function HomePage() {
 
           <div className="home-detail__body">
             <section className="timeline-column">
-              <span className="section-kicker">SESSION TIMELINE</span>
+              <div className="timeline-column__header">
+                <span className="section-kicker">SESSION TIMELINE</span>
+                {activeStudy.isLeader ? (
+                  <button className="soft-button" onClick={openSessionEditor} type="button">
+                    수정
+                  </button>
+                ) : null}
+              </div>
 
               <div className="home-timeline-viewport" ref={timelineViewportRef}>
                 <div className="home-timeline-list">
@@ -539,8 +728,8 @@ export function HomePage() {
                       isBreak
                         ? 'break'
                         : isHighlighted && !activeStudy.isLeader
-                        ? session.planned ? 'planned' : 'missed'
-                        : tone
+                          ? session.planned ? 'planned' : 'missed'
+                          : tone
                     const chipTone = isBreak
                       ? 'break'
                       : activeStudy.isLeader && isHighlighted
@@ -609,16 +798,16 @@ export function HomePage() {
             </section>
 
             <aside className="board-column">
-              {activeStudy.notice ? (
-                <section className="home-notice-card">
-                  <div className="home-card__header">
+              <section className="home-notice-card">
+                <div className="home-card__header">
                     <span className="section-kicker">공지</span>
+                  {activeStudy.notice ? (
                     <span className="home-card__meta">{activeStudy.notice.createdAt}</span>
-                  </div>
-                  <strong>{activeStudy.notice.title}</strong>
-                  <p>{activeStudy.notice.content}</p>
-                </section>
-              ) : null}
+                  ) : null}
+                </div>
+                <strong>{activeStudy.notice?.title ?? '공지 없음'}</strong>
+                <p>{activeStudy.notice?.content ?? '등록된 공지가 없습니다.'}</p>
+              </section>
 
               <section className="home-posts-card">
                 <div className="home-card__header">
@@ -633,52 +822,125 @@ export function HomePage() {
                 </div>
 
                 <div className="home-posts-viewport">
-                  <div className="home-post-list">
-                    {renderedPosts.map((post) => (
-                      <article
-                        className={
-                          post.placeholder ? 'home-post-row is-placeholder' : 'home-post-row'
-                        }
-                        key={String(post.postId)}
-                        onClick={() => {
-                          if (!post.placeholder && typeof post.postId === 'number') {
-                            void openPostModal(post.postId)
+                  {isPostsLoading && !studyPosts.length ? (
+                    <div className="home-posts-empty">아직 게시글이 없어요</div>
+                  ) : pagedPosts.length ? (
+                    <div className="home-post-list">
+                      {pagedPosts.map((post) => (
+                        <article
+                          className={
+                            post.placeholder ? 'home-post-row is-placeholder' : 'home-post-row'
                           }
-                        }}
-                        onKeyDown={(event) => {
-                          if (post.placeholder || typeof post.postId !== 'number') {
-                            return
-                          }
+                          key={String(post.postId)}
+                          onClick={() => {
+                            if (!post.placeholder && typeof post.postId === 'number') {
+                              void openPostModal(post.postId)
+                            }
+                          }}
+                          onKeyDown={(event) => {
+                            if (post.placeholder || typeof post.postId !== 'number') {
+                              return
+                            }
 
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault()
-                            void openPostModal(post.postId)
-                          }
-                        }}
-                        role="button"
-                        tabIndex={post.placeholder ? -1 : 0}
-                      >
-                        <div className="home-post-row__copy">
-                          <strong>{post.title}</strong>
-                          <span>{post.authorNickname}</span>
-                        </div>
-                        <time>{post.createdAt}</time>
-                      </article>
-                    ))}
-                  </div>
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              void openPostModal(post.postId)
+                            }
+                          }}
+                          role="button"
+                          tabIndex={post.placeholder ? -1 : 0}
+                        >
+                          <div className="home-post-row__copy">
+                            <strong>{post.title}</strong>
+                            {post.authorUserId ? (
+                              <ProfileNameButton
+                                className="profile-name-button is-inline"
+                                nickname={post.authorNickname}
+                                userId={post.authorUserId}
+                              />
+                            ) : (
+                              <span>{post.authorNickname}</span>
+                            )}
+                          </div>
+                          <time>{post.createdAt}</time>
+                        </article>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="home-posts-empty">아직 게시글이 없어요</div>
+                  )}
                 </div>
 
                 <div className="home-posts-divider" />
 
                 <div className="pagination-row pagination-row--posts">
                   <div className="pagination-pages">
-                    <button className="pagination-ghost" type="button">
+                    <button
+                      className="pagination-ghost"
+                      disabled={postPage === 1 || !studyPosts.length}
+                      onClick={() => setPostPage((currentPage) => Math.max(1, currentPage - 1))}
+                      type="button"
+                    >
                       이전
                     </button>
-                    <span className="pagination-badge is-active">1</span>
-                    <span className="pagination-badge">2</span>
-                    <span className="pagination-badge">3</span>
-                    <button className="pagination-ghost" type="button">
+
+                    {studyPosts.length ? (
+                      <>
+                        {shouldShowLeadingFirstPage ? (
+                          <button
+                            className="pagination-badge"
+                            onClick={() => setPostPage(1)}
+                            type="button"
+                          >
+                            1
+                          </button>
+                        ) : null}
+
+                        {shouldShowLeadingEllipsis ? (
+                          <span className="pagination-ellipsis" aria-hidden="true">
+                            ...
+                          </span>
+                        ) : null}
+
+                        {visiblePostPages.map((page) => (
+                          <button
+                            aria-current={page === postPage ? 'page' : undefined}
+                            className={page === postPage ? 'pagination-badge is-active' : 'pagination-badge'}
+                            disabled={page === postPage}
+                            key={page}
+                            onClick={() => setPostPage(page)}
+                            type="button"
+                          >
+                            {page}
+                          </button>
+                        ))}
+
+                        {shouldShowTrailingEllipsis ? (
+                          <span className="pagination-ellipsis" aria-hidden="true">
+                            ...
+                          </span>
+                        ) : null}
+
+                        {shouldShowTrailingLastPage ? (
+                          <button
+                            className="pagination-badge"
+                            onClick={() => setPostPage(totalPostPages)}
+                            type="button"
+                          >
+                            {totalPostPages}
+                          </button>
+                        ) : null}
+                      </>
+                    ) : (
+                      <span className="pagination-empty">페이지 없음</span>
+                    )}
+
+                    <button
+                      className="pagination-ghost"
+                      disabled={postPage === totalPostPages || !studyPosts.length}
+                      onClick={() => setPostPage((currentPage) => Math.min(totalPostPages, currentPage + 1))}
+                      type="button"
+                    >
                       다음
                     </button>
                   </div>
@@ -695,6 +957,141 @@ export function HomePage() {
           </div>
         </section>
       </div>
+
+      {showSessionEditor ? (
+        <div
+          className="modal-backdrop"
+          onClick={closeSessionEditor}
+          role="presentation"
+        >
+          <article
+            className="modal-card session-editor-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-card__header">
+              <div>
+                <span className="section-kicker">회차 수정</span>
+                <h2>{activeStudy.title}</h2>
+                <p className="modal-description">
+                  출석이 마감된 완료 회차는 잠금 상태로 보여요.
+                </p>
+              </div>
+              <button
+                className="soft-button"
+                onClick={closeSessionEditor}
+                type="button"
+              >
+                닫기
+              </button>
+            </div>
+
+            <div className="session-builder-actions session-editor-summary">
+              <span className="count-badge">진행 {sessionDraftRegularCount}개</span>
+              {sessionDraftBreakCount ? (
+                <span className="count-badge is-warm">휴차 {sessionDraftBreakCount}개</span>
+              ) : null}
+            </div>
+
+            <div className="session-plan-list session-editor-list">
+              {sessionDrafts.map((session, index) => {
+                const isBreak = session.sessionType === 'BREAK'
+                const cardClassName = [
+                  'session-plan-card',
+                  isBreak ? 'is-break' : '',
+                  !session.editable ? 'is-locked' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+
+                return (
+                  <article className={cardClassName} key={session.sessionId}>
+                    <div className="session-plan-card__header">
+                      <div>
+                        <span className="field-label">{index + 1}회차</span>
+                        {!session.editable ? (
+                          <strong className="session-editor-lock-label">완료 회차</strong>
+                        ) : null}
+                      </div>
+
+                      <div className="filter-chip-row">
+                        <button
+                          className={
+                            !isBreak ? 'filter-chip is-active' : 'filter-chip'
+                          }
+                          disabled={!session.editable}
+                          onClick={() =>
+                            handleSessionDraftTypeChange(session.sessionId, 'REGULAR')
+                          }
+                          type="button"
+                        >
+                          진행
+                        </button>
+                        <button
+                          className={
+                            isBreak ? 'filter-chip is-active warm' : 'filter-chip warm'
+                          }
+                          disabled={!session.editable}
+                          onClick={() =>
+                            handleSessionDraftTypeChange(session.sessionId, 'BREAK')
+                          }
+                          type="button"
+                        >
+                          휴차
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="session-plan-card__body">
+                      <label className="field-block">
+                        <span className="field-label">일시</span>
+                        <input
+                          className="field-control"
+                          disabled={!session.editable}
+                          onChange={(event) =>
+                            updateSessionDraft(session.sessionId, {
+                              scheduledAt: event.target.value,
+                            })
+                          }
+                          type="datetime-local"
+                          value={session.scheduledAt}
+                        />
+                      </label>
+
+                      <label className="field-block">
+                        <span className="field-label">회차 제목</span>
+                        <input
+                          className="field-control"
+                          disabled={!session.editable || isBreak}
+                          onChange={(event) =>
+                            updateSessionDraft(session.sessionId, {
+                              title: event.target.value,
+                            })
+                          }
+                          value={isBreak ? BREAK_TITLE : session.title}
+                        />
+                      </label>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+
+            <div className="session-editor-footer">
+              <button className="soft-button" onClick={closeSessionEditor} type="button">
+                취소
+              </button>
+              <button
+                className="primary-button"
+                disabled={isSessionSaving}
+                onClick={handleSessionEditorSave}
+                type="button"
+              >
+                {isSessionSaving ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          </article>
+        </div>
+      ) : null}
 
       {showOverview ? (
         <div
@@ -737,7 +1134,7 @@ export function HomePage() {
               </div>
               <div className="info-tile">
                 <span>현재 게시글</span>
-                <strong>{activeStudy.posts.length}개</strong>
+                <strong>{studyPosts.length}개</strong>
               </div>
             </div>
           </article>
@@ -760,7 +1157,11 @@ export function HomePage() {
                 <h2>{postDetail?.title ?? selectedPostSummary?.title ?? '게시글'}</h2>
                 {postDetail ? (
                   <div className="post-detail-meta">
-                    <span>{postDetail.authorNickname}</span>
+                    <ProfileNameButton
+                      className="profile-name-button is-inline"
+                      nickname={postDetail.authorNickname}
+                      userId={postDetail.authorUserId}
+                    />
                     <time>{postDetail.createdAt}</time>
                   </div>
                 ) : null}
@@ -780,7 +1181,34 @@ export function HomePage() {
               <div className="post-detail-layout">
                 <section className="post-detail-body">
                   <span className="section-kicker">본문</span>
-                  <p>{postDetail.content}</p>
+                  <div className="post-detail-body__content">
+                    <p>{postDetail.content}</p>
+                  </div>
+                </section>
+
+                <section className="post-comment-composer post-comment-composer-panel">
+                  <div className="post-comments-panel__header">
+                    <span className="section-kicker">댓글 작성</span>
+                  </div>
+
+                  <textarea
+                    className="field-control textarea-field post-comment-textarea"
+                    disabled={isCommentSubmitting}
+                    onChange={(event) => setCommentDraft(event.target.value)}
+                    placeholder="댓글을 입력하세요"
+                    value={commentDraft}
+                  />
+
+                  <div className="post-comment-composer__footer">
+                    <button
+                      className="primary-button"
+                      disabled={isCommentSubmitting || !commentDraft.trim()}
+                      onClick={handleCreateComment}
+                      type="button"
+                    >
+                      댓글 등록
+                    </button>
+                  </div>
                 </section>
 
                 <section className="post-comments-panel">
@@ -794,7 +1222,11 @@ export function HomePage() {
                       postDetail.comments.map((comment) => (
                         <article className="post-comment-row" key={comment.commentId}>
                           <div className="post-comment-row__meta">
-                            <strong>{comment.authorNickname}</strong>
+                            <ProfileNameButton
+                              className="profile-name-button is-inline is-strong"
+                              nickname={comment.authorNickname}
+                              userId={comment.authorUserId}
+                            />
                             <time>{comment.createdAt}</time>
                           </div>
                           <p>{comment.content}</p>
@@ -805,28 +1237,6 @@ export function HomePage() {
                         아직 댓글이 없어요. 첫 댓글을 남겨보세요.
                       </div>
                     )}
-                  </div>
-
-                  <div className="post-comment-composer">
-                    <textarea
-                      className="field-control textarea-field post-comment-textarea"
-                      disabled={isCommentSubmitting}
-                      onChange={(event) => setCommentDraft(event.target.value)}
-                      placeholder="댓글을 입력하세요"
-                      value={commentDraft}
-                    />
-
-                    <div className="post-comment-composer__footer">
-                      <div style={{ flex: 1 }}></div>
-                      <button
-                        className="primary-button"
-                        disabled={isCommentSubmitting || !commentDraft.trim()}
-                        onClick={handleCreateComment}
-                        type="button"
-                      >
-                        댓글 등록
-                      </button>
-                    </div>
                   </div>
                 </section>
               </div>
@@ -922,7 +1332,11 @@ export function HomePage() {
               {(attendancePanel?.roster ?? activeStudy.attendanceRoster).map((member) => (
                 <div className="attendance-row" key={member.userId}>
                   <div className="attendance-row__member">
-                    <strong>{member.nickname}</strong>
+                    <ProfileNameButton
+                      className="profile-name-button is-inline is-strong"
+                      nickname={member.nickname}
+                      userId={member.userId}
+                    />
                   </div>
 
                   <div className="attendance-actions">

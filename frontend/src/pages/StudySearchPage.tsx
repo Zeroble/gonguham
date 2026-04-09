@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { api, type StudyCard, type StudyDetail } from '../app/api'
 import {
   DAY_FILTER_OPTIONS,
@@ -10,13 +11,16 @@ import {
   TIME_FILTER_OPTIONS,
 } from '../app/display'
 import { useApp } from '../app/useApp'
+import { ProfileNameButton } from '../features/profile/ProfileNameButton'
+import { type AppShellOutletContext } from '../layouts/appShellDashboard'
 
 export function StudySearchPage() {
   const { sessionUserId, showToast } = useApp()
+  const { refreshDashboard } = useOutletContext<AppShellOutletContext>()
   const [studies, setStudies] = useState<StudyCard[]>([])
   const [keyword, setKeyword] = useState('')
   const [selectedType, setSelectedType] = useState('')
-  const [selectedDay, setSelectedDay] = useState('')
+  const [selectedDays, setSelectedDays] = useState<string[]>([])
   const [selectedTime, setSelectedTime] = useState('')
   const [selectedPlace, setSelectedPlace] = useState('')
   const [selectedStudy, setSelectedStudy] = useState<StudyDetail | null>(null)
@@ -49,11 +53,11 @@ export function StudySearchPage() {
     () =>
       studies.filter(
         (study) =>
-          matchesDayFilter(study.daysOfWeek, selectedDay) &&
+          matchesDayFilter(study.daysOfWeek, selectedDays) &&
           matchesTimeFilter(study.timeLabel, selectedTime) &&
           matchesPlaceFilter(study.locationLabel, selectedPlace),
       ),
-    [selectedDay, selectedPlace, selectedTime, studies],
+    [selectedDays, selectedPlace, selectedTime, studies],
   )
 
   async function openDetail(studyId: number) {
@@ -78,16 +82,25 @@ export function StudySearchPage() {
       const detail = await api.joinStudy(sessionUserId, studyId)
       setSelectedStudy(detail)
       setStudies(await api.getStudies(sessionUserId, trimmedKeyword, selectedType))
+      await refreshDashboard()
       showToast('스터디에 바로 참여했어요.')
     } catch (error) {
       showToast(error instanceof Error ? error.message : '스터디 참여에 실패했어요.')
     }
   }
 
+  function toggleSelectedDay(day: string) {
+    setSelectedDays((current) =>
+      current.includes(day)
+        ? current.filter((value) => value !== day)
+        : [...current, day],
+    )
+  }
+
   function resetFilters() {
     setKeyword('')
     setSelectedType('')
-    setSelectedDay('')
+    setSelectedDays([])
     setSelectedTime('')
     setSelectedPlace('')
   }
@@ -120,10 +133,12 @@ export function StudySearchPage() {
               {DAY_FILTER_OPTIONS.map((option) => (
                 <button
                   className={
-                    selectedDay === option.value ? 'filter-chip is-active' : 'filter-chip'
+                    selectedDays.includes(option.value)
+                      ? 'filter-chip is-active'
+                      : 'filter-chip'
                   }
                   key={option.value}
-                  onClick={() => setSelectedDay(option.value)}
+                  onClick={() => toggleSelectedDay(option.value)}
                   type="button"
                 >
                   {option.label}
@@ -271,19 +286,21 @@ export function StudySearchPage() {
               </div>
               <div className="info-tile">
                 <span>리더</span>
-                <strong>{selectedStudy.leaderNickname}</strong>
+                <ProfileNameButton
+                  className="profile-name-button is-inline is-strong"
+                  nickname={selectedStudy.leaderNickname}
+                  userId={selectedStudy.leaderUserId}
+                />
               </div>
             </div>
 
             <div className="detail-modal-grid">
               <section className="detail-modal-column">
-                {selectedStudy.notice ? (
-                  <article className="notice-panel">
+                <article className="notice-panel">
                     <span className="section-kicker">공지</span>
-                    <strong>{selectedStudy.notice.title}</strong>
-                    <p>{selectedStudy.notice.content}</p>
-                  </article>
-                ) : null}
+                  <strong>{selectedStudy.notice?.title ?? '공지 없음'}</strong>
+                  <p>{selectedStudy.notice?.content ?? '등록된 공지가 없습니다.'}</p>
+                </article>
 
                 <article className="detail-panel">
                   <span className="section-kicker">회차</span>
@@ -312,7 +329,11 @@ export function StudySearchPage() {
                       <article className="post-row" key={post.postId}>
                         <div>
                           <strong>{post.title}</strong>
-                          <span>{post.authorNickname}</span>
+                          <ProfileNameButton
+                            className="profile-name-button is-inline"
+                            nickname={post.authorNickname}
+                            userId={post.authorUserId}
+                          />
                         </div>
                         <time>{post.createdAt}</time>
                       </article>
