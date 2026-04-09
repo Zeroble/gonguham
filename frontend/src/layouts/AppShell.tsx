@@ -6,6 +6,7 @@ import { AvatarPreview } from '../features/avatar/AvatarPreview'
 import { summaryToRenderState } from '../features/avatar/avatarCatalog'
 import { ProfileModal } from '../features/profile/ProfileModal'
 import { ProfileNameButton } from '../features/profile/ProfileNameButton'
+import gonguhamLogoSmall from '../assets/gonguham/logo-small.png'
 import {
   buildAppShellStudySummary,
   type AppShellOutletContext,
@@ -129,7 +130,11 @@ export function AppShell() {
 
       <header className="top-summary-card">
         <div className="summary-brand">
-          <strong>공구함</strong>
+          <img
+            className="summary-brand__logo"
+            src={gonguhamLogoSmall}
+            alt="공구함"
+          />
           <span>공부 같이할 사람 구함</span>
         </div>
 
