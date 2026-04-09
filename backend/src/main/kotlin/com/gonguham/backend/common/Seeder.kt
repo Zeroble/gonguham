@@ -15,6 +15,7 @@ import com.gonguham.backend.domain.MembershipRole
 import com.gonguham.backend.domain.MembershipStatus
 import com.gonguham.backend.domain.PostType
 import com.gonguham.backend.domain.RepeatType
+import com.gonguham.backend.domain.SessionType
 import com.gonguham.backend.domain.StudyStatus
 import com.gonguham.backend.domain.StudyType
 import com.gonguham.backend.study.Attendance
@@ -83,7 +84,7 @@ class Seeder(
                 nickname = "김민수",
                 email = "member@gonguham.app",
                 totalEarnedChecks = 9,
-                currentChecks = 4,
+                currentChecks = 9,
                 level = levelPolicy.levelFor(9),
                 createdAt = now.minusDays(12),
             ),
@@ -108,14 +109,47 @@ class Seeder(
         val ownedTop = items.first { it.assetKey == "top-06" }
         val defaultBottom = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_BOTTOM_ITEM_KEY }
         val ownedBottom = items.first { it.assetKey == "bottom-04" }
+        val ownedShoes = items.first { it.assetKey == "shoes-02" }
+        val defaultPupil = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_PUPIL_ITEM_KEY }
+        val ownedPupil = items.first { it.assetKey == "pupil-03" }
+        val defaultEyebrow = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_EYEBROW_ITEM_KEY }
+        val ownedEyebrow = items.first { it.assetKey == "eyebrow-02" }
+        val defaultEyelash = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_EYELASH_ITEM_KEY }
+        val ownedEyelash = items.first { it.assetKey == "eyelash-02" }
+        val defaultMouth = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_MOUTH_ITEM_KEY }
+        val ownedMouth = items.first { it.assetKey == "mouth-04" }
 
         userAvatarItemRepository.saveAll(
-            listOf(defaultHair, ownedHair, defaultTop, ownedTop, defaultBottom, ownedBottom).map {
+            listOf(
+                defaultHair,
+                ownedHair,
+                defaultTop,
+                ownedTop,
+                defaultBottom,
+                ownedBottom,
+                ownedShoes,
+                defaultPupil,
+                ownedPupil,
+                defaultEyebrow,
+                ownedEyebrow,
+                defaultEyelash,
+                ownedEyelash,
+                defaultMouth,
+                ownedMouth,
+            ).distinctBy { it.id }.map {
                 UserAvatarItem(userId = leader.id!!, avatarItemId = it.id!!, purchasedAt = now.minusDays(2))
             },
         )
         userAvatarItemRepository.saveAll(
-            listOf(defaultHair, defaultTop, defaultBottom).map {
+            listOf(
+                defaultHair,
+                defaultTop,
+                defaultBottom,
+                defaultPupil,
+                defaultEyebrow,
+                defaultEyelash,
+                defaultMouth,
+            ).map {
                 UserAvatarItem(userId = member.id!!, avatarItemId = it.id!!, purchasedAt = now.minusDays(10))
             },
         )
@@ -131,6 +165,11 @@ class Seeder(
                 equippedHairItemId = ownedHair.id,
                 equippedTopItemId = ownedTop.id,
                 equippedBottomItemId = ownedBottom.id,
+                equippedShoesItemId = ownedShoes.id,
+                equippedPupilItemId = ownedPupil.id,
+                equippedEyebrowItemId = ownedEyebrow.id,
+                equippedEyelashItemId = ownedEyelash.id,
+                equippedMouthItemId = ownedMouth.id,
             ),
         )
         avatarProfileRepository.save(
@@ -144,6 +183,10 @@ class Seeder(
                 equippedHairItemId = defaultHair.id,
                 equippedTopItemId = defaultTop.id,
                 equippedBottomItemId = defaultBottom.id,
+                equippedPupilItemId = defaultPupil.id,
+                equippedEyebrowItemId = defaultEyebrow.id,
+                equippedEyelashItemId = defaultEyelash.id,
+                equippedMouthItemId = defaultMouth.id,
             ),
         )
 
@@ -153,7 +196,7 @@ class Seeder(
                 type = StudyType.TOPIC,
                 title = "자료구조 같이 끝내는 주제 스터디",
                 description = "연결 리스트부터 그래프까지 개념과 문제 풀이를 함께 가져갑니다.",
-                dayOfWeek = DayOfWeek.TUESDAY,
+                daysOfWeek = mutableSetOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY),
                 startTime = LocalTime.of(18, 30),
                 endTime = LocalTime.of(20, 0),
                 startDate = LocalDate.now().minusWeeks(3),
@@ -175,7 +218,7 @@ class Seeder(
                 type = StudyType.MOGAKGONG,
                 title = "도서관 저녁 모각공",
                 description = "각자 할 일을 들고 와서 2시간 집중하고 마지막 10분만 공유해요.",
-                dayOfWeek = DayOfWeek.WEDNESDAY,
+                daysOfWeek = mutableSetOf(DayOfWeek.WEDNESDAY),
                 startTime = LocalTime.of(19, 0),
                 endTime = LocalTime.of(21, 0),
                 startDate = LocalDate.now().minusWeeks(1),
@@ -197,7 +240,7 @@ class Seeder(
                 type = StudyType.FLASH,
                 title = "UX 리서치 짧은 실습반",
                 description = "인터뷰 질문 짜기부터 인사이트 정리까지 빠르게 실습해봅니다.",
-                dayOfWeek = DayOfWeek.FRIDAY,
+                daysOfWeek = mutableSetOf(DayOfWeek.FRIDAY),
                 startTime = LocalTime.of(17, 0),
                 endTime = LocalTime.of(18, 30),
                 startDate = LocalDate.now().plusDays(3),
@@ -240,7 +283,7 @@ class Seeder(
                 StudySession(studyId = topicStudy.id!!, sessionNo = 8, title = "이진 탐색 트리", scheduledAt = now.minusWeeks(2), placeText = topicStudy.locationText),
                 StudySession(studyId = topicStudy.id!!, sessionNo = 9, title = "그래프 BFS/DFS", scheduledAt = now.minusWeeks(1), placeText = topicStudy.locationText),
                 StudySession(studyId = topicStudy.id!!, sessionNo = 10, title = "힙과 우선순위 큐", scheduledAt = now.plusDays(1), placeText = topicStudy.locationText, noticeText = "오늘 스터디는 새천년관 3층 세미나실 B에서 진행해요."),
-                StudySession(studyId = topicStudy.id!!, sessionNo = 11, title = "최단 경로와 MST", scheduledAt = now.plusWeeks(1), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 11, title = "쉬어가는 회차", scheduledAt = now.plusWeeks(1), sessionType = SessionType.BREAK, placeText = topicStudy.locationText),
             ),
         )
         val extraTopicSessions = studySessionRepository.saveAll(
@@ -280,7 +323,7 @@ class Seeder(
         val olderCompletedSession = topicSessions.first { it.sessionNo == 8 }
         val archiveSession = extraTopicSessions.first { it.sessionNo == 6 }
         val missedSession = extraTopicSessions.first { it.sessionNo == 7 }
-        val futurePlannedSession = topicSessions.first { it.sessionNo == 11 }
+        val futurePlannedSession = extraTopicSessions.first { it.sessionNo == 12 }
         val kickoffSession = earlyTopicSessions.first { it.sessionNo == 1 }
         val secondSession = earlyTopicSessions.first { it.sessionNo == 2 }
         val drillSession = earlyTopicSessions.first { it.sessionNo == 3 }
@@ -359,7 +402,7 @@ class Seeder(
             listOf(
                 CheckLedger(userId = leader.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = completedSession.id!!, createdAt = now.minusDays(6)),
                 CheckLedger(userId = member.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = completedSession.id!!, createdAt = now.minusDays(6)),
-                CheckLedger(userId = leader.id!!, changeType = CheckChangeType.SPEND, amount = -2, reason = CheckReason.ITEM_PURCHASE, refType = "ITEM", refId = ownedTop.id!!, createdAt = now.minusDays(2)),
+                CheckLedger(userId = leader.id!!, changeType = CheckChangeType.SPEND, amount = -5, reason = CheckReason.ITEM_PURCHASE, refType = "ITEM", refId = ownedTop.id!!, createdAt = now.minusDays(2)),
             ),
         )
 

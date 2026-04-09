@@ -22,48 +22,57 @@ class AvatarServiceTests @Autowired constructor(
     private val userRepository: UserRepository,
 ) {
     @Test
-    fun `summary and shop include asset keys and free appearance`() {
+    fun `summary and shop include paid face slots and shoes`() {
         val leader = userRepository.findById(1L).orElseThrow()
 
         val summary = avatarService.summary(leader)
         val hairShop = avatarService.shop(leader, AvatarCategory.HAIR.name)
+        val pupilShop = avatarService.shop(leader, AvatarCategory.PUPIL.name)
 
         assertEquals("body-05", summary.appearance.bodyAssetKey)
         assertEquals("pupil-03", summary.appearance.pupilAssetKey)
         assertNotNull(summary.equipped.hair)
+        assertNotNull(summary.equipped.pupil)
+        assertNotNull(summary.equipped.shoes)
         assertTrue(summary.equipped.hair.assetKey.startsWith("hair-"))
+        assertEquals("shoes-02", summary.appearance.shoesAssetKey)
         assertTrue(hairShop.isNotEmpty())
+        assertTrue(pupilShop.isNotEmpty())
         assertTrue(hairShop.all { it.assetKey.startsWith("hair-") })
+        assertTrue(pupilShop.all { it.assetKey.startsWith("pupil-") })
     }
 
     @Test
-    fun `save appearance rejects unowned item`() {
+    fun `save appearance purchases unowned items during save`() {
         val member = userRepository.findById(2L).orElseThrow()
         val current = avatarService.summary(member)
         val lockedTop = avatarItemRepository.findAllByCategoryOrderByPriceChecksAscNameAsc(AvatarCategory.TOP)
             .first { !userAvatarItemRepository.existsByUserIdAndAvatarItemId(member.id!!, it.id!!) }
 
-        val exception = assertFailsWith<ResponseStatusException> {
-            avatarService.saveAppearance(
-                member,
-                SaveAvatarAppearanceRequest(
-                    hairItemId = current.equipped.hair?.itemId,
-                    topItemId = lockedTop.id!!,
-                    bottomItemId = current.equipped.bottom?.itemId,
-                    bodyAssetKey = current.appearance.bodyAssetKey,
-                    pupilAssetKey = current.appearance.pupilAssetKey,
-                    eyebrowAssetKey = current.appearance.eyebrowAssetKey,
-                    eyelashAssetKey = current.appearance.eyelashAssetKey,
-                    mouthAssetKey = current.appearance.mouthAssetKey,
-                ),
-            )
-        }
+        val nextSummary = avatarService.saveAppearance(
+            member,
+            SaveAvatarAppearanceRequest(
+                hairItemId = current.equipped.hair?.itemId,
+                topItemId = lockedTop.id!!,
+                bottomItemId = current.equipped.bottom?.itemId,
+                shoesItemId = current.equipped.shoes?.itemId,
+                pupilItemId = current.equipped.pupil?.itemId,
+                eyebrowItemId = current.equipped.eyebrow?.itemId,
+                eyelashItemId = current.equipped.eyelash?.itemId,
+                mouthItemId = current.equipped.mouth?.itemId,
+                bodyAssetKey = current.appearance.bodyAssetKey,
+            ),
+        )
 
-        assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+        val refreshedMember = userRepository.findById(member.id!!).orElseThrow()
+
+        assertEquals(lockedTop.id, nextSummary.equipped.top?.itemId)
+        assertTrue(userAvatarItemRepository.existsByUserIdAndAvatarItemId(member.id!!, lockedTop.id!!))
+        assertEquals(4, refreshedMember.currentChecks)
     }
 
     @Test
-    fun `save appearance rejects invalid free asset key`() {
+    fun `save appearance rejects invalid skin tone key`() {
         val member = userRepository.findById(2L).orElseThrow()
         val current = avatarService.summary(member)
 
@@ -74,11 +83,41 @@ class AvatarServiceTests @Autowired constructor(
                     hairItemId = current.equipped.hair?.itemId,
                     topItemId = current.equipped.top?.itemId,
                     bottomItemId = current.equipped.bottom?.itemId,
+                    shoesItemId = current.equipped.shoes?.itemId,
+                    pupilItemId = current.equipped.pupil?.itemId,
+                    eyebrowItemId = current.equipped.eyebrow?.itemId,
+                    eyelashItemId = current.equipped.eyelash?.itemId,
+                    mouthItemId = current.equipped.mouth?.itemId,
+                    bodyAssetKey = "body-99",
+                ),
+            )
+        }
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+    }
+
+    @Test
+    fun `save appearance rejects checkout when total price exceeds balance`() {
+        val member = userRepository.findById(2L).orElseThrow()
+        val current = avatarService.summary(member)
+        val lockedTop = avatarItemRepository.findAllByCategoryOrderByPriceChecksAscNameAsc(AvatarCategory.TOP)
+            .first { !userAvatarItemRepository.existsByUserIdAndAvatarItemId(member.id!!, it.id!!) }
+        val lockedBottom = avatarItemRepository.findAllByCategoryOrderByPriceChecksAscNameAsc(AvatarCategory.BOTTOM)
+            .first { !userAvatarItemRepository.existsByUserIdAndAvatarItemId(member.id!!, it.id!!) }
+
+        val exception = assertFailsWith<ResponseStatusException> {
+            avatarService.saveAppearance(
+                member,
+                SaveAvatarAppearanceRequest(
+                    hairItemId = current.equipped.hair?.itemId,
+                    topItemId = lockedTop.id!!,
+                    bottomItemId = lockedBottom.id!!,
+                    shoesItemId = current.equipped.shoes?.itemId,
+                    pupilItemId = current.equipped.pupil?.itemId,
+                    eyebrowItemId = current.equipped.eyebrow?.itemId,
+                    eyelashItemId = current.equipped.eyelash?.itemId,
+                    mouthItemId = current.equipped.mouth?.itemId,
                     bodyAssetKey = current.appearance.bodyAssetKey,
-                    pupilAssetKey = "pupil-99",
-                    eyebrowAssetKey = current.appearance.eyebrowAssetKey,
-                    eyelashAssetKey = current.appearance.eyelashAssetKey,
-                    mouthAssetKey = current.appearance.mouthAssetKey,
                 ),
             )
         }
@@ -99,7 +138,7 @@ class AvatarServiceTests @Autowired constructor(
         avatarService.purchase(afterFirstPurchase, item.id!!)
         val afterSecondPurchase = userRepository.findById(member.id!!).orElseThrow()
 
-        assertEquals(initialChecks - item.priceChecks, afterFirstPurchase.currentChecks)
+        assertEquals(initialChecks - 5, afterFirstPurchase.currentChecks)
         assertEquals(afterFirstPurchase.currentChecks, afterSecondPurchase.currentChecks)
         assertEquals(
             1,

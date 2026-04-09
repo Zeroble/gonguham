@@ -28,6 +28,7 @@ object AvatarAssetCatalog {
     val eyebrowAssetKeys = (1..5).map { "eyebrow-${it.toAssetNo()}" }.toSet()
     val eyelashAssetKeys = (1..5).map { "eyelash-${it.toAssetNo()}" }.toSet()
     val mouthAssetKeys = (1..20).map { "mouth-${it.toAssetNo()}" }.toSet()
+    val shoesAssetKeys = (1..4).map { "shoes-${it.toAssetNo()}" }.toSet()
 
     const val DEFAULT_BODY_ASSET_KEY = "body-01"
     const val DEFAULT_PUPIL_ASSET_KEY = "pupil-01"
@@ -35,8 +36,13 @@ object AvatarAssetCatalog {
     const val DEFAULT_EYELASH_ASSET_KEY = "eyelash-01"
     const val DEFAULT_MOUTH_ASSET_KEY = "mouth-01"
     const val DEFAULT_HAIR_ITEM_KEY = "hair-01-f"
-    const val DEFAULT_TOP_ITEM_KEY = "top-01"
-    const val DEFAULT_BOTTOM_ITEM_KEY = "bottom-01"
+    const val DEFAULT_TOP_ITEM_KEY = "top-06"
+    const val DEFAULT_BOTTOM_ITEM_KEY = "bottom-04"
+    val DEFAULT_SHOES_ITEM_KEY: String? = null
+    const val DEFAULT_PUPIL_ITEM_KEY = DEFAULT_PUPIL_ASSET_KEY
+    const val DEFAULT_EYEBROW_ITEM_KEY = DEFAULT_EYEBROW_ASSET_KEY
+    const val DEFAULT_EYELASH_ITEM_KEY = DEFAULT_EYELASH_ASSET_KEY
+    const val DEFAULT_MOUTH_ITEM_KEY = DEFAULT_MOUTH_ASSET_KEY
 
     fun defaultAppearance() = AvatarFreeAppearance(
         bodyAssetKey = DEFAULT_BODY_ASSET_KEY,
@@ -48,36 +54,17 @@ object AvatarAssetCatalog {
 
     fun isValidBodyAssetKey(assetKey: String) = bodyAssetKeys.contains(assetKey)
 
-    fun isValidPupilAssetKey(assetKey: String) = pupilAssetKeys.contains(assetKey)
-
-    fun isValidEyebrowAssetKey(assetKey: String) = eyebrowAssetKeys.contains(assetKey)
-
-    fun isValidEyelashAssetKey(assetKey: String) = eyelashAssetKeys.contains(assetKey)
-
-    fun isValidMouthAssetKey(assetKey: String) = mouthAssetKeys.contains(assetKey)
-
     fun buildSeedItems(): List<AvatarItem> = buildList {
         for (styleNo in 1..12) {
             val assetNo = styleNo.toAssetNo()
-            val priceChecks = when (styleNo) {
-                in 1..4 -> 1
-                in 5..8 -> 2
-                else -> 3
-            }
-            val rarity = when (styleNo) {
-                in 1..4 -> AvatarRarity.BASIC
-                in 5..8 -> AvatarRarity.POINT
-                else -> AvatarRarity.SIGNATURE
-            }
 
             for (colorSpec in hairColorSpecs) {
                 add(
                     AvatarItem(
                         category = AvatarCategory.HAIR,
                         name = "헤어 프리셋 $assetNo · ${colorSpec.label}",
-                        description = "앞머리, 옆머리, 뒷머리가 함께 구성된 헤어 프리셋",
-                        priceChecks = priceChecks,
-                        rarity = rarity,
+                        priceChecks = 5,
+                        rarity = AvatarRarity.BASIC,
                         assetKey = "hair-$assetNo-${colorSpec.code}",
                         isDefault = assetNo == "01" && colorSpec.code == "f",
                     ),
@@ -85,51 +72,31 @@ object AvatarAssetCatalog {
             }
         }
 
-        for (index in 1..12) {
-            val assetNo = index.toAssetNo()
-            add(
-                AvatarItem(
-                    category = AvatarCategory.TOP,
-                    name = "상의 $assetNo",
-                    description = "치비 캐릭터용 상의 $assetNo",
-                    priceChecks = when (index) {
-                        in 1..4 -> 1
-                        in 5..8 -> 2
-                        else -> 3
-                    },
-                    rarity = when (index) {
-                        in 1..4 -> AvatarRarity.BASIC
-                        in 5..8 -> AvatarRarity.POINT
-                        else -> AvatarRarity.SIGNATURE
-                    },
-                    assetKey = "top-$assetNo",
-                    isDefault = assetNo == "01",
-                ),
-            )
-        }
+        addAll(buildSimpleItems(AvatarCategory.TOP, "top", 12, "상의", defaultAssetNo = "06"))
+        addAll(buildSimpleItems(AvatarCategory.BOTTOM, "bottom", 8, "하의", defaultAssetNo = "04"))
+        addAll(buildSimpleItems(AvatarCategory.SHOES, "shoes", 4, "신발"))
+        addAll(buildSimpleItems(AvatarCategory.PUPIL, "pupil", 16, "눈", defaultAssetNo = "01"))
+        addAll(buildSimpleItems(AvatarCategory.EYEBROW, "eyebrow", 5, "눈썹", defaultAssetNo = "01"))
+        addAll(buildSimpleItems(AvatarCategory.EYELASH, "eyelash", 5, "속눈썹", defaultAssetNo = "01"))
+        addAll(buildSimpleItems(AvatarCategory.MOUTH, "mouth", 20, "입", defaultAssetNo = "01"))
+    }
 
-        for (index in 1..8) {
-            val assetNo = index.toAssetNo()
-            add(
-                AvatarItem(
-                    category = AvatarCategory.BOTTOM,
-                    name = "하의 $assetNo",
-                    description = "치비 캐릭터용 하의 $assetNo",
-                    priceChecks = when (index) {
-                        in 1..3 -> 1
-                        in 4..6 -> 2
-                        else -> 3
-                    },
-                    rarity = when (index) {
-                        in 1..3 -> AvatarRarity.BASIC
-                        in 4..6 -> AvatarRarity.POINT
-                        else -> AvatarRarity.SIGNATURE
-                    },
-                    assetKey = "bottom-$assetNo",
-                    isDefault = assetNo == "01",
-                ),
-            )
-        }
+    private fun buildSimpleItems(
+        category: AvatarCategory,
+        assetPrefix: String,
+        count: Int,
+        label: String,
+        defaultAssetNo: String? = null,
+    ): List<AvatarItem> = (1..count).map { index ->
+        val assetNo = index.toAssetNo()
+        AvatarItem(
+            category = category,
+            name = "$label $assetNo",
+            priceChecks = 5,
+            rarity = AvatarRarity.BASIC,
+            assetKey = "$assetPrefix-$assetNo",
+            isDefault = defaultAssetNo != null && assetNo == defaultAssetNo,
+        )
     }
 
     private fun Int.toAssetNo(): String = toString().padStart(2, '0')

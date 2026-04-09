@@ -3,6 +3,7 @@
 import com.gonguham.backend.domain.MembershipRole
 import com.gonguham.backend.domain.MembershipStatus
 import com.gonguham.backend.domain.PostType
+import com.gonguham.backend.domain.SessionType
 import com.gonguham.backend.study.AttendanceRepository
 import com.gonguham.backend.study.PostRepository
 import com.gonguham.backend.study.SessionParticipationRepository
@@ -34,14 +35,17 @@ class DashboardService(
         val membershipsByStudyId = memberships.associateBy { it.studyId }
         val studies = studyRepository.findAllById(memberships.map { it.studyId }).sortedBy { it.createdAt }
         val today = LocalDate.now()
-        val sessions = studies.flatMap { study -> studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(study.id!!) }
+        val sessions = studies.flatMap { study ->
+            studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(study.id!!)
+                .filter { it.sessionType == SessionType.REGULAR }
+        }
 
         val joinedStudies = studies.map { study ->
             JoinedStudyCard(
                 studyId = study.id!!,
                 typeLabel = typeLabel(study.type.name),
                 title = study.title,
-                timeLabel = "${dayLabel(study.dayOfWeek.name)} ${study.startTime}",
+                timeLabel = "${dayLabel(study.daysOfWeek)} ${study.startTime}",
                 locationLabel = study.locationText,
             )
         }
@@ -77,19 +81,24 @@ class DashboardService(
         else -> "반짝"
     }
 
-    private fun dayLabel(raw: String): String = when (raw) {
-        "MONDAY" -> "월"
-        "TUESDAY" -> "화"
-        "WEDNESDAY" -> "수"
-        "THURSDAY" -> "목"
-        "FRIDAY" -> "금"
-        "SATURDAY" -> "토"
-        else -> "일"
-    }
+    private fun dayLabel(days: Collection<java.time.DayOfWeek>): String =
+        days.sortedBy { it.value }.joinToString("·") { day ->
+            when (day.name) {
+                "MONDAY" -> "월"
+                "TUESDAY" -> "화"
+                "WEDNESDAY" -> "수"
+                "THURSDAY" -> "목"
+                "FRIDAY" -> "금"
+                "SATURDAY" -> "토"
+                else -> "일"
+            }
+        }
 
     private fun resolveCurrentSession(
         sessions: List<com.gonguham.backend.study.StudySession>,
-    ) = sessions.firstOrNull { it.attendanceClosedAt == null }
+    ) = sessions.firstOrNull {
+        it.sessionType == SessionType.REGULAR && it.attendanceClosedAt == null
+    }
 
     private fun buildStudyPanel(
         user: User,
@@ -115,13 +124,26 @@ class DashboardService(
             attendanceSessionId = currentSessionId,
             attendanceSessionLabel = currentSession?.let { "${it.sessionNo}회차 ${it.title}" },
             sessions = orderedSessions.map { session ->
-                val attendance = attendanceRepository.findBySessionIdAndUserId(session.id!!, user.id!!)
-                val participation = sessionParticipationRepository.findBySessionIdAndUserId(session.id!!, user.id!!)
-                val planned = participation?.planned == true
+                val attendance = if (session.sessionType == SessionType.BREAK) {
+                    null
+                } else {
+                    attendanceRepository.findBySessionIdAndUserId(session.id!!, user.id!!)
+                }
+                val participation = if (session.sessionType == SessionType.BREAK) {
+                    null
+                } else {
+                    sessionParticipationRepository.findBySessionIdAndUserId(session.id!!, user.id!!)
+                }
+                val planned = if (session.sessionType == SessionType.BREAK) {
+                    false
+                } else {
+                    participation?.planned == true
+                }
                 val isCurrent = session.id == currentSessionId
                 val isClosed = session.attendanceClosedAt != null
-                val isFuture = !isCurrent && !isClosed
+                val isFuture = !isCurrent && !isClosed && session.sessionType == SessionType.REGULAR
                 val nodeState = when {
+                    session.sessionType == SessionType.BREAK -> "BREAK"
                     isCurrent -> "CURRENT"
                     isFuture -> "FUTURE"
                     attendance?.status?.name == "PRESENT" -> "ATTENDED"
@@ -134,6 +156,7 @@ class DashboardService(
                     nodeState = nodeState,
                     scheduledAt = session.scheduledAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
                     planned = planned,
+                    sessionType = session.sessionType.name,
                 )
             },
             notice = notice?.let {

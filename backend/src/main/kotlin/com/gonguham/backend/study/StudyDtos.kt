@@ -1,5 +1,6 @@
 package com.gonguham.backend.study
 
+import com.gonguham.backend.domain.SessionType
 import com.gonguham.backend.domain.LocationType
 import com.gonguham.backend.domain.PostType
 import com.gonguham.backend.domain.StudyType
@@ -9,6 +10,7 @@ data class StudyCardResponse(
     val type: String,
     val title: String,
     val description: String,
+    val daysOfWeek: List<String>,
     val dayLabel: String,
     val timeLabel: String,
     val locationLabel: String,
@@ -23,6 +25,7 @@ data class StudyDetailResponse(
     val title: String,
     val description: String,
     val leaderNickname: String,
+    val daysOfWeek: List<String>,
     val dayLabel: String,
     val timeLabel: String,
     val locationLabel: String,
@@ -42,6 +45,7 @@ data class StudyDetailSession(
     val sessionNo: Int,
     val title: String,
     val scheduledAt: String,
+    val sessionType: String,
 )
 
 data class StudyFeedResponse(
@@ -53,11 +57,28 @@ data class StudyFeedResponse(
     val createdAt: String,
 )
 
+data class PostDetailResponse(
+    val postId: Long,
+    val type: String,
+    val title: String,
+    val content: String,
+    val authorNickname: String,
+    val createdAt: String,
+    val comments: List<PostCommentResponse>,
+)
+
+data class PostCommentResponse(
+    val commentId: Long,
+    val authorNickname: String,
+    val content: String,
+    val createdAt: String,
+)
+
 data class CreateStudyRequest(
     val type: StudyType,
     val title: String,
     val description: String,
-    val dayOfWeek: String,
+    val daysOfWeek: List<String>,
     val startTime: String,
     val endTime: String,
     val startDate: String,
@@ -69,7 +90,14 @@ data class CreateStudyRequest(
     val suppliesText: String,
     val cautionText: String,
     val tags: List<String>,
-    val sessions: List<String>,
+    val sessions: List<CreateStudySessionRequest>,
+)
+
+data class CreateStudySessionRequest(
+    val title: String,
+    val scheduledAt: String,
+    val sessionType: SessionType,
+    val placeText: String? = null,
 )
 
 data class UpdateParticipationRequest(
@@ -111,5 +139,9 @@ data class DashboardParticipationResult(
 data class CreatePostRequest(
     val type: PostType,
     val title: String,
+    val content: String,
+)
+
+data class CreateCommentRequest(
     val content: String,
 )

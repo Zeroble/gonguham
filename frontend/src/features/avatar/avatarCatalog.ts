@@ -1,5 +1,4 @@
 import type {
-  AvatarAppearance,
   AvatarShopItem,
   AvatarSlot,
   AvatarSummary,
@@ -17,18 +16,32 @@ const assetModules = {
   ...import.meta.glob('../../../assets/bangs/COLOR/*.png', { eager: true, import: 'default' }),
   ...import.meta.glob('../../../assets/top/colors/*.png', { eager: true, import: 'default' }),
   ...import.meta.glob('../../../assets/bottom/color/*.png', { eager: true, import: 'default' }),
+  ...import.meta.glob('../../../assets/shoes/*.png', { eager: true, import: 'default' }),
+  ...import.meta.glob('../../../assets/shoes/COLOR/*.png', { eager: true, import: 'default' }),
 } as Record<string, string>
 
-export type AvatarDraft = AvatarAppearance & {
+export type AvatarDraft = {
+  bodyAssetKey: string
   hair: AvatarSlot | null
   top: AvatarSlot | null
   bottom: AvatarSlot | null
+  shoes: AvatarSlot | null
+  pupil: AvatarSlot | null
+  eyebrow: AvatarSlot | null
+  eyelash: AvatarSlot | null
+  mouth: AvatarSlot | null
 }
 
-export type AvatarRenderState = AvatarAppearance & {
+export type AvatarRenderState = {
+  bodyAssetKey: string
+  pupilAssetKey: string
+  eyebrowAssetKey: string
+  eyelashAssetKey: string
+  mouthAssetKey: string
   hairAssetKey: string | null
   topAssetKey: string | null
   bottomAssetKey: string | null
+  shoesAssetKey: string | null
 }
 
 type AssetOption = {
@@ -36,26 +49,29 @@ type AssetOption = {
   label: string
 }
 
-export const DEFAULT_AVATAR_APPEARANCE: AvatarAppearance = {
-  bodyAssetKey: 'body-01',
-  pupilAssetKey: 'pupil-01',
-  eyebrowAssetKey: 'eyebrow-01',
-  eyelashAssetKey: 'eyelash-01',
-  mouthAssetKey: 'mouth-01',
-}
+const DEFAULT_BODY_ASSET_KEY = 'body-01'
+const DEFAULT_PUPIL_ASSET_KEY = 'pupil-01'
+const DEFAULT_EYEBROW_ASSET_KEY = 'eyebrow-01'
+const DEFAULT_EYELASH_ASSET_KEY = 'eyelash-01'
+const DEFAULT_MOUTH_ASSET_KEY = 'mouth-01'
+const DEFAULT_HAIR_ITEM_ASSET_KEY = 'hair-01-f'
+const DEFAULT_TOP_ITEM_ASSET_KEY = 'top-06'
+const DEFAULT_BOTTOM_ITEM_ASSET_KEY = 'bottom-04'
+const DEFAULT_SHOES_ITEM_ASSET_KEY: string | null = null
 
 export const BODY_OPTIONS = createNumberedOptions('body', 29, '톤')
-export const PUPIL_OPTIONS = createNumberedOptions('pupil', 16, '눈')
-export const EYEBROW_OPTIONS = createNumberedOptions('eyebrow', 5, '눈썹')
-export const EYELASH_OPTIONS = createNumberedOptions('eyelash', 5, '속눈썹')
-export const MOUTH_OPTIONS = createNumberedOptions('mouth', 20, '입')
 
 export function createDefaultDraft(): AvatarDraft {
   return {
-    ...DEFAULT_AVATAR_APPEARANCE,
+    bodyAssetKey: DEFAULT_BODY_ASSET_KEY,
     hair: null,
     top: null,
     bottom: null,
+    shoes: null,
+    pupil: null,
+    eyebrow: null,
+    eyelash: null,
+    mouth: null,
   }
 }
 
@@ -65,10 +81,15 @@ export function summaryToDraft(summary: AvatarSummary | null): AvatarDraft {
   }
 
   return {
-    ...summary.appearance,
+    bodyAssetKey: summary.appearance.bodyAssetKey,
     hair: summary.equipped.hair,
     top: summary.equipped.top,
     bottom: summary.equipped.bottom,
+    shoes: summary.equipped.shoes,
+    pupil: summary.equipped.pupil,
+    eyebrow: summary.equipped.eyebrow,
+    eyelash: summary.equipped.eyelash,
+    mouth: summary.equipped.mouth,
   }
 }
 
@@ -79,13 +100,14 @@ export function summaryToRenderState(summary: AvatarSummary | null): AvatarRende
 export function draftToRenderState(draft: AvatarDraft): AvatarRenderState {
   return {
     bodyAssetKey: draft.bodyAssetKey,
-    pupilAssetKey: draft.pupilAssetKey,
-    eyebrowAssetKey: draft.eyebrowAssetKey,
-    eyelashAssetKey: draft.eyelashAssetKey,
-    mouthAssetKey: draft.mouthAssetKey,
-    hairAssetKey: draft.hair?.assetKey ?? null,
-    topAssetKey: draft.top?.assetKey ?? null,
-    bottomAssetKey: draft.bottom?.assetKey ?? null,
+    pupilAssetKey: draft.pupil?.assetKey ?? DEFAULT_PUPIL_ASSET_KEY,
+    eyebrowAssetKey: draft.eyebrow?.assetKey ?? DEFAULT_EYEBROW_ASSET_KEY,
+    eyelashAssetKey: draft.eyelash?.assetKey ?? DEFAULT_EYELASH_ASSET_KEY,
+    mouthAssetKey: draft.mouth?.assetKey ?? DEFAULT_MOUTH_ASSET_KEY,
+    hairAssetKey: draft.hair?.assetKey ?? DEFAULT_HAIR_ITEM_ASSET_KEY,
+    topAssetKey: draft.top?.assetKey ?? DEFAULT_TOP_ITEM_ASSET_KEY,
+    bottomAssetKey: draft.bottom?.assetKey ?? DEFAULT_BOTTOM_ITEM_ASSET_KEY,
+    shoesAssetKey: draft.shoes?.assetKey ?? DEFAULT_SHOES_ITEM_ASSET_KEY,
   }
 }
 
@@ -94,24 +116,26 @@ export function draftToAppearanceRequest(draft: AvatarDraft): SaveAvatarAppearan
     hairItemId: draft.hair?.itemId ?? null,
     topItemId: draft.top?.itemId ?? null,
     bottomItemId: draft.bottom?.itemId ?? null,
+    shoesItemId: draft.shoes?.itemId ?? null,
+    pupilItemId: draft.pupil?.itemId ?? null,
+    eyebrowItemId: draft.eyebrow?.itemId ?? null,
+    eyelashItemId: draft.eyelash?.itemId ?? null,
+    mouthItemId: draft.mouth?.itemId ?? null,
     bodyAssetKey: draft.bodyAssetKey,
-    pupilAssetKey: draft.pupilAssetKey,
-    eyebrowAssetKey: draft.eyebrowAssetKey,
-    eyelashAssetKey: draft.eyelashAssetKey,
-    mouthAssetKey: draft.mouthAssetKey,
   }
 }
 
 export function isSameDraft(left: AvatarDraft, right: AvatarDraft) {
   return (
     left.bodyAssetKey === right.bodyAssetKey &&
-    left.pupilAssetKey === right.pupilAssetKey &&
-    left.eyebrowAssetKey === right.eyebrowAssetKey &&
-    left.eyelashAssetKey === right.eyelashAssetKey &&
-    left.mouthAssetKey === right.mouthAssetKey &&
     left.hair?.itemId === right.hair?.itemId &&
     left.top?.itemId === right.top?.itemId &&
-    left.bottom?.itemId === right.bottom?.itemId
+    left.bottom?.itemId === right.bottom?.itemId &&
+    left.shoes?.itemId === right.shoes?.itemId &&
+    left.pupil?.itemId === right.pupil?.itemId &&
+    left.eyebrow?.itemId === right.eyebrow?.itemId &&
+    left.eyelash?.itemId === right.eyelash?.itemId &&
+    left.mouth?.itemId === right.mouth?.itemId
   )
 }
 
@@ -129,30 +153,61 @@ export function applyShopItemToDraft(draft: AvatarDraft, item: AvatarShopItem): 
       return { ...draft, top: slot }
     case 'BOTTOM':
       return { ...draft, bottom: slot }
+    case 'SHOES':
+      return { ...draft, shoes: slot }
+    case 'PUPIL':
+      return { ...draft, pupil: slot }
+    case 'EYEBROW':
+      return { ...draft, eyebrow: slot }
+    case 'EYELASH':
+      return { ...draft, eyelash: slot }
+    case 'MOUTH':
+      return { ...draft, mouth: slot }
     default:
       return draft
   }
 }
 
 export function buildItemPreviewState(draft: AvatarDraft, item: AvatarShopItem): AvatarRenderState {
-  const current = draftToRenderState(draft)
+  return draftToRenderState(applyShopItemToDraft(draft, item))
+}
 
-  switch (item.category) {
+export function buildBodyPreviewState(draft: AvatarDraft, bodyAssetKey: string): AvatarRenderState {
+  return draftToRenderState({
+    ...draft,
+    bodyAssetKey,
+  })
+}
+
+export function getSelectedItemId(draft: AvatarDraft, category: string) {
+  switch (category) {
     case 'HAIR':
-      return { ...current, hairAssetKey: item.assetKey }
+      return draft.hair?.itemId ?? null
     case 'TOP':
-      return { ...current, topAssetKey: item.assetKey }
+      return draft.top?.itemId ?? null
     case 'BOTTOM':
-      return { ...current, bottomAssetKey: item.assetKey }
+      return draft.bottom?.itemId ?? null
+    case 'SHOES':
+      return draft.shoes?.itemId ?? null
+    case 'PUPIL':
+      return draft.pupil?.itemId ?? null
+    case 'EYEBROW':
+      return draft.eyebrow?.itemId ?? null
+    case 'EYELASH':
+      return draft.eyelash?.itemId ?? null
+    case 'MOUTH':
+      return draft.mouth?.itemId ?? null
     default:
-      return current
+      return null
   }
 }
 
-export function getAvatarLayers(state: AvatarRenderState) {
-  return [
+export function getAvatarLayers(state: AvatarRenderState, scope: 'full' | 'face' = 'full') {
+  const layers = [
     createLayer('hair-back', state.hairAssetKey ? resolveHairAsset(state.hairAssetKey, 'back') : null),
     createLayer('body', resolveBodyAsset(state.bodyAssetKey)),
+    createLayer('shoes-color', state.shoesAssetKey ? resolveShoesAsset(state.shoesAssetKey, 'color') : null),
+    createLayer('shoes-base', state.shoesAssetKey ? resolveShoesAsset(state.shoesAssetKey, 'base') : null),
     createLayer('bottom', state.bottomAssetKey ? resolveBottomAsset(state.bottomAssetKey) : null),
     createLayer('top', state.topAssetKey ? resolveTopAsset(state.topAssetKey) : null),
     createLayer('pupil', resolvePupilAsset(state.pupilAssetKey)),
@@ -162,6 +217,13 @@ export function getAvatarLayers(state: AvatarRenderState) {
     createLayer('hair-front', state.hairAssetKey ? resolveHairAsset(state.hairAssetKey, 'front') : null),
     createLayer('bangs', state.hairAssetKey ? resolveHairAsset(state.hairAssetKey, 'bangs') : null),
   ].filter((layer): layer is { id: string; src: string } => layer !== null)
+
+  if (scope === 'face') {
+    const hiddenLayerIds = new Set(['shoes-color', 'shoes-base', 'bottom', 'top'])
+    return layers.filter((layer) => !hiddenLayerIds.has(layer.id))
+  }
+
+  return layers
 }
 
 function createLayer(id: string, src: string | null) {
@@ -201,6 +263,15 @@ function resolveTopAsset(assetKey: string) {
 function resolveBottomAsset(assetKey: string) {
   const assetNo = parseSimpleAssetKey(assetKey, 'bottom')
   return resolveAsset(`bottom/color/${Number(assetNo)}.png`)
+}
+
+function resolveShoesAsset(assetKey: string, part: 'base' | 'color') {
+  const assetNo = parseSimpleAssetKey(assetKey, 'shoes')
+  if (part === 'base') {
+    return resolveAsset(`shoes/${Number(assetNo)}.png`)
+  }
+
+  return resolveAsset(`shoes/COLOR/${Number(assetNo)}.png`)
 }
 
 function resolveHairAsset(assetKey: string, part: 'back' | 'front' | 'bangs') {

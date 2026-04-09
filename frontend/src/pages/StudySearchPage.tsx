@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { api, type StudyCard, type StudyDetail } from '../app/api'
 import {
   DAY_FILTER_OPTIONS,
-  PLACE_FILTER_OPTIONS,
-  STUDY_TYPE_OPTIONS,
-  TIME_FILTER_OPTIONS,
   matchesDayFilter,
   matchesPlaceFilter,
   matchesTimeFilter,
+  PLACE_FILTER_OPTIONS,
+  STUDY_TYPE_OPTIONS,
+  TIME_FILTER_OPTIONS,
 } from '../app/display'
 import { useApp } from '../app/useApp'
 
@@ -49,7 +49,7 @@ export function StudySearchPage() {
     () =>
       studies.filter(
         (study) =>
-          matchesDayFilter(study.dayLabel, selectedDay) &&
+          matchesDayFilter(study.daysOfWeek, selectedDay) &&
           matchesTimeFilter(study.timeLabel, selectedTime) &&
           matchesPlaceFilter(study.locationLabel, selectedPlace),
       ),
@@ -175,7 +175,7 @@ export function StudySearchPage() {
           <input
             className="field-control search-field"
             onChange={(event) => setKeyword(event.target.value)}
-            placeholder="검색: 자료구조 / 모각공 / 토요일"
+            placeholder="검색어를 입력해주세요"
             value={keyword}
           />
         </div>
@@ -289,7 +289,14 @@ export function StudySearchPage() {
                   <span className="section-kicker">회차</span>
                   <div className="session-preview-list">
                     {selectedStudy.sessions.map((session) => (
-                      <div className="session-preview-item" key={session.sessionId}>
+                      <div
+                        className={
+                          session.sessionType === 'BREAK'
+                            ? 'session-preview-item is-break'
+                            : 'session-preview-item'
+                        }
+                        key={session.sessionId}
+                      >
                         <span>{session.sessionNo}회차</span>
                         <strong>{session.title}</strong>
                         <span>{session.scheduledAt}</span>
@@ -324,7 +331,7 @@ export function StudySearchPage() {
                   <p>{selectedStudy.rulesText}</p>
                 </article>
                 <article className="detail-panel">
-                  <span className="section-kicker">유의사항</span>
+                  <span className="section-kicker">주의사항</span>
                   <p>{selectedStudy.cautionText}</p>
                 </article>
                 <article className="detail-panel">

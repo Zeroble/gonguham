@@ -85,4 +85,19 @@ class StudyController(
         @RequestBody body: CreatePostRequest,
     ): StudyFeedResponse =
         studyService.createPost(currentUserService.currentUser(request), studyId, body)
+
+    @GetMapping("/posts/{postId}")
+    fun postDetail(
+        request: HttpServletRequest,
+        @PathVariable postId: Long,
+    ): PostDetailResponse =
+        studyService.postDetail(currentUserService.currentUser(request), postId)
+
+    @PostMapping("/posts/{postId}/comments")
+    fun createComment(
+        request: HttpServletRequest,
+        @PathVariable postId: Long,
+        @RequestBody body: CreateCommentRequest,
+    ): PostCommentResponse =
+        studyService.createComment(currentUserService.currentUser(request), postId, body)
 }

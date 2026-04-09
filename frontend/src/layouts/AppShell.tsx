@@ -1,4 +1,4 @@
-import { NavLink, Navigate, Outlet } from 'react-router-dom'
+import { NavLink, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { useApp } from '../app/useApp'
 import { AvatarPreview } from '../features/avatar/AvatarPreview'
 import { summaryToRenderState } from '../features/avatar/avatarCatalog'
@@ -12,6 +12,8 @@ const tabs = [
 
 export function AppShell() {
   const { avatarSummary, isBooting, me, logout, toast } = useApp()
+  const location = useLocation()
+  const isHomeRoute = location.pathname === '/app/home'
 
   if (isBooting) {
     return <div className="fullscreen-message">공구함을 불러오는 중입니다.</div>
@@ -22,7 +24,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={isHomeRoute ? 'app-shell is-home-route' : 'app-shell'}>
       {toast ? (
         <div className="app-toast-region" aria-atomic="true" aria-live="polite">
           <div className="app-toast" key={toast.id} role="status">
@@ -58,23 +60,11 @@ export function AppShell() {
 
         <div className="summary-side">
           <div className="summary-character-slot" aria-hidden="true">
-            {avatarSummary ? (
-              <AvatarPreview
-                className="summary-character-slot__preview"
-                size="summary"
-                state={summaryToRenderState(avatarSummary)}
-              />
-            ) : (
-              <div className="summary-character-slot__placeholder">
-                <span>
-                  커스터마이징
-                  <br />
-                  캐릭터가
-                  <br />
-                  여기 표시됨
-                </span>
-              </div>
-            )}
+            <AvatarPreview
+              className="summary-character-slot__preview"
+              size="profile"
+              state={summaryToRenderState(avatarSummary)}
+            />
           </div>
 
           <div className="summary-profile">
@@ -89,7 +79,7 @@ export function AppShell() {
         </div>
       </header>
 
-      <main className="page-body">
+      <main className={isHomeRoute ? 'page-body is-home-route' : 'page-body'}>
         <Outlet />
       </main>
     </div>

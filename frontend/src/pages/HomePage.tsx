@@ -1,6 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { api, type AttendanceRosterEntry, type DashboardResponse, type SessionAttendancePanel } from '../app/api'
+import {
+  api,
+  type AttendanceRosterEntry,
+  type DashboardResponse,
+  type PostDetail,
+  type SessionAttendancePanel,
+} from '../app/api'
 import { useApp } from '../app/useApp'
 
 type RenderedTimelineItem = {
@@ -10,6 +16,7 @@ type RenderedTimelineItem = {
   nodeState: string
   scheduledAt: string
   planned: boolean
+  sessionType: string
   placeholder?: boolean
 }
 
@@ -22,6 +29,7 @@ type RenderedPostItem = {
 }
 
 function getTimelineToneByState(nodeState: string) {
+  if (nodeState === 'BREAK') return 'break'
   if (nodeState === 'CURRENT') return 'planned'
   if (nodeState === 'ATTENDED') return 'done'
   if (nodeState === 'ABSENT') return 'missed'
@@ -30,6 +38,7 @@ function getTimelineToneByState(nodeState: string) {
 }
 
 function getTimelineNodeClass(nodeState: string) {
+  if (nodeState === 'BREAK') return 'home-timeline-node is-break'
   if (nodeState === 'CURRENT') return 'home-timeline-node is-highlighted'
   if (nodeState === 'ATTENDED') return 'home-timeline-node is-attended'
   if (nodeState === 'ABSENT') return 'home-timeline-node is-absent'
@@ -61,14 +70,21 @@ export function HomePage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const timelineViewportRef = useRef<HTMLDivElement | null>(null)
   const currentTimelineRowRef = useRef<HTMLDivElement | null>(null)
+  const postRequestTokenRef = useRef(0)
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null)
   const [draftTitle, setDraftTitle] = useState('')
   const [draftContent, setDraftContent] = useState('')
   const [draftType, setDraftType] = useState<'POST' | 'NOTICE'>('POST')
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null)
+  const [postDetail, setPostDetail] = useState<PostDetail | null>(null)
+  const [commentDraft, setCommentDraft] = useState('')
   const [attendanceMap, setAttendanceMap] = useState<Record<number, string>>({})
   const [attendancePanel, setAttendancePanel] = useState<SessionAttendancePanel | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isPostDetailLoading, setIsPostDetailLoading] = useState(false)
+  const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
   const [showOverview, setShowOverview] = useState(false)
+  const [showPostModal, setShowPostModal] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
   const [showAttendance, setShowAttendance] = useState(false)
   const selectedStudyId = useMemo(() => {
@@ -176,7 +192,10 @@ export function HomePage() {
 
     return (
       activeStudy.sessions.find((session) => session.sessionId === activeStudy.currentSessionId) ??
-      activeStudy.sessions.find((session) => session.nodeState === 'CURRENT') ??
+      activeStudy.sessions.find(
+        (session) => session.nodeState === 'CURRENT' && session.sessionType !== 'BREAK',
+      ) ??
+      activeStudy.sessions.find((session) => session.sessionType === 'REGULAR') ??
       activeStudy.sessions[0]
     )
   }, [activeStudy])
@@ -230,6 +249,21 @@ export function HomePage() {
     ]
   }, [activeStudy])
 
+  const selectedPostSummary = useMemo(
+    () => renderedPosts.find((post) => typeof post.postId === 'number' && post.postId === selectedPostId) ?? null,
+    [renderedPosts, selectedPostId],
+  )
+
+  useEffect(() => {
+    postRequestTokenRef.current += 1
+    setSelectedPostId(null)
+    setPostDetail(null)
+    setCommentDraft('')
+    setIsPostDetailLoading(false)
+    setIsCommentSubmitting(false)
+    setShowPostModal(false)
+  }, [activeStudy?.studyId])
+
   async function reload() {
     if (!sessionUserId || !activeStudy?.studyId) {
       return
@@ -246,6 +280,58 @@ export function HomePage() {
         }
         : current,
     )
+  }
+
+  function closePostModal() {
+    postRequestTokenRef.current += 1
+    setSelectedPostId(null)
+    setPostDetail(null)
+    setCommentDraft('')
+    setIsPostDetailLoading(false)
+    setIsCommentSubmitting(false)
+    setShowPostModal(false)
+  }
+
+  async function loadPostDetail(postId: number) {
+    if (!sessionUserId) {
+      return
+    }
+
+    const requestToken = ++postRequestTokenRef.current
+    setIsPostDetailLoading(true)
+
+    try {
+      const detail = await api.getPostDetail(sessionUserId, postId)
+
+      if (requestToken !== postRequestTokenRef.current) {
+        return
+      }
+
+      setPostDetail(detail)
+    } catch (error) {
+      if (requestToken !== postRequestTokenRef.current) {
+        return
+      }
+
+      closePostModal()
+      showToast(error instanceof Error ? error.message : '게시글을 불러오지 못했어요.')
+    } finally {
+      if (requestToken === postRequestTokenRef.current) {
+        setIsPostDetailLoading(false)
+      }
+    }
+  }
+
+  async function openPostModal(postId: number) {
+    if (!sessionUserId) {
+      return
+    }
+
+    setSelectedPostId(postId)
+    setPostDetail(null)
+    setCommentDraft('')
+    setShowPostModal(true)
+    await loadPostDetail(postId)
   }
 
   async function openAttendanceModal(sessionId: number) {
@@ -320,6 +406,26 @@ export function HomePage() {
       showToast('게시글을 등록했어요.')
     } catch (error) {
       showToast(error instanceof Error ? error.message : '게시글 등록에 실패했어요.')
+    }
+  }
+
+  async function handleCreateComment() {
+    if (!sessionUserId || !selectedPostId || !commentDraft.trim()) {
+      return
+    }
+
+    try {
+      setIsCommentSubmitting(true)
+      await api.createPostComment(sessionUserId, selectedPostId, {
+        content: commentDraft.trim(),
+      })
+      setCommentDraft('')
+      await loadPostDetail(selectedPostId)
+      showToast('댓글을 등록했어요.')
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : '댓글 등록에 실패했어요.')
+    } finally {
+      setIsCommentSubmitting(false)
     }
   }
 
@@ -413,36 +519,55 @@ export function HomePage() {
               <div className="home-timeline-viewport" ref={timelineViewportRef}>
                 <div className="home-timeline-list">
                   {renderedTimeline.map((session) => {
+                    const isBreak = session.sessionType === 'BREAK'
                     const isHighlighted =
                       !session.placeholder &&
+                      !isBreak &&
                       session.sessionId === activeStudy.currentSessionId
                     const isPastSession =
                       !session.placeholder &&
+                      !isBreak &&
                       !isHighlighted &&
                       session.nodeState !== 'FUTURE'
                     const tone = getTimelineToneByState(session.nodeState)
-                    const canToggle = isHighlighted
+                    const canToggle = !isBreak && isHighlighted
                     const isInteractive =
                       !session.placeholder &&
-                      (activeStudy.isLeader ? isHighlighted : canToggle)
+                      !isBreak &&
+                      (activeStudy.isLeader ? (isHighlighted || isPastSession) : canToggle)
                     const memberChipTone =
-                      isHighlighted && !activeStudy.isLeader
+                      isBreak
+                        ? 'break'
+                        : isHighlighted && !activeStudy.isLeader
                         ? session.planned ? 'planned' : 'missed'
                         : tone
-                    const chipTone = activeStudy.isLeader && isHighlighted
-                      ? hasAttendanceStarted ? 'edit' : 'start'
-                      : activeStudy.isLeader && isPastSession
-                        ? 'edit'
-                        : memberChipTone
-                    const chipLabel = activeStudy.isLeader && isHighlighted
-                      ? hasAttendanceStarted ? '수정' : '시작'
-                      : activeStudy.isLeader && isPastSession
-                        ? '수정'
-                        : getMemberCurrentChipLabel(session.planned)
+                    const chipTone = isBreak
+                      ? 'break'
+                      : activeStudy.isLeader && isHighlighted
+                        ? hasAttendanceStarted ? 'edit' : 'start'
+                        : activeStudy.isLeader && isPastSession
+                          ? 'edit'
+                          : memberChipTone
+                    const chipLabel = isBreak
+                      ? '쉬어가는 회차'
+                      : activeStudy.isLeader && isHighlighted
+                        ? hasAttendanceStarted ? '수정' : '시작'
+                        : activeStudy.isLeader && isPastSession
+                          ? '수정'
+                          : getMemberCurrentChipLabel(session.planned)
                     const showChip =
-                      session.placeholder ||
-                      isHighlighted ||
-                      (activeStudy.isLeader && isPastSession)
+                      !isBreak &&
+                      (session.placeholder ||
+                        isHighlighted ||
+                        (activeStudy.isLeader && isPastSession))
+                    const cardClassName = [
+                      'home-timeline-card',
+                      isHighlighted ? 'is-highlighted' : '',
+                      session.placeholder ? 'is-placeholder' : '',
+                      isBreak ? 'is-break' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
 
                     return (
                       <div
@@ -458,14 +583,9 @@ export function HomePage() {
                         </div>
 
                         <div
-                          className={
-                            isHighlighted
-                              ? 'home-timeline-card is-highlighted'
-                              : session.placeholder
-                                ? 'home-timeline-card is-placeholder'
-                                : 'home-timeline-card'
-                          }
+                          className={cardClassName}
                           onClick={() => {
+                            if (isBreak || session.placeholder) return
                             if (activeStudy.isLeader && typeof session.sessionId === 'number' && (isHighlighted || isPastSession)) return void openAttendanceModal(session.sessionId)
                             if (isInteractive && canToggle && typeof session.sessionId === 'number') return void handleParticipation(session.sessionId, !session.planned)
                           }}
@@ -520,6 +640,23 @@ export function HomePage() {
                           post.placeholder ? 'home-post-row is-placeholder' : 'home-post-row'
                         }
                         key={String(post.postId)}
+                        onClick={() => {
+                          if (!post.placeholder && typeof post.postId === 'number') {
+                            void openPostModal(post.postId)
+                          }
+                        }}
+                        onKeyDown={(event) => {
+                          if (post.placeholder || typeof post.postId !== 'number') {
+                            return
+                          }
+
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault()
+                            void openPostModal(post.postId)
+                          }
+                        }}
+                        role="button"
+                        tabIndex={post.placeholder ? -1 : 0}
                       >
                         <div className="home-post-row__copy">
                           <strong>{post.title}</strong>
@@ -603,6 +740,97 @@ export function HomePage() {
                 <strong>{activeStudy.posts.length}개</strong>
               </div>
             </div>
+          </article>
+        </div>
+      ) : null}
+
+      {showPostModal ? (
+        <div
+          className="modal-backdrop"
+          onClick={closePostModal}
+          role="presentation"
+        >
+          <article
+            className="modal-card post-detail-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="modal-card__header">
+              <div>
+                <span className="section-kicker">게시글 상세</span>
+                <h2>{postDetail?.title ?? selectedPostSummary?.title ?? '게시글'}</h2>
+                {postDetail ? (
+                  <div className="post-detail-meta">
+                    <span>{postDetail.authorNickname}</span>
+                    <time>{postDetail.createdAt}</time>
+                  </div>
+                ) : null}
+              </div>
+              <button
+                className="soft-button"
+                onClick={closePostModal}
+                type="button"
+              >
+                닫기
+              </button>
+            </div>
+
+            {isPostDetailLoading ? (
+              <div className="post-detail-loading">게시글을 불러오는 중이에요.</div>
+            ) : postDetail ? (
+              <div className="post-detail-layout">
+                <section className="post-detail-body">
+                  <span className="section-kicker">본문</span>
+                  <p>{postDetail.content}</p>
+                </section>
+
+                <section className="post-comments-panel">
+                  <div className="post-comments-panel__header">
+                    <span className="section-kicker">댓글</span>
+                    <span className="home-card__meta">{postDetail.comments.length}개</span>
+                  </div>
+
+                  <div className="post-comments-list">
+                    {postDetail.comments.length ? (
+                      postDetail.comments.map((comment) => (
+                        <article className="post-comment-row" key={comment.commentId}>
+                          <div className="post-comment-row__meta">
+                            <strong>{comment.authorNickname}</strong>
+                            <time>{comment.createdAt}</time>
+                          </div>
+                          <p>{comment.content}</p>
+                        </article>
+                      ))
+                    ) : (
+                      <div className="post-comments-empty">
+                        아직 댓글이 없어요. 첫 댓글을 남겨보세요.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="post-comment-composer">
+                    <textarea
+                      className="field-control textarea-field post-comment-textarea"
+                      disabled={isCommentSubmitting}
+                      onChange={(event) => setCommentDraft(event.target.value)}
+                      placeholder="댓글을 입력하세요"
+                      value={commentDraft}
+                    />
+
+                    <div className="post-comment-composer__footer">
+                      <div style={{ flex: 1 }}></div>
+                      <button
+                        className="primary-button"
+                        disabled={isCommentSubmitting || !commentDraft.trim()}
+                        onClick={handleCreateComment}
+                        type="button"
+                      >
+                        댓글 등록
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            ) : null}
           </article>
         </div>
       ) : null}

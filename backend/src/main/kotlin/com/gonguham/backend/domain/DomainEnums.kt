@@ -22,6 +22,11 @@ enum class StudyStatus {
     CLOSED,
 }
 
+enum class SessionType {
+    REGULAR,
+    BREAK,
+}
+
 enum class MembershipRole {
     LEADER,
     MEMBER,
@@ -46,6 +51,11 @@ enum class AvatarCategory {
     HAIR,
     TOP,
     BOTTOM,
+    SHOES,
+    PUPIL,
+    EYEBROW,
+    EYELASH,
+    MOUTH,
 }
 
 enum class AvatarRarity {

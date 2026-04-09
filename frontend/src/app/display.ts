@@ -10,15 +10,6 @@ export const STUDY_TYPE_PICKER_OPTIONS = STUDY_TYPE_OPTIONS.filter(
 )
 
 export const DAY_FILTER_OPTIONS = [
-  { label: '월', value: '월요일' },
-  { label: '화', value: '화요일' },
-  { label: '수', value: '수요일' },
-  { label: '목', value: '목요일' },
-  { label: '금', value: '금요일' },
-  { label: '토', value: '토요일' },
-] as const
-
-export const DAY_PICKER_OPTIONS = [
   { label: '월', value: 'MONDAY' },
   { label: '화', value: 'TUESDAY' },
   { label: '수', value: 'WEDNESDAY' },
@@ -26,6 +17,8 @@ export const DAY_PICKER_OPTIONS = [
   { label: '금', value: 'FRIDAY' },
   { label: '토', value: 'SATURDAY' },
 ] as const
+
+export const DAY_PICKER_OPTIONS = DAY_FILTER_OPTIONS
 
 export const TIME_FILTER_OPTIONS = [
   { label: '오전', value: 'MORNING' },
@@ -44,9 +37,15 @@ export const LOCATION_OPTIONS = [
 ] as const
 
 export const AVATAR_CATEGORY_OPTIONS = [
+  { label: '피부', value: 'BODY' },
+  { label: '눈', value: 'PUPIL' },
+  { label: '눈썹', value: 'EYEBROW' },
+  { label: '속눈썹', value: 'EYELASH' },
+  { label: '입', value: 'MOUTH' },
   { label: '헤어', value: 'HAIR' },
   { label: '상의', value: 'TOP' },
   { label: '하의', value: 'BOTTOM' },
+  { label: '신발', value: 'SHOES' },
 ] as const
 
 const studyTypeLabels: Record<string, string> = {
@@ -55,22 +54,32 @@ const studyTypeLabels: Record<string, string> = {
   FLASH: '반짝',
 }
 
-const rarityLabels: Record<string, string> = {
-  BASIC: '기본',
-  POINT: '포인트',
-  SIGNATURE: '시그니처',
+const dayShortLabels: Record<string, string> = {
+  MONDAY: '월',
+  TUESDAY: '화',
+  WEDNESDAY: '수',
+  THURSDAY: '목',
+  FRIDAY: '금',
+  SATURDAY: '토',
+  SUNDAY: '일',
 }
 
 export function getStudyTypeLabel(value: string) {
   return studyTypeLabels[value] ?? value
 }
 
-export function getRarityLabel(value: string) {
-  return rarityLabels[value] ?? value
+export function getDayLabel(value: string) {
+  return dayShortLabels[value] ?? value
 }
 
-export function matchesDayFilter(dayLabel: string, filter: string) {
-  return filter ? dayLabel === filter : true
+export function formatDaysOfWeek(daysOfWeek: string[]) {
+  return daysOfWeek
+    .map((day) => getDayLabel(day))
+    .join('·')
+}
+
+export function matchesDayFilter(daysOfWeek: string[], filter: string) {
+  return filter ? daysOfWeek.includes(filter) : true
 }
 
 export function matchesPlaceFilter(locationLabel: string, filter: string) {

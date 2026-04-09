@@ -25,8 +25,6 @@ class AvatarItem(
     @Column(nullable = false)
     var name: String = "",
     @Column(nullable = false)
-    var description: String = "",
-    @Column(nullable = false)
     var priceChecks: Int = 0,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

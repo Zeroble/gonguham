@@ -14,12 +14,18 @@ data class AvatarAppearanceResponse(
     val eyebrowAssetKey: String,
     val eyelashAssetKey: String,
     val mouthAssetKey: String,
+    val shoesAssetKey: String?,
 )
 
 data class EquippedAvatarResponse(
     val hair: AvatarSlotResponse?,
     val top: AvatarSlotResponse?,
     val bottom: AvatarSlotResponse?,
+    val shoes: AvatarSlotResponse?,
+    val pupil: AvatarSlotResponse?,
+    val eyebrow: AvatarSlotResponse?,
+    val eyelash: AvatarSlotResponse?,
+    val mouth: AvatarSlotResponse?,
 )
 
 data class AvatarSlotResponse(
@@ -31,9 +37,7 @@ data class AvatarSlotResponse(
 data class AvatarShopItemResponse(
     val itemId: Long,
     val category: String,
-    val rarity: String,
     val name: String,
-    val description: String,
     val priceChecks: Int,
     val assetKey: String,
     val owned: Boolean,
@@ -48,9 +52,10 @@ data class SaveAvatarAppearanceRequest(
     val hairItemId: Long?,
     val topItemId: Long?,
     val bottomItemId: Long?,
+    val shoesItemId: Long?,
+    val pupilItemId: Long?,
+    val eyebrowItemId: Long?,
+    val eyelashItemId: Long?,
+    val mouthItemId: Long?,
     val bodyAssetKey: String,
-    val pupilAssetKey: String,
-    val eyebrowAssetKey: String,
-    val eyelashAssetKey: String,
-    val mouthAssetKey: String,
 )

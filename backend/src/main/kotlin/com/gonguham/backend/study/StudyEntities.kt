@@ -6,15 +6,20 @@ import com.gonguham.backend.domain.MembershipRole
 import com.gonguham.backend.domain.MembershipStatus
 import com.gonguham.backend.domain.PostType
 import com.gonguham.backend.domain.RepeatType
+import com.gonguham.backend.domain.SessionType
 import com.gonguham.backend.domain.StudyStatus
 import com.gonguham.backend.domain.StudyType
+import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.Table
 import org.springframework.data.jpa.repository.JpaRepository
 import java.time.DayOfWeek
@@ -37,9 +42,11 @@ class Study(
     var title: String = "",
     @Column(nullable = false, length = 2000)
     var description: String = "",
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "study_days_of_week", joinColumns = [JoinColumn(name = "study_id")])
+    @Column(name = "day_of_week", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    var dayOfWeek: DayOfWeek = DayOfWeek.MONDAY,
+    var daysOfWeek: MutableSet<DayOfWeek> = linkedSetOf(DayOfWeek.MONDAY),
     @Column(nullable = false)
     var startTime: LocalTime = LocalTime.NOON,
     @Column(nullable = false)
@@ -117,6 +124,9 @@ class StudySession(
     var title: String = "",
     @Column(nullable = false)
     var scheduledAt: LocalDateTime = LocalDateTime.now(),
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var sessionType: SessionType = SessionType.REGULAR,
     var placeText: String? = null,
     @Column(length = 1000)
     var noticeText: String? = null,
@@ -181,6 +191,24 @@ class Post(
     var updatedAt: LocalDateTime = LocalDateTime.now(),
 )
 
+@Entity
+@Table(name = "post_comments")
+class PostComment(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null,
+    @Column(nullable = false)
+    var postId: Long = 0,
+    @Column(nullable = false)
+    var authorUserId: Long = 0,
+    @Column(nullable = false, length = 1000)
+    var content: String = "",
+    @Column(nullable = false)
+    var createdAt: LocalDateTime = LocalDateTime.now(),
+    @Column(nullable = false)
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
+)
+
 interface StudyRepository : JpaRepository<Study, Long>
 
 interface StudyTagRepository : JpaRepository<StudyTag, Long> {
@@ -213,4 +241,8 @@ interface AttendanceRepository : JpaRepository<Attendance, Long> {
 interface PostRepository : JpaRepository<Post, Long> {
     fun findAllByStudyIdAndTypeOrderByCreatedAtDesc(studyId: Long, type: PostType): List<Post>
     fun findAllByStudyIdOrderByCreatedAtDesc(studyId: Long): List<Post>
+}
+
+interface PostCommentRepository : JpaRepository<PostComment, Long> {
+    fun findAllByPostIdOrderByCreatedAtAsc(postId: Long): List<PostComment>
 }

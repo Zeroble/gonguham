@@ -1,41 +1,84 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api, type AvatarShopItem, type AvatarSummary } from '../app/api'
-import { AVATAR_CATEGORY_OPTIONS, getRarityLabel } from '../app/display'
+import { AVATAR_CATEGORY_OPTIONS } from '../app/display'
 import { useApp } from '../app/useApp'
 import { AvatarPreview } from '../features/avatar/AvatarPreview'
 import {
   BODY_OPTIONS,
-  EYEBROW_OPTIONS,
-  EYELASH_OPTIONS,
-  MOUTH_OPTIONS,
-  PUPIL_OPTIONS,
   applyShopItemToDraft,
+  buildBodyPreviewState,
   buildItemPreviewState,
   draftToAppearanceRequest,
   draftToRenderState,
+  getSelectedItemId,
   isSameDraft,
   summaryToDraft,
   type AvatarDraft,
 } from '../features/avatar/avatarCatalog'
 
-type FreeAppearanceField =
-  | 'bodyAssetKey'
-  | 'pupilAssetKey'
-  | 'eyebrowAssetKey'
-  | 'eyelashAssetKey'
-  | 'mouthAssetKey'
+type CustomizeCategory = (typeof AVATAR_CATEGORY_OPTIONS)[number]['value']
+type ShopCategory = Exclude<CustomizeCategory, 'BODY'>
+type PendingPurchaseCart = Partial<Record<ShopCategory, AvatarShopItem>>
 
-const FREE_EDITOR_SECTIONS: Array<{
-  key: FreeAppearanceField
-  label: string
-  options: Array<{ assetKey: string; label: string }>
-}> = [
-  { key: 'bodyAssetKey', label: '스킨톤', options: BODY_OPTIONS },
-  { key: 'pupilAssetKey', label: '눈', options: PUPIL_OPTIONS },
-  { key: 'eyebrowAssetKey', label: '눈썹', options: EYEBROW_OPTIONS },
-  { key: 'eyelashAssetKey', label: '속눈썹', options: EYELASH_OPTIONS },
-  { key: 'mouthAssetKey', label: '입', options: MOUTH_OPTIONS },
-]
+const FACE_PREVIEW_CATEGORIES = new Set(['PUPIL', 'EYEBROW', 'EYELASH', 'MOUTH'])
+const SHOP_CATEGORIES = AVATAR_CATEGORY_OPTIONS
+  .map((option) => option.value)
+  .filter((value): value is ShopCategory => value !== 'BODY')
+const CATEGORY_LABELS = Object.fromEntries(
+  AVATAR_CATEGORY_OPTIONS.map((option) => [option.value, option.label]),
+) as Record<CustomizeCategory, string>
+
+async function fetchShopItems(userId: number) {
+  const entries = await Promise.all(
+    SHOP_CATEGORIES.map(async (shopCategory) => {
+      const nextItems = await api.getAvatarShop(userId, shopCategory)
+      return [shopCategory, nextItems] as const
+    }),
+  )
+
+  return entries.reduce<Partial<Record<ShopCategory, AvatarShopItem[]>>>((next, [shopCategory, nextItems]) => {
+    next[shopCategory] = nextItems
+    return next
+  }, {})
+}
+
+function toShopCategory(category: string): ShopCategory | null {
+  return SHOP_CATEGORIES.find((value) => value === category) ?? null
+}
+
+function removePendingPurchase(
+  pendingPurchases: PendingPurchaseCart,
+  category: ShopCategory,
+): PendingPurchaseCart {
+  if (!pendingPurchases[category]) {
+    return pendingPurchases
+  }
+
+  const next = { ...pendingPurchases }
+  delete next[category]
+  return next
+}
+
+function restoreDraftCategory(draft: AvatarDraft, savedDraft: AvatarDraft, category: ShopCategory): AvatarDraft {
+  switch (category) {
+    case 'HAIR':
+      return { ...draft, hair: savedDraft.hair }
+    case 'TOP':
+      return { ...draft, top: savedDraft.top }
+    case 'BOTTOM':
+      return { ...draft, bottom: savedDraft.bottom }
+    case 'SHOES':
+      return { ...draft, shoes: savedDraft.shoes }
+    case 'PUPIL':
+      return { ...draft, pupil: savedDraft.pupil }
+    case 'EYEBROW':
+      return { ...draft, eyebrow: savedDraft.eyebrow }
+    case 'EYELASH':
+      return { ...draft, eyelash: savedDraft.eyelash }
+    case 'MOUTH':
+      return { ...draft, mouth: savedDraft.mouth }
+  }
+}
 
 export function CustomizePage() {
   const {
@@ -47,88 +90,129 @@ export function CustomizePage() {
     showToast,
   } = useApp()
   const [summary, setSummary] = useState<AvatarSummary | null>(avatarSummary)
-  const [items, setItems] = useState<AvatarShopItem[]>([])
-  const [category, setCategory] = useState('HAIR')
+  const [shopItemsByCategory, setShopItemsByCategory] = useState<Partial<Record<ShopCategory, AvatarShopItem[]>>>({})
+  const [category, setCategory] = useState<CustomizeCategory>('HAIR')
   const [mode, setMode] = useState<'SHOP' | 'INVENTORY'>('SHOP')
   const [draft, setDraft] = useState<AvatarDraft>(() => summaryToDraft(avatarSummary))
+  const [pendingPurchases, setPendingPurchases] = useState<PendingPurchaseCart>({})
+  const [isShopLoading, setIsShopLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     setSummary(avatarSummary)
     setDraft(summaryToDraft(avatarSummary))
+    setPendingPurchases({})
   }, [avatarSummary])
 
   useEffect(() => {
     if (!sessionUserId) {
+      setShopItemsByCategory({})
+      setPendingPurchases({})
+      setIsShopLoading(false)
       return
     }
 
+    setShopItemsByCategory({})
+    setIsShopLoading(true)
     let cancelled = false
 
-    async function fetchItems() {
-      const nextItems = await api.getAvatarShop(sessionUserId, category)
-      if (!cancelled) {
-        setItems(nextItems)
+    async function prefetchShop() {
+      try {
+        const nextItems = await fetchShopItems(sessionUserId)
+        if (cancelled) {
+          return
+        }
+
+        setShopItemsByCategory(nextItems)
+      } catch {
+        if (!cancelled) {
+          setShopItemsByCategory({})
+        }
+      } finally {
+        if (!cancelled) {
+          setIsShopLoading(false)
+        }
       }
     }
 
-    void fetchItems()
+    void prefetchShop()
 
     return () => {
       cancelled = true
     }
-  }, [category, sessionUserId])
+  }, [sessionUserId])
 
   const savedDraft = useMemo(() => summaryToDraft(summary), [summary])
+  const hasChanges = !isSameDraft(draft, savedDraft)
+  const currentChecks = me?.currentChecks ?? summary?.currentChecks ?? 0
+  const pendingItems = useMemo(
+    () => SHOP_CATEGORIES.flatMap((shopCategory) => (pendingPurchases[shopCategory] ? [pendingPurchases[shopCategory]] : [])),
+    [pendingPurchases],
+  )
+  const pendingPriceChecks = useMemo(
+    () => pendingItems.reduce((total, item) => total + item.priceChecks, 0),
+    [pendingItems],
+  )
+  const canCheckoutPendingPurchases = pendingPriceChecks <= currentChecks
+  const items = useMemo(
+    () => (category === 'BODY' ? [] : shopItemsByCategory[category] ?? []),
+    [category, shopItemsByCategory],
+  )
   const visibleItems = useMemo(
     () => (mode === 'SHOP' ? items : items.filter((item) => item.owned)),
     [items, mode],
   )
-  const hasChanges = !isSameDraft(draft, savedDraft)
-  const currentChecks = me?.currentChecks ?? summary?.currentChecks ?? 0
 
-  async function reloadShop(nextCategory = category) {
-    if (!sessionUserId) {
+  async function reloadAllShop(userId = sessionUserId) {
+    if (!userId) {
       return
     }
 
-    setItems(await api.getAvatarShop(sessionUserId, nextCategory))
+    setIsShopLoading(true)
+    try {
+      setShopItemsByCategory(await fetchShopItems(userId))
+    } catch {
+      showToast('상점 목록을 다시 불러오지 못했어요.')
+    } finally {
+      setIsShopLoading(false)
+    }
   }
 
-  async function handlePurchase(item: AvatarShopItem) {
-    if (!sessionUserId) {
+  function handlePreviewItem(item: AvatarShopItem) {
+    const shopCategory = toShopCategory(item.category)
+
+    if (!shopCategory) {
       return
     }
 
-    if (currentChecks < item.priceChecks) {
-      showToast('체크가 부족해서 아직 구매할 수 없어요.')
+    if (item.owned) {
+      setPendingPurchases((current) => removePendingPurchase(current, shopCategory))
+      setDraft((current) => applyShopItemToDraft(current, item))
       return
     }
 
-    try {
-      await api.purchaseAvatarItem(sessionUserId, item.itemId)
-      const nextUser = await refreshMe()
-      if (nextUser) {
-        setSummary((current) =>
-          current
-            ? {
-                ...current,
-                currentChecks: nextUser.currentChecks,
-                totalEarnedChecks: nextUser.totalEarnedChecks,
-                level: nextUser.level,
-              }
-            : current,
-        )
-      }
-      await reloadShop()
-      showToast('아이템을 구매했어요. 저장 전에 미리 골라둘 수 있어요.')
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : '아이템 구매에 실패했어요.')
+    const replacedItem = pendingPurchases[shopCategory]
+    const nextPendingPrice = pendingPriceChecks - (replacedItem?.priceChecks ?? 0) + item.priceChecks
+
+    if (nextPendingPrice > currentChecks) {
+      showToast('체크가 부족해서 이 아이템은 아직 담을 수 없어요.')
+      return
     }
+
+    setPendingPurchases((current) => ({
+      ...current,
+      [shopCategory]: item,
+    }))
+    setDraft((current) => applyShopItemToDraft(current, item))
+  }
+
+  function handleRemovePendingItem(categoryToRemove: ShopCategory) {
+    setPendingPurchases((current) => removePendingPurchase(current, categoryToRemove))
+    setDraft((current) => restoreDraftCategory(current, savedDraft, categoryToRemove))
   }
 
   async function handleSave() {
-    if (!sessionUserId || !hasChanges) {
+    if (!sessionUserId || !hasChanges || !canCheckoutPendingPurchases) {
       return
     }
 
@@ -140,9 +224,15 @@ export function CustomizePage() {
       )
       setSummary(nextSummary)
       setDraft(summaryToDraft(nextSummary))
+      setPendingPurchases({})
       replaceAvatarSummary(nextSummary)
-      await reloadShop()
-      showToast('커스터마이징을 저장했어요.')
+      await refreshMe().catch(() => null)
+      await reloadAllShop(sessionUserId)
+      showToast(
+        pendingPriceChecks > 0
+          ? `${pendingPriceChecks}체크로 아이템을 구매하고 저장했어요.`
+          : '커스터마이징을 저장했어요.',
+      )
     } catch (error) {
       showToast(error instanceof Error ? error.message : '커스터마이징 저장에 실패했어요.')
     } finally {
@@ -150,17 +240,8 @@ export function CustomizePage() {
     }
   }
 
-  function handleReset() {
-    setDraft(savedDraft)
-    showToast('저장된 모습으로 되돌렸어요.')
-  }
-
-  function handleSelectItem(item: AvatarShopItem) {
-    setDraft((current) => applyShopItemToDraft(current, item))
-  }
-
-  function handleFreeAppearanceChange(field: FreeAppearanceField, assetKey: string) {
-    setDraft((current) => ({ ...current, [field]: assetKey }))
+  function handleSelectBody(assetKey: string) {
+    setDraft((current) => ({ ...current, bodyAssetKey: assetKey }))
   }
 
   return (
@@ -168,109 +249,80 @@ export function CustomizePage() {
       <article className="page-surface stage-panel">
         <div className="section-card__header">
           <div>
-            <h2>캐릭터 스테이지</h2>
-            <p>얼굴 파츠와 스킨톤은 자유롭게 조합하고, 헤어와 옷은 골라둔 뒤 저장해요.</p>
-          </div>
-          <span className={hasChanges ? 'count-badge is-pending' : 'count-badge'}>
-            {hasChanges ? '저장 전 미리보기' : '저장 완료'}
-          </span>
-        </div>
-
-        <div className="stage-canvas">
-          <span className="stage-canvas__label">{hasChanges ? '미리보기 캐릭터' : '현재 캐릭터'}</span>
-          <div className="stage-canvas__viewport">
-            <AvatarPreview className="stage-canvas__preview" size="stage" state={draftToRenderState(draft)} />
+            <h2>미리보기</h2>
           </div>
         </div>
 
-        <div className="editor-action-row">
+        <div className="stage-canvas__viewport">
+          <AvatarPreview className="stage-canvas__preview" size="stage" state={draftToRenderState(draft)} />
+        </div>
+
+        <section className="pending-purchase-panel">
+          <div className="pending-purchase-panel__header">
+            <h3>구매 대기 목록</h3>
+            {pendingItems.length ? <span className="count-badge is-pending">총 {pendingPriceChecks}체크</span> : null}
+          </div>
+
+          {pendingItems.length ? (
+            <ul className="pending-purchase-list">
+              {pendingItems.map((item) => {
+                const itemCategory = toShopCategory(item.category)
+                if (!itemCategory) {
+                  return null
+                }
+
+                return (
+                  <li className="pending-purchase-item" key={`${item.category}-${item.itemId}`}>
+                    <div className="pending-purchase-item__meta">
+                      <strong>{CATEGORY_LABELS[itemCategory]}</strong>
+                      <span>{item.name}</span>
+                    </div>
+
+                    <div className="pending-purchase-item__actions">
+                      <span>{item.priceChecks}체크</span>
+                      <button
+                        aria-label={`${item.name} 미리보기 해제`}
+                        className="pending-purchase-item__remove"
+                        onClick={() => handleRemovePendingItem(itemCategory)}
+                        type="button"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : (
+            <div className="empty-inline-state pending-purchase-panel__empty">
+              미리보기에 담아둔 구매 예정 아이템이 없어요.
+            </div>
+          )}
+        </section>
+
+        <div className="stage-panel__footer">
           <button
-            className="soft-button"
-            disabled={!hasChanges || isSaving}
-            onClick={handleReset}
-            type="button"
-          >
-            취소
-          </button>
-          <button
-            className="primary-button"
-            disabled={!hasChanges || isSaving}
+            className="primary-button stage-panel__save"
+            disabled={!hasChanges || isSaving || !canCheckoutPendingPurchases}
             onClick={handleSave}
             type="button"
           >
-            {isSaving ? '저장 중...' : '저장'}
+            {isSaving
+              ? '저장 중...'
+              : pendingPriceChecks > 0
+                ? canCheckoutPendingPurchases
+                  ? `구매 및 저장 (${pendingPriceChecks}체크)`
+                  : `체크 부족 (${pendingPriceChecks}체크)`
+                : '저장'}
           </button>
         </div>
-
-        <article className="equipped-panel">
-          <div className="equipped-panel__header">
-            <span className="section-kicker">현재 선택 슬롯</span>
-            <span className="filter-label">저장 시 아래 선택이 반영돼요.</span>
-          </div>
-
-          <div className="equipped-slot-list">
-            <div className="equipped-slot">
-              <span>헤어</span>
-              <strong>{draft.hair?.name ?? '선택 안 함'}</strong>
-            </div>
-            <div className="equipped-slot">
-              <span>상의</span>
-              <strong>{draft.top?.name ?? '선택 안 함'}</strong>
-            </div>
-            <div className="equipped-slot">
-              <span>하의</span>
-              <strong>{draft.bottom?.name ?? '선택 안 함'}</strong>
-            </div>
-          </div>
-        </article>
-
-        <article className="free-editor-panel">
-          <div className="free-editor-panel__header">
-            <div>
-              <span className="section-kicker">무료 편집</span>
-              <h3>얼굴과 스킨톤을 조합해 보세요.</h3>
-            </div>
-          </div>
-
-          <div className="free-editor-sections">
-            {FREE_EDITOR_SECTIONS.map((section) => (
-              <section className="free-editor-section" key={section.key}>
-                <div className="free-editor-section__header">
-                  <strong>{section.label}</strong>
-                  <span className="filter-label">
-                    {
-                      section.options.find((option) => option.assetKey === draft[section.key])?.label
-                    }
-                  </span>
-                </div>
-
-                <div className="free-option-grid">
-                  {section.options.map((option) => (
-                    <button
-                      className={
-                        draft[section.key] === option.assetKey
-                          ? 'free-option-button is-active'
-                          : 'free-option-button'
-                      }
-                      key={option.assetKey}
-                      onClick={() => handleFreeAppearanceChange(section.key, option.assetKey)}
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </article>
       </article>
 
       <article className="page-surface shop-panel">
         <div className="shop-panel__header">
           <div>
-            <h2>아이템 상점</h2>
-            <p>보유 아이템은 먼저 골라 두고, 원하는 조합이 되면 한 번에 저장할 수 있어요.</p>
+            <h2>커스터마이징 셀렉터</h2>
+            <p>피부는 무료로 바꾸고, 나머지 파츠는 먼저 미리보기에 담은 뒤 저장할 때 한 번에 구매돼요.</p>
           </div>
 
           <div className="shop-summary-pills">
@@ -308,77 +360,122 @@ export function CustomizePage() {
           </div>
         </div>
 
-        <section className="shop-grid">
-          {visibleItems.map((item) => {
-            const currentSelection =
-              item.category === 'HAIR'
-                ? draft.hair?.itemId
-                : item.category === 'TOP'
-                  ? draft.top?.itemId
-                  : draft.bottom?.itemId
-            const isSelected = currentSelection === item.itemId
-            const isAffordable = currentChecks >= item.priceChecks
+        {category === 'BODY' ? (
+          <section className="shop-grid">
+            {BODY_OPTIONS.map((option) => {
+              const isSelected = draft.bodyAssetKey === option.assetKey
 
-            return (
-              <article className="shop-item-card" key={item.itemId}>
-                <div className="shop-item-card__top">
-                  <span className={`rarity-badge is-${item.rarity.toLowerCase()}`}>
-                    {getRarityLabel(item.rarity)}
-                  </span>
-                  <span className="count-badge">{item.priceChecks}체크</span>
-                </div>
-
-                <div className="thumb-plate">
-                  <AvatarPreview
-                    className="shop-item-card__preview"
-                    size="thumb"
-                    state={buildItemPreviewState(draft, item)}
-                  />
-                </div>
-
-                <div className="shop-item-card__body">
-                  <div className="shop-item-card__title-row">
-                    <h3>{item.name}</h3>
-                    {item.owned && isSelected && !item.equipped ? (
-                      <span className="inline-state-pill">저장 대기</span>
-                    ) : null}
+              return (
+                <article className="shop-item-card" key={option.assetKey}>
+                  <div className="thumb-plate">
+                    <AvatarPreview
+                      className="shop-item-card__preview"
+                      size="thumb"
+                      state={buildBodyPreviewState(draft, option.assetKey)}
+                    />
                   </div>
-                  <p>{item.description}</p>
-                </div>
 
-                <div className="card-action-row">
-                  {item.owned ? (
+                  <div className="shop-item-card__body">
+                    <div className="shop-item-card__title-row">
+                      <h3>{option.label}</h3>
+                      {isSelected ? <span className="inline-state-pill">미리보기 적용중</span> : null}
+                    </div>
+                    <p>기본 피부 톤은 자유롭게 바꿀 수 있어요.</p>
+                  </div>
+
+                  <div className="card-action-row">
                     <button
                       className={isSelected ? 'soft-button is-disabled' : 'primary-button'}
                       disabled={isSelected}
-                      onClick={() => handleSelectItem(item)}
+                      onClick={() => handleSelectBody(option.assetKey)}
                       type="button"
                     >
-                      {isSelected ? (item.equipped ? '착용중' : '선택됨') : '선택'}
+                      {isSelected ? '선택됨' : '선택'}
                     </button>
-                  ) : (
-                    <button
-                      className={isAffordable ? 'primary-button' : 'soft-button is-disabled'}
-                      disabled={!isAffordable}
-                      onClick={() => handlePurchase(item)}
-                      type="button"
-                    >
-                      {isAffordable ? '구매' : '체크 부족'}
-                    </button>
-                  )}
-                </div>
-              </article>
-            )
-          })}
-        </section>
+                  </div>
+                </article>
+              )
+            })}
+          </section>
+        ) : (
+          <>
+            <section className="shop-grid">
+              {visibleItems.map((item) => {
+                const shopCategory = toShopCategory(item.category)
+                const isSelected = getSelectedItemId(draft, item.category) === item.itemId
+                const pendingItem = shopCategory ? pendingPurchases[shopCategory] : null
+                const isPending = pendingItem?.itemId === item.itemId
+                const nextPendingPrice = pendingPriceChecks - (pendingItem?.priceChecks ?? 0) + item.priceChecks
+                const canPreviewItem = item.owned || nextPendingPrice <= currentChecks
 
-        {!visibleItems.length ? (
-          <div className="empty-inline-state">
-            {mode === 'INVENTORY'
-              ? '이 카테고리에는 아직 보유한 아이템이 없어요.'
-              : '지금 보여줄 아이템이 없어요.'}
-          </div>
-        ) : null}
+                return (
+                  <article className="shop-item-card" key={item.itemId}>
+                    <div className="thumb-plate">
+                      <AvatarPreview
+                        className="shop-item-card__preview"
+                        size={FACE_PREVIEW_CATEGORIES.has(item.category) ? 'face-thumb' : 'thumb'}
+                        scope={FACE_PREVIEW_CATEGORIES.has(item.category) ? 'face' : 'full'}
+                        state={buildItemPreviewState(draft, item)}
+                      />
+                    </div>
+
+                    <div className="shop-item-card__body">
+                      <div className="shop-item-card__title-row">
+                        <h3>{item.name}</h3>
+                        {!item.owned && isPending ? (
+                          <span className="inline-state-pill">구매 대기</span>
+                        ) : null}
+                        {item.owned && isSelected ? (
+                          <span className="inline-state-pill">
+                            {item.equipped ? '착용중' : '미리보기 적용중'}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="card-action-row">
+                      {item.owned ? (
+                        <button
+                          className={isSelected ? 'soft-button is-disabled' : 'primary-button'}
+                          disabled={isSelected}
+                          onClick={() => handlePreviewItem(item)}
+                          type="button"
+                        >
+                          {isSelected ? '선택됨' : '적용'}
+                        </button>
+                      ) : (
+                        <button
+                          className={canPreviewItem && !isPending ? 'primary-button' : 'soft-button is-disabled'}
+                          disabled={!canPreviewItem || isPending}
+                          onClick={() => handlePreviewItem(item)}
+                          type="button"
+                        >
+                          {isPending
+                            ? '장바구니 담김'
+                            : canPreviewItem
+                              ? `미리보기 · ${item.priceChecks}체크`
+                              : `${item.priceChecks}체크 필요`}
+                        </button>
+                      )}
+                    </div>
+                  </article>
+                )
+              })}
+            </section>
+
+            {!isShopLoading && !visibleItems.length ? (
+              <div className="empty-inline-state">
+                {mode === 'INVENTORY'
+                  ? '이 카테고리에는 아직 보유한 아이템이 없어요.'
+                  : '지금 보여줄 아이템이 없어요.'}
+              </div>
+            ) : null}
+
+            {isShopLoading ? (
+              <div className="empty-inline-state">아이템을 불러오는 중이에요.</div>
+            ) : null}
+          </>
+        )}
       </article>
     </section>
   )

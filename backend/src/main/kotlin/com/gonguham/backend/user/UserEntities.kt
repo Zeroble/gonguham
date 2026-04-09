@@ -53,6 +53,11 @@ class AvatarProfile(
     var equippedHairItemId: Long? = null,
     var equippedTopItemId: Long? = null,
     var equippedBottomItemId: Long? = null,
+    var equippedShoesItemId: Long? = null,
+    var equippedPupilItemId: Long? = null,
+    var equippedEyebrowItemId: Long? = null,
+    var equippedEyelashItemId: Long? = null,
+    var equippedMouthItemId: Long? = null,
 )
 
 interface UserRepository : JpaRepository<User, Long> {

@@ -38,6 +38,7 @@ export type StudyHomePanel = {
     nodeState: string
     scheduledAt: string
     planned: boolean
+    sessionType: string
   }>
   notice: FeedItem | null
   posts: FeedItem[]
@@ -66,11 +67,29 @@ export type FeedItem = {
   createdAt: string
 }
 
+export type PostComment = {
+  commentId: number
+  authorNickname: string
+  content: string
+  createdAt: string
+}
+
+export type PostDetail = {
+  postId: number
+  type: string
+  title: string
+  content: string
+  authorNickname: string
+  createdAt: string
+  comments: PostComment[]
+}
+
 export type StudyCard = {
   studyId: number
   type: string
   title: string
   description: string
+  daysOfWeek: string[]
   dayLabel: string
   timeLabel: string
   locationLabel: string
@@ -85,6 +104,7 @@ export type StudyDetail = {
   title: string
   description: string
   leaderNickname: string
+  daysOfWeek: string[]
   dayLabel: string
   timeLabel: string
   locationLabel: string
@@ -99,6 +119,7 @@ export type StudyDetail = {
     sessionNo: number
     title: string
     scheduledAt: string
+    sessionType: string
   }>
   notice: FeedItem | null
   posts: FeedItem[]
@@ -113,6 +134,11 @@ export type AvatarSummary = {
     hair: AvatarSlot | null
     top: AvatarSlot | null
     bottom: AvatarSlot | null
+    shoes: AvatarSlot | null
+    pupil: AvatarSlot | null
+    eyebrow: AvatarSlot | null
+    eyelash: AvatarSlot | null
+    mouth: AvatarSlot | null
   }
 }
 
@@ -122,6 +148,7 @@ export type AvatarAppearance = {
   eyebrowAssetKey: string
   eyelashAssetKey: string
   mouthAssetKey: string
+  shoesAssetKey: string | null
 }
 
 export type AvatarSlot = {
@@ -133,9 +160,7 @@ export type AvatarSlot = {
 export type AvatarShopItem = {
   itemId: number
   category: string
-  rarity: string
   name: string
-  description: string
   priceChecks: number
   assetKey: string
   owned: boolean
@@ -146,11 +171,38 @@ export type SaveAvatarAppearanceRequest = {
   hairItemId: number | null
   topItemId: number | null
   bottomItemId: number | null
+  shoesItemId: number | null
+  pupilItemId: number | null
+  eyebrowItemId: number | null
+  eyelashItemId: number | null
+  mouthItemId: number | null
   bodyAssetKey: string
-  pupilAssetKey: string
-  eyebrowAssetKey: string
-  eyelashAssetKey: string
-  mouthAssetKey: string
+}
+
+export type CreateStudySessionInput = {
+  title: string
+  scheduledAt: string
+  sessionType: 'REGULAR' | 'BREAK'
+  placeText?: string | null
+}
+
+export type CreateStudyInput = {
+  type: 'TOPIC' | 'MOGAKGONG' | 'FLASH'
+  title: string
+  description: string
+  daysOfWeek: string[]
+  startTime: string
+  endTime: string
+  startDate: string
+  endDate: string
+  maxMembers: number
+  locationType: 'ONLINE' | 'OFFLINE'
+  locationText: string
+  rulesText: string
+  suppliesText: string
+  cautionText: string
+  tags: string[]
+  sessions: CreateStudySessionInput[]
 }
 
 type FetchOptions = Omit<RequestInit, 'headers' | 'body'> & {
@@ -244,7 +296,7 @@ export const api = {
       body: {},
     })
   },
-  createStudy(userId: number, body: unknown) {
+  createStudy(userId: number, body: CreateStudyInput) {
     return request<StudyDetail>('/api/v1/studies', userId, {
       method: 'POST',
       body,
@@ -272,6 +324,15 @@ export const api = {
   },
   createPost(userId: number, studyId: number, body: { type: 'POST' | 'NOTICE'; title: string; content: string }) {
     return request<FeedItem>(`/api/v1/studies/${studyId}/posts`, userId, {
+      method: 'POST',
+      body,
+    })
+  },
+  getPostDetail(userId: number, postId: number) {
+    return request<PostDetail>(`/api/v1/posts/${postId}`, userId)
+  },
+  createPostComment(userId: number, postId: number, body: { content: string }) {
+    return request<PostComment>(`/api/v1/posts/${postId}/comments`, userId, {
       method: 'POST',
       body,
     })

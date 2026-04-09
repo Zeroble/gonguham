@@ -37,6 +37,7 @@ data class TimelineSession(
     val nodeState: String,
     val scheduledAt: String,
     val planned: Boolean,
+    val sessionType: String,
 )
 
 data class FeedItem(
