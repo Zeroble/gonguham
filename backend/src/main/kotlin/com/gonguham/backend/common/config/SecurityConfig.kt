@@ -3,6 +3,8 @@ package com.gonguham.backend.common.config
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
@@ -13,7 +15,7 @@ class SecurityConfig {
             .cors { }
             .csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/h2-console/**", "/api/v1/health").permitAll()
+                it.requestMatchers("/api/v1/health").permitAll()
                 it.anyRequest().permitAll()
             }
             .headers { headers -> headers.frameOptions { it.sameOrigin() } }
@@ -22,4 +24,7 @@ class SecurityConfig {
 
         return http.build()
     }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

@@ -1,6 +1,7 @@
 package com.gonguham.backend.common
 
 import com.gonguham.backend.avatar.AvatarAssetCatalog
+import com.gonguham.backend.avatar.AvatarFreeAppearance
 import com.gonguham.backend.avatar.AvatarItemRepository
 import com.gonguham.backend.avatar.UserAvatarItem
 import com.gonguham.backend.avatar.UserAvatarItemRepository
@@ -21,6 +22,8 @@ import com.gonguham.backend.domain.StudyType
 import com.gonguham.backend.study.Attendance
 import com.gonguham.backend.study.AttendanceRepository
 import com.gonguham.backend.study.Post
+import com.gonguham.backend.study.PostComment
+import com.gonguham.backend.study.PostCommentRepository
 import com.gonguham.backend.study.PostRepository
 import com.gonguham.backend.study.SessionParticipation
 import com.gonguham.backend.study.SessionParticipationRepository
@@ -38,6 +41,7 @@ import com.gonguham.backend.user.User
 import com.gonguham.backend.user.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.boot.CommandLineRunner
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -58,7 +62,9 @@ class Seeder(
     private val sessionParticipationRepository: SessionParticipationRepository,
     private val attendanceRepository: AttendanceRepository,
     private val postRepository: PostRepository,
+    private val postCommentRepository: PostCommentRepository,
     private val levelPolicy: LevelPolicy,
+    private val passwordEncoder: PasswordEncoder,
 ) : CommandLineRunner {
     @Transactional
     override fun run(vararg args: String) {
@@ -69,9 +75,9 @@ class Seeder(
 
         val leader = userRepository.save(
             User(
-                kakaoId = "kakao-101",
                 nickname = "정다솔",
                 email = "leader@gonguham.app",
+                passwordHash = passwordEncoder.encode(DEFAULT_PASSWORD)!!,
                 totalEarnedChecks = 27,
                 currentChecks = 14,
                 level = levelPolicy.levelFor(27),
@@ -80,9 +86,9 @@ class Seeder(
         )
         val member = userRepository.save(
             User(
-                kakaoId = "kakao-102",
                 nickname = "김민수",
                 email = "member@gonguham.app",
+                passwordHash = passwordEncoder.encode(DEFAULT_PASSWORD)!!,
                 totalEarnedChecks = 9,
                 currentChecks = 9,
                 level = levelPolicy.levelFor(9),
@@ -91,9 +97,9 @@ class Seeder(
         )
         val guest = userRepository.save(
             User(
-                kakaoId = "kakao-103",
                 nickname = "박서연",
                 email = "guest@gonguham.app",
+                passwordHash = passwordEncoder.encode(DEFAULT_PASSWORD)!!,
                 totalEarnedChecks = 4,
                 currentChecks = 2,
                 level = levelPolicy.levelFor(4),
@@ -118,6 +124,15 @@ class Seeder(
         val ownedEyelash = items.first { it.assetKey == "eyelash-02" }
         val defaultMouth = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_MOUTH_ITEM_KEY }
         val ownedMouth = items.first { it.assetKey == "mouth-04" }
+        val avatarDefaults = AvatarDefaults(
+            hair = defaultHair,
+            top = defaultTop,
+            bottom = defaultBottom,
+            pupil = defaultPupil,
+            eyebrow = defaultEyebrow,
+            eyelash = defaultEyelash,
+            mouth = defaultMouth,
+        )
 
         userAvatarItemRepository.saveAll(
             listOf(
@@ -238,7 +253,7 @@ class Seeder(
             Study(
                 leaderUserId = member.id!!,
                 type = StudyType.FLASH,
-                title = "UX 리서치 짧은 실습반",
+                title = "사용자 조사 짧은 실습반",
                 description = "인터뷰 질문 짜기부터 인사이트 정리까지 빠르게 실습해봅니다.",
                 daysOfWeek = mutableSetOf(DayOfWeek.FRIDAY),
                 startTime = LocalTime.of(17, 0),
@@ -248,7 +263,7 @@ class Seeder(
                 repeatType = RepeatType.ONCE,
                 maxMembers = 6,
                 locationType = LocationType.ONLINE,
-                locationText = "Google Meet",
+                locationText = "구글 밋",
                 rulesText = "서로 인터뷰 연습 파트너가 되어주기",
                 suppliesText = "노트북, 메모 앱",
                 cautionText = "회차 1회짜리 반짝 스터디",
@@ -259,11 +274,11 @@ class Seeder(
 
         studyTagRepository.saveAll(
             listOf(
-                StudyTag(studyId = topicStudy.id!!, name = "CS"),
+                StudyTag(studyId = topicStudy.id!!, name = "컴공"),
                 StudyTag(studyId = topicStudy.id!!, name = "자료구조"),
                 StudyTag(studyId = mogakStudy.id!!, name = "집중"),
                 StudyTag(studyId = mogakStudy.id!!, name = "루틴"),
-                StudyTag(studyId = flashStudy.id!!, name = "UX"),
+                StudyTag(studyId = flashStudy.id!!, name = "사용자조사"),
                 StudyTag(studyId = flashStudy.id!!, name = "실습"),
             ),
         )
@@ -310,11 +325,11 @@ class Seeder(
 
         val earlyTopicSessions = studySessionRepository.saveAll(
             listOf(
-                StudySession(studyId = topicStudy.id!!, sessionNo = 1, title = "OT and study setup", scheduledAt = now.minusWeeks(9), placeText = topicStudy.locationText),
-                StudySession(studyId = topicStudy.id!!, sessionNo = 2, title = "Array and list warmup", scheduledAt = now.minusWeeks(8), placeText = topicStudy.locationText),
-                StudySession(studyId = topicStudy.id!!, sessionNo = 3, title = "Stack and queue drill", scheduledAt = now.minusWeeks(7), placeText = topicStudy.locationText),
-                StudySession(studyId = topicStudy.id!!, sessionNo = 4, title = "Tree traversal basics", scheduledAt = now.minusWeeks(6), placeText = topicStudy.locationText),
-                StudySession(studyId = topicStudy.id!!, sessionNo = 5, title = "Graph intro practice", scheduledAt = now.minusWeeks(5), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 1, title = "OT 및 스터디 세팅", scheduledAt = now.minusWeeks(9), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 2, title = "배열과 리스트 워밍업", scheduledAt = now.minusWeeks(8), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 3, title = "스택과 큐 훈련", scheduledAt = now.minusWeeks(7), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 4, title = "트리 순회 기초", scheduledAt = now.minusWeeks(6), placeText = topicStudy.locationText),
+                StudySession(studyId = topicStudy.id!!, sessionNo = 5, title = "그래프 입문 연습", scheduledAt = now.minusWeeks(5), placeText = topicStudy.locationText),
             ),
         )
 
@@ -413,5 +428,413 @@ class Seeder(
                 Post(studyId = topicStudy.id!!, authorUserId = leader.id!!, type = PostType.POST, title = "지난 회차 정리본 공유", content = "그래프 BFS/DFS 요약 노트 업로드했습니다.", createdAt = now.minusDays(1), updatedAt = now.minusDays(1)),
             ),
         )
+        seedExtendedData(
+            now = now,
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+            items = items,
+        )
+    }
+
+    private fun seedExtendedData(
+        now: LocalDateTime,
+        defaultAppearance: AvatarFreeAppearance,
+        avatarDefaults: AvatarDefaults,
+        items: List<com.gonguham.backend.avatar.AvatarItem>,
+    ) {
+        val hana = createSeedUser(
+            email = "hana@gonguham.app",
+            nickname = "하나",
+            totalEarnedChecks = 31,
+            currentChecks = 18,
+            createdAt = now.minusDays(28),
+            bodyAssetKey = "body-08",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
+        val minho = createSeedUser(
+            email = "minho@gonguham.app",
+            nickname = "민호",
+            totalEarnedChecks = 22,
+            currentChecks = 11,
+            createdAt = now.minusDays(24),
+            bodyAssetKey = "body-12",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
+        val sora = createSeedUser(
+            email = "sora@gonguham.app",
+            nickname = "소라",
+            totalEarnedChecks = 17,
+            currentChecks = 9,
+            createdAt = now.minusDays(19),
+            bodyAssetKey = "body-16",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
+        val daniel = createSeedUser(
+            email = "daniel@gonguham.app",
+            nickname = "도윤",
+            totalEarnedChecks = 14,
+            currentChecks = 6,
+            createdAt = now.minusDays(15),
+            bodyAssetKey = "body-20",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
+        val yuna = createSeedUser(
+            email = "yuna@gonguham.app",
+            nickname = "유나",
+            totalEarnedChecks = 11,
+            currentChecks = 7,
+            createdAt = now.minusDays(10),
+            bodyAssetKey = "body-24",
+            defaultAppearance = defaultAppearance,
+            avatarDefaults = avatarDefaults,
+        )
+
+        val featuredHair = items.first { it.assetKey == "hair-03-c" }
+        val featuredTop = items.first { it.assetKey == "top-03" }
+        val featuredShoes = items.first { it.assetKey == "shoes-01" }
+        userAvatarItemRepository.saveAll(
+            listOf(featuredHair, featuredTop, featuredShoes).map { avatarItem ->
+                UserAvatarItem(
+                    userId = hana.id!!,
+                    avatarItemId = avatarItem.id!!,
+                    purchasedAt = now.minusDays(7),
+                )
+            },
+        )
+        avatarProfileRepository.findByUserId(hana.id!!)?.let { profile ->
+            profile.equippedHairItemId = featuredHair.id
+            profile.equippedTopItemId = featuredTop.id
+            profile.equippedShoesItemId = featuredShoes.id
+            avatarProfileRepository.save(profile)
+        }
+
+        val backendLab = studyRepository.save(
+            Study(
+                leaderUserId = hana.id!!,
+                type = StudyType.TOPIC,
+                title = "백엔드 리팩터링 연구실",
+                description = "매주 실제 스프링 기능을 가져와 더 읽기 쉽고 안전한 코드로 다듬는 스터디입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
+                startTime = LocalTime.of(19, 30),
+                endTime = LocalTime.of(21, 30),
+                startDate = LocalDate.now().minusWeeks(2),
+                endDate = LocalDate.now().plusWeeks(6),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 6,
+                locationType = LocationType.OFFLINE,
+                locationText = "강남 스터디룸 A",
+                rulesText = "이번 주 발표 담당자는 모임 전까지 초안 PR이나 코드 조각을 꼭 공유합니다.",
+                suppliesText = "노트북, 리뷰 메모, 함께 볼 로그나 쿼리 결과를 준비해 주세요.",
+                cautionText = "정시에 시작하고, 첫 15분은 가벼운 근황 공유만 진행합니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(18),
+            ),
+        )
+        val sprintClub = studyRepository.save(
+            Study(
+                leaderUserId = minho.id!!,
+                type = StudyType.MOGAKGONG,
+                title = "토요 알고리즘 스프린트",
+                description = "조용한 몰입 시간과 실전 모의테스트, 짧은 회고로 리듬을 만드는 주말 알고리즘 스터디입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.SATURDAY),
+                startTime = LocalTime.of(9, 0),
+                endTime = LocalTime.of(12, 30),
+                startDate = LocalDate.now().minusWeeks(3),
+                endDate = LocalDate.now().plusWeeks(5),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 8,
+                locationType = LocationType.OFFLINE,
+                locationText = "신촌 스터디 라운지",
+                rulesText = "휴대폰은 무음, 소리 재생 금지, 모의테스트는 10시 30분 정각에 시작합니다.",
+                suppliesText = "노트, 펜, 물, 이번 주에 막힌 문제 하나를 가져와 주세요.",
+                cautionText = "지각하면 첫 집중 블록은 건너뛰고 두 번째 블록부터 합류합니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(16),
+            ),
+        )
+        val designCircle = studyRepository.save(
+            Study(
+                leaderUserId = sora.id!!,
+                type = StudyType.TOPIC,
+                title = "프로덕트 디자인 독서모임",
+                description = "디자인 책을 함께 읽고 실무에 바로 써먹을 수 있는 크리틱 질문으로 연결하는 모임입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.TUESDAY),
+                startTime = LocalTime.of(20, 0),
+                endTime = LocalTime.of(21, 30),
+                startDate = LocalDate.now().minusWeeks(1),
+                endDate = LocalDate.now().plusWeeks(7),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 5,
+                locationType = LocationType.ONLINE,
+                locationText = "줌",
+                rulesText = "지정 챕터를 읽고, 같이 볼 화면 예시를 하나씩 준비합니다.",
+                suppliesText = "스크린샷, 메모, 읽으면서 체크한 포인트를 가져와 주세요.",
+                cautionText = "읽기 시간에는 즉석 리디자인을 하지 않고 워크숍 시간에만 진행합니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(12),
+            ),
+        )
+        val portfolioClub = studyRepository.save(
+            Study(
+                leaderUserId = daniel.id!!,
+                type = StudyType.FLASH,
+                title = "포트폴리오 피드백 클럽",
+                description = "짧고 밀도 있게 포트폴리오 피드백을 주고받는 취업 준비 스터디입니다.",
+                daysOfWeek = mutableSetOf(DayOfWeek.FRIDAY),
+                startTime = LocalTime.of(19, 0),
+                endTime = LocalTime.of(20, 30),
+                startDate = LocalDate.now().plusDays(2),
+                endDate = LocalDate.now().plusWeeks(4),
+                repeatType = RepeatType.WEEKLY,
+                maxMembers = 5,
+                locationType = LocationType.ONLINE,
+                locationText = "구글 밋",
+                rulesText = "가장 자신 있는 케이스 스터디 하나와 가장 고민되는 지점을 같이 공유합니다.",
+                suppliesText = "포트폴리오 링크, 지원 직무, 최근 지원 메모를 준비해 주세요.",
+                cautionText = "피드백은 솔직하게 하되 구체적으로, 한 사람당 시간을 길게 끌지 않습니다.",
+                status = StudyStatus.OPEN,
+                createdAt = now.minusDays(5),
+            ),
+        )
+
+        studyTagRepository.saveAll(
+            listOf(
+                StudyTag(studyId = backendLab.id!!, name = "백엔드"),
+                StudyTag(studyId = backendLab.id!!, name = "스프링"),
+                StudyTag(studyId = backendLab.id!!, name = "리팩터링"),
+                StudyTag(studyId = sprintClub.id!!, name = "알고리즘"),
+                StudyTag(studyId = sprintClub.id!!, name = "몰입"),
+                StudyTag(studyId = designCircle.id!!, name = "디자인"),
+                StudyTag(studyId = designCircle.id!!, name = "독서"),
+                StudyTag(studyId = portfolioClub.id!!, name = "취업"),
+                StudyTag(studyId = portfolioClub.id!!, name = "포트폴리오"),
+            ),
+        )
+
+        studyMembershipRepository.saveAll(
+            listOf(
+                StudyMembership(studyId = backendLab.id!!, userId = hana.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(18)),
+                StudyMembership(studyId = backendLab.id!!, userId = minho.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(17)),
+                StudyMembership(studyId = backendLab.id!!, userId = sora.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(16)),
+                StudyMembership(studyId = sprintClub.id!!, userId = minho.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(16)),
+                StudyMembership(studyId = sprintClub.id!!, userId = hana.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(15)),
+                StudyMembership(studyId = sprintClub.id!!, userId = daniel.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(15)),
+                StudyMembership(studyId = sprintClub.id!!, userId = yuna.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(14)),
+                StudyMembership(studyId = designCircle.id!!, userId = sora.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(12)),
+                StudyMembership(studyId = designCircle.id!!, userId = hana.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(11)),
+                StudyMembership(studyId = designCircle.id!!, userId = yuna.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(11)),
+                StudyMembership(studyId = portfolioClub.id!!, userId = daniel.id!!, role = MembershipRole.LEADER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(5)),
+                StudyMembership(studyId = portfolioClub.id!!, userId = minho.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(4)),
+                StudyMembership(studyId = portfolioClub.id!!, userId = yuna.id!!, role = MembershipRole.MEMBER, status = MembershipStatus.ACTIVE, joinedAt = now.minusDays(4)),
+            ),
+        )
+
+        val backendLabSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = backendLab.id!!, sessionNo = 1, title = "서비스 경계 점검", scheduledAt = now.minusDays(14).withHour(19).withMinute(30).withSecond(0).withNano(0), placeText = backendLab.locationText),
+                StudySession(studyId = backendLab.id!!, sessionNo = 2, title = "쿼리 플랜 클리닉", scheduledAt = now.minusDays(9).withHour(19).withMinute(30).withSecond(0).withNano(0), placeText = backendLab.locationText),
+                StudySession(studyId = backendLab.id!!, sessionNo = 3, title = "에러 응답 정리", scheduledAt = now.plusDays(1).withHour(19).withMinute(30).withSecond(0).withNano(0), placeText = backendLab.locationText, noticeText = "단순화하고 싶은 엔드포인트 하나를 가져와 주세요."),
+                StudySession(studyId = backendLab.id!!, sessionNo = 4, title = "캐시 실험 공유", scheduledAt = now.plusDays(8).withHour(19).withMinute(30).withSecond(0).withNano(0), placeText = backendLab.locationText),
+            ),
+        )
+        val sprintClubSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = sprintClub.id!!, sessionNo = 1, title = "몸풀기 세트와 페이스 체크", scheduledAt = now.minusDays(20).withHour(9).withMinute(0).withSecond(0).withNano(0), placeText = sprintClub.locationText),
+                StudySession(studyId = sprintClub.id!!, sessionNo = 2, title = "그리디 모의테스트", scheduledAt = now.minusDays(13).withHour(9).withMinute(0).withSecond(0).withNano(0), placeText = sprintClub.locationText),
+                StudySession(studyId = sprintClub.id!!, sessionNo = 3, title = "DP 집중 블록", scheduledAt = now.plusDays(3).withHour(9).withMinute(0).withSecond(0).withNano(0), placeText = sprintClub.locationText, noticeText = "첫 45분은 각자 문제 풀이에 몰입합니다."),
+                StudySession(studyId = sprintClub.id!!, sessionNo = 4, title = "휴식 주간", scheduledAt = now.plusDays(10).withHour(9).withMinute(0).withSecond(0).withNano(0), sessionType = SessionType.BREAK, placeText = sprintClub.locationText),
+            ),
+        )
+        val designCircleSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = designCircle.id!!, sessionNo = 1, title = "독서 노트 싱크", scheduledAt = now.minusDays(7).withHour(20).withMinute(0).withSecond(0).withNano(0), placeText = designCircle.locationText),
+                StudySession(studyId = designCircle.id!!, sessionNo = 2, title = "크리틱 질문 워크숍", scheduledAt = now.plusDays(4).withHour(20).withMinute(0).withSecond(0).withNano(0), placeText = designCircle.locationText),
+                StudySession(studyId = designCircle.id!!, sessionNo = 3, title = "휴리스틱 뜯어보기", scheduledAt = now.plusDays(11).withHour(20).withMinute(0).withSecond(0).withNano(0), placeText = designCircle.locationText),
+            ),
+        )
+        val portfolioClubSessions = studySessionRepository.saveAll(
+            listOf(
+                StudySession(studyId = portfolioClub.id!!, sessionNo = 1, title = "케이스 스터디 피드백 루프", scheduledAt = now.plusDays(2).withHour(19).withMinute(0).withSecond(0).withNano(0), placeText = portfolioClub.locationText),
+                StudySession(studyId = portfolioClub.id!!, sessionNo = 2, title = "이력서-포트폴리오 정렬", scheduledAt = now.plusDays(9).withHour(19).withMinute(0).withSecond(0).withNano(0), placeText = portfolioClub.locationText),
+                StudySession(studyId = portfolioClub.id!!, sessionNo = 3, title = "오퍼 회고 미니 세션", scheduledAt = now.plusDays(16).withHour(19).withMinute(0).withSecond(0).withNano(0), placeText = portfolioClub.locationText),
+            ),
+        )
+
+        studySessionRepository.saveAll(
+            listOf(
+                backendLabSessions[0],
+                backendLabSessions[1],
+                sprintClubSessions[0],
+                sprintClubSessions[1],
+                designCircleSessions[0],
+            ).onEach { it.attendanceClosedAt = now.minusHours(12) },
+        )
+
+        sessionParticipationRepository.saveAll(
+            listOf(
+                SessionParticipation(sessionId = backendLabSessions[0].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(14)),
+                SessionParticipation(sessionId = backendLabSessions[0].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusDays(14)),
+                SessionParticipation(sessionId = backendLabSessions[0].id!!, userId = sora.id!!, planned = true, updatedAt = now.minusDays(14)),
+                SessionParticipation(sessionId = backendLabSessions[1].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(9)),
+                SessionParticipation(sessionId = backendLabSessions[1].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusDays(9)),
+                SessionParticipation(sessionId = backendLabSessions[1].id!!, userId = sora.id!!, planned = false, updatedAt = now.minusDays(9)),
+                SessionParticipation(sessionId = backendLabSessions[2].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusHours(10)),
+                SessionParticipation(sessionId = backendLabSessions[2].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusHours(8)),
+                SessionParticipation(sessionId = sprintClubSessions[0].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusDays(20)),
+                SessionParticipation(sessionId = sprintClubSessions[0].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(20)),
+                SessionParticipation(sessionId = sprintClubSessions[0].id!!, userId = daniel.id!!, planned = true, updatedAt = now.minusDays(20)),
+                SessionParticipation(sessionId = sprintClubSessions[1].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusDays(13)),
+                SessionParticipation(sessionId = sprintClubSessions[1].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(13)),
+                SessionParticipation(sessionId = sprintClubSessions[1].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusDays(13)),
+                SessionParticipation(sessionId = sprintClubSessions[2].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusHours(14)),
+                SessionParticipation(sessionId = sprintClubSessions[2].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusHours(12)),
+                SessionParticipation(sessionId = designCircleSessions[0].id!!, userId = sora.id!!, planned = true, updatedAt = now.minusDays(7)),
+                SessionParticipation(sessionId = designCircleSessions[0].id!!, userId = hana.id!!, planned = true, updatedAt = now.minusDays(7)),
+                SessionParticipation(sessionId = designCircleSessions[0].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusDays(7)),
+                SessionParticipation(sessionId = designCircleSessions[1].id!!, userId = sora.id!!, planned = true, updatedAt = now.minusHours(6)),
+                SessionParticipation(sessionId = designCircleSessions[1].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusHours(5)),
+                SessionParticipation(sessionId = portfolioClubSessions[0].id!!, userId = daniel.id!!, planned = true, updatedAt = now.minusHours(4)),
+                SessionParticipation(sessionId = portfolioClubSessions[0].id!!, userId = minho.id!!, planned = true, updatedAt = now.minusHours(3)),
+                SessionParticipation(sessionId = portfolioClubSessions[0].id!!, userId = yuna.id!!, planned = true, updatedAt = now.minusHours(2)),
+            ),
+        )
+
+        attendanceRepository.saveAll(
+            listOf(
+                Attendance(sessionId = backendLabSessions[0].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = hana.id!!, checkedAt = now.minusDays(14)),
+                Attendance(sessionId = backendLabSessions[0].id!!, userId = minho.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = hana.id!!, checkedAt = now.minusDays(14)),
+                Attendance(sessionId = backendLabSessions[0].id!!, userId = sora.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = hana.id!!, checkedAt = now.minusDays(14)),
+                Attendance(sessionId = backendLabSessions[1].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = hana.id!!, checkedAt = now.minusDays(9)),
+                Attendance(sessionId = backendLabSessions[1].id!!, userId = minho.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = hana.id!!, checkedAt = now.minusDays(9)),
+                Attendance(sessionId = sprintClubSessions[0].id!!, userId = minho.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = minho.id!!, checkedAt = now.minusDays(20)),
+                Attendance(sessionId = sprintClubSessions[0].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = minho.id!!, checkedAt = now.minusDays(20)),
+                Attendance(sessionId = sprintClubSessions[0].id!!, userId = daniel.id!!, status = AttendanceStatus.ABSENT, checkedByUserId = minho.id!!, checkedAt = now.minusDays(20)),
+                Attendance(sessionId = sprintClubSessions[1].id!!, userId = minho.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = minho.id!!, checkedAt = now.minusDays(13)),
+                Attendance(sessionId = sprintClubSessions[1].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = minho.id!!, checkedAt = now.minusDays(13)),
+                Attendance(sessionId = sprintClubSessions[1].id!!, userId = yuna.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = minho.id!!, checkedAt = now.minusDays(13)),
+                Attendance(sessionId = designCircleSessions[0].id!!, userId = sora.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = sora.id!!, checkedAt = now.minusDays(7)),
+                Attendance(sessionId = designCircleSessions[0].id!!, userId = hana.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = sora.id!!, checkedAt = now.minusDays(7)),
+                Attendance(sessionId = designCircleSessions[0].id!!, userId = yuna.id!!, status = AttendanceStatus.PRESENT, checkedByUserId = sora.id!!, checkedAt = now.minusDays(7)),
+            ),
+        )
+
+        checkLedgerRepository.saveAll(
+            listOf(
+                CheckLedger(userId = hana.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = backendLabSessions[1].id!!, createdAt = now.minusDays(9)),
+                CheckLedger(userId = minho.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = backendLabSessions[1].id!!, createdAt = now.minusDays(9)),
+                CheckLedger(userId = sora.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = designCircleSessions[0].id!!, createdAt = now.minusDays(7)),
+                CheckLedger(userId = yuna.id!!, changeType = CheckChangeType.EARN, amount = 2, reason = CheckReason.ATTENDANCE, refType = "SESSION", refId = sprintClubSessions[1].id!!, createdAt = now.minusDays(13)),
+                CheckLedger(userId = hana.id!!, changeType = CheckChangeType.SPEND, amount = -15, reason = CheckReason.ITEM_PURCHASE, refType = "ITEM", refId = featuredTop.id!!, createdAt = now.minusDays(7)),
+            ),
+        )
+
+        val backendPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = backendLab.id!!, authorUserId = hana.id!!, type = PostType.NOTICE, title = "이번 주 주제: API 에러 응답", content = "각자 정리하고 싶은 컨트롤러 응답 하나씩 가져와 주세요.", createdAt = now.minusHours(20), updatedAt = now.minusHours(20)),
+                Post(studyId = backendLab.id!!, authorUserId = minho.id!!, type = PostType.POST, title = "쿼리 플랜 비교 자료", content = "지난주에 봤던 N+1 이슈 전후 실행 계획 캡처를 정리해서 올렸어요.", createdAt = now.minusHours(16), updatedAt = now.minusHours(16)),
+            ),
+        )
+        val sprintPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = sprintClub.id!!, authorUserId = minho.id!!, type = PostType.NOTICE, title = "이번 토요일 진행 방식 안내", content = "이번 주는 DP 세트가 조금 어려워서 첫 집중 블록을 더 길게 가져갑니다.", createdAt = now.minusHours(12), updatedAt = now.minusHours(12)),
+                Post(studyId = sprintClub.id!!, authorUserId = yuna.id!!, type = PostType.POST, title = "모의테스트 회고", content = "그리디는 괜찮았는데 마지막 두 문제에서 시간 관리가 무너졌어요.", createdAt = now.minusHours(9), updatedAt = now.minusHours(9)),
+            ),
+        )
+        val designPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = designCircle.id!!, authorUserId = sora.id!!, type = PostType.NOTICE, title = "화요일 전까지 4장 읽어오기", content = "크리틱 질문에 집중해서 보고, 같이 뜯어볼 모바일 화면 하나씩 준비해 주세요.", createdAt = now.minusHours(7), updatedAt = now.minusHours(7)),
+                Post(studyId = designCircle.id!!, authorUserId = hana.id!!, type = PostType.POST, title = "잘 먹혔던 크리틱 질문 세 가지", content = "어제 온보딩 화면 리뷰에 썼던 질문 세트를 짧은 예시와 함께 정리했어요.", createdAt = now.minusHours(5), updatedAt = now.minusHours(5)),
+            ),
+        )
+        val portfolioPosts = postRepository.saveAll(
+            listOf(
+                Post(studyId = portfolioClub.id!!, authorUserId = daniel.id!!, type = PostType.NOTICE, title = "강한 케이스 하나 가져오기", content = "처음 10분은 목표를 맞추고, 이후에는 빠르게 돌아가며 피드백을 주고받을게요.", createdAt = now.minusHours(3), updatedAt = now.minusHours(3)),
+                Post(studyId = portfolioClub.id!!, authorUserId = yuna.id!!, type = PostType.POST, title = "서사 구조 메모", content = "프로덕트 케이스 스터디를 정리할 때 쓸 수 있는 간단한 전개 틀을 적어봤어요.", createdAt = now.minusHours(2), updatedAt = now.minusHours(2)),
+            ),
+        )
+
+        postCommentRepository.saveAll(
+            listOf(
+                PostComment(postId = backendPosts[1].id!!, authorUserId = sora.id!!, content = "실행 계획 캡처 덕분에 느린 쿼리 원인을 설명하기 쉬웠어요.", createdAt = now.minusHours(13), updatedAt = now.minusHours(13)),
+                PostComment(postId = backendPosts[1].id!!, authorUserId = hana.id!!, content = "다음 주엔 검증 로직 정리 전후도 같이 비교해봐요.", createdAt = now.minusHours(12), updatedAt = now.minusHours(12)),
+                PostComment(postId = sprintPosts[1].id!!, authorUserId = hana.id!!, content = "회고 읽고 나니 마지막 구간에서 왜 흔들렸는지 바로 보였어요.", createdAt = now.minusHours(8), updatedAt = now.minusHours(8)),
+                PostComment(postId = designPosts[1].id!!, authorUserId = yuna.id!!, content = "두 번째 질문은 모바일 온보딩 리뷰에 딱 맞는 것 같아요.", createdAt = now.minusHours(4), updatedAt = now.minusHours(4)),
+                PostComment(postId = portfolioPosts[1].id!!, authorUserId = minho.id!!, content = "이 틀 그대로 세션 전에 한 번 써봐도 될 것 같아요.", createdAt = now.minusHours(1), updatedAt = now.minusHours(1)),
+            ),
+        )
+    }
+
+    private fun createSeedUser(
+        email: String,
+        nickname: String,
+        totalEarnedChecks: Int,
+        currentChecks: Int,
+        createdAt: LocalDateTime,
+        bodyAssetKey: String,
+        defaultAppearance: AvatarFreeAppearance,
+        avatarDefaults: AvatarDefaults,
+    ): User {
+        val user = userRepository.save(
+            User(
+                email = email,
+                passwordHash = passwordEncoder.encode(DEFAULT_PASSWORD)!!,
+                nickname = nickname,
+                totalEarnedChecks = totalEarnedChecks,
+                currentChecks = currentChecks,
+                level = levelPolicy.levelFor(totalEarnedChecks),
+                createdAt = createdAt,
+            ),
+        )
+
+        userAvatarItemRepository.saveAll(
+            avatarDefaults.allItems.map { avatarItem ->
+                UserAvatarItem(
+                    userId = user.id!!,
+                    avatarItemId = avatarItem.id!!,
+                    purchasedAt = createdAt,
+                )
+            },
+        )
+
+        avatarProfileRepository.save(
+            AvatarProfile(
+                userId = user.id!!,
+                bodyAssetKey = bodyAssetKey,
+                pupilAssetKey = defaultAppearance.pupilAssetKey,
+                eyebrowAssetKey = defaultAppearance.eyebrowAssetKey,
+                eyelashAssetKey = defaultAppearance.eyelashAssetKey,
+                mouthAssetKey = defaultAppearance.mouthAssetKey,
+                equippedHairItemId = avatarDefaults.hair.id,
+                equippedTopItemId = avatarDefaults.top.id,
+                equippedBottomItemId = avatarDefaults.bottom.id,
+                equippedPupilItemId = avatarDefaults.pupil.id,
+                equippedEyebrowItemId = avatarDefaults.eyebrow.id,
+                equippedEyelashItemId = avatarDefaults.eyelash.id,
+                equippedMouthItemId = avatarDefaults.mouth.id,
+            ),
+        )
+
+        return user
+    }
+
+    private data class AvatarDefaults(
+        val hair: com.gonguham.backend.avatar.AvatarItem,
+        val top: com.gonguham.backend.avatar.AvatarItem,
+        val bottom: com.gonguham.backend.avatar.AvatarItem,
+        val pupil: com.gonguham.backend.avatar.AvatarItem,
+        val eyebrow: com.gonguham.backend.avatar.AvatarItem,
+        val eyelash: com.gonguham.backend.avatar.AvatarItem,
+        val mouth: com.gonguham.backend.avatar.AvatarItem,
+    ) {
+        val allItems: List<com.gonguham.backend.avatar.AvatarItem>
+            get() = listOf(hair, top, bottom, pupil, eyebrow, eyelash, mouth)
+    }
+
+    companion object {
+        const val DEFAULT_PASSWORD = "gonguham123!"
     }
 }

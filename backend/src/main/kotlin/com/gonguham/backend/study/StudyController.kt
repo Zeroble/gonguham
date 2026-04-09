@@ -55,6 +55,20 @@ class StudyController(
     ): StudyDetailResponse =
         studyService.joinStudy(currentUserService.currentUser(request), studyId)
 
+    @PostMapping("/studies/{studyId}/leave")
+    fun leave(
+        request: HttpServletRequest,
+        @PathVariable studyId: Long,
+    ): StudyActionResult =
+        studyService.leaveStudy(currentUserService.currentUser(request), studyId)
+
+    @PostMapping("/studies/{studyId}/close")
+    fun close(
+        request: HttpServletRequest,
+        @PathVariable studyId: Long,
+    ): StudyActionResult =
+        studyService.closeStudy(currentUserService.currentUser(request), studyId)
+
     @PatchMapping("/sessions/{sessionId}/participation")
     fun updateParticipation(
         request: HttpServletRequest,

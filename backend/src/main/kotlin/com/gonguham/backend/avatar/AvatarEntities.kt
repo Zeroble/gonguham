@@ -51,6 +51,7 @@ class UserAvatarItem(
 
 interface AvatarItemRepository : JpaRepository<AvatarItem, Long> {
     fun findAllByCategoryOrderByPriceChecksAscNameAsc(category: AvatarCategory): List<AvatarItem>
+    fun findAllByIsDefaultTrue(): List<AvatarItem>
 }
 
 interface UserAvatarItemRepository : JpaRepository<UserAvatarItem, Long> {

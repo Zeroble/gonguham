@@ -11,7 +11,7 @@ import {
   TIME_FILTER_OPTIONS,
 } from '../app/display'
 import { useApp } from '../app/useApp'
-import { ProfileNameButton } from '../features/profile/ProfileNameButton'
+import { StudyOverviewSheet } from '../features/study/StudyOverviewSheet'
 import { type AppShellOutletContext } from '../layouts/appShellDashboard'
 
 export function StudySearchPage() {
@@ -253,15 +253,11 @@ export function StudySearchPage() {
           role="presentation"
         >
           <article
-            className="modal-card study-detail-modal"
+            className="modal-card study-detail-modal study-overview-modal"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="modal-card__header">
-              <div>
-                <span className="study-type-badge">{selectedStudy.type}</span>
-                <h2>{selectedStudy.title}</h2>
-                <p className="modal-description">{selectedStudy.description}</p>
-              </div>
+              <span className="section-kicker">스터디 상세</span>
               <button
                 className="soft-button"
                 onClick={() => setSelectedStudy(null)}
@@ -271,111 +267,21 @@ export function StudySearchPage() {
               </button>
             </div>
 
-            <div className="info-grid">
-              <div className="info-tile">
-                <span>요일</span>
-                <strong>{selectedStudy.dayLabel}</strong>
-              </div>
-              <div className="info-tile">
-                <span>시간</span>
-                <strong>{selectedStudy.timeLabel}</strong>
-              </div>
-              <div className="info-tile">
-                <span>위치</span>
-                <strong>{selectedStudy.locationLabel}</strong>
-              </div>
-              <div className="info-tile">
-                <span>리더</span>
-                <ProfileNameButton
-                  className="profile-name-button is-inline is-strong"
-                  nickname={selectedStudy.leaderNickname}
-                  userId={selectedStudy.leaderUserId}
-                />
-              </div>
+            <StudyOverviewSheet study={selectedStudy} />
+
+            <div className="study-overview-modal__footer">
+              {selectedStudy.joined ? (
+                <span className="status-chip is-done">이미 참여 중인 스터디예요</span>
+              ) : (
+                <button
+                  className="primary-button"
+                  onClick={() => handleJoin(selectedStudy.studyId)}
+                  type="button"
+                >
+                  즉시 참여
+                </button>
+              )}
             </div>
-
-            <div className="detail-modal-grid">
-              <section className="detail-modal-column">
-                <article className="notice-panel">
-                    <span className="section-kicker">공지</span>
-                  <strong>{selectedStudy.notice?.title ?? '공지 없음'}</strong>
-                  <p>{selectedStudy.notice?.content ?? '등록된 공지가 없습니다.'}</p>
-                </article>
-
-                <article className="detail-panel">
-                  <span className="section-kicker">회차</span>
-                  <div className="session-preview-list">
-                    {selectedStudy.sessions.map((session) => (
-                      <div
-                        className={
-                          session.sessionType === 'BREAK'
-                            ? 'session-preview-item is-break'
-                            : 'session-preview-item'
-                        }
-                        key={session.sessionId}
-                      >
-                        <span>{session.sessionNo}회차</span>
-                        <strong>{session.title}</strong>
-                        <span>{session.scheduledAt}</span>
-                      </div>
-                    ))}
-                  </div>
-                </article>
-
-                <article className="detail-panel">
-                  <span className="section-kicker">게시글</span>
-                  <div className="post-list">
-                    {selectedStudy.posts.map((post) => (
-                      <article className="post-row" key={post.postId}>
-                        <div>
-                          <strong>{post.title}</strong>
-                          <ProfileNameButton
-                            className="profile-name-button is-inline"
-                            nickname={post.authorNickname}
-                            userId={post.authorUserId}
-                          />
-                        </div>
-                        <time>{post.createdAt}</time>
-                      </article>
-                    ))}
-                  </div>
-                </article>
-              </section>
-
-              <aside className="detail-modal-column">
-                <article className="detail-panel">
-                  <span className="section-kicker">준비물</span>
-                  <p>{selectedStudy.suppliesText}</p>
-                </article>
-                <article className="detail-panel">
-                  <span className="section-kicker">참여 규칙</span>
-                  <p>{selectedStudy.rulesText}</p>
-                </article>
-                <article className="detail-panel">
-                  <span className="section-kicker">주의사항</span>
-                  <p>{selectedStudy.cautionText}</p>
-                </article>
-                <article className="detail-panel">
-                  <span className="section-kicker">태그</span>
-                  <div className="tag-row">
-                    {selectedStudy.tags.map((tag) => (
-                      <span className="tag-chip" key={tag}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              </aside>
-            </div>
-
-            <button
-              className={selectedStudy.joined ? 'soft-button is-disabled' : 'primary-button'}
-              disabled={selectedStudy.joined}
-              onClick={() => handleJoin(selectedStudy.studyId)}
-              type="button"
-            >
-              {selectedStudy.joined ? '이미 참여중' : '즉시 참여'}
-            </button>
           </article>
         </div>
       ) : null}

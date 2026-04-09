@@ -1,9 +1,12 @@
 package com.gonguham.backend.study
 
+import com.gonguham.backend.support.PostgresIntegrationTest
 import com.gonguham.backend.dashboard.DashboardService
 import com.gonguham.backend.domain.LocationType
+import com.gonguham.backend.domain.MembershipStatus
 import com.gonguham.backend.domain.RepeatType
 import com.gonguham.backend.domain.SessionType
+import com.gonguham.backend.domain.StudyStatus
 import com.gonguham.backend.domain.StudyType
 import com.gonguham.backend.user.UserRepository
 import java.time.DayOfWeek
@@ -24,9 +27,10 @@ class StudyScheduleApiTests @Autowired constructor(
     private val studyService: StudyService,
     private val dashboardService: DashboardService,
     private val studyRepository: StudyRepository,
+    private val studyMembershipRepository: StudyMembershipRepository,
     private val studySessionRepository: StudySessionRepository,
     private val userRepository: UserRepository,
-) {
+) : PostgresIntegrationTest() {
     @Test
     fun `leader can create topic study with multiple days and break sessions`() {
         val leader = userRepository.findById(1L).orElseThrow()
@@ -195,5 +199,37 @@ class StudyScheduleApiTests @Autowired constructor(
         }
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+    }
+
+    @Test
+    fun `member can leave joined study and detail reflects left membership`() {
+        val member = userRepository.findById(2L).orElseThrow()
+
+        val result = studyService.leaveStudy(member, 1L)
+        val membership = studyMembershipRepository.findByStudyIdAndUserId(1L, member.id!!)!!
+        val dashboard = dashboardService.dashboardFor(member)
+        val detail = studyService.studyDetail(member, 1L)
+
+        assertEquals(1L, result.studyId)
+        assertEquals(MembershipStatus.LEFT, membership.status)
+        assertEquals(false, detail.joined)
+        assertEquals(listOf(3L), dashboard.joinedStudies.map { it.studyId })
+    }
+
+    @Test
+    fun `leader can close study and it disappears from dashboard`() {
+        val guestLeader = userRepository.findById(3L).orElseThrow()
+
+        val result = studyService.closeStudy(guestLeader, 2L)
+        val closedStudy = studyRepository.findById(2L).orElseThrow()
+        val dashboard = dashboardService.dashboardFor(guestLeader)
+
+        assertEquals(2L, result.studyId)
+        assertEquals(StudyStatus.CLOSED, closedStudy.status)
+        assertEquals(true, dashboard.joinedStudies.none { it.studyId == 2L })
+        assertEquals(
+            true,
+            studyMembershipRepository.findAllByStudyIdAndStatus(2L, MembershipStatus.ACTIVE).isEmpty(),
+        )
     }
 }

@@ -1,5 +1,6 @@
 package com.gonguham.backend.study
 
+import com.gonguham.backend.support.PostgresIntegrationTest
 import com.gonguham.backend.domain.PostType
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
@@ -18,7 +19,7 @@ class StudyPostApiTests @Autowired constructor(
     private val postRepository: PostRepository,
     private val postCommentRepository: PostCommentRepository,
     private val userRepository: com.gonguham.backend.user.UserRepository,
-) {
+) : PostgresIntegrationTest() {
     @Test
     fun `study member can read post detail with comments ordered oldest first`() {
         val post = topicStudyPost()

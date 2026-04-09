@@ -119,6 +119,11 @@ data class UpdateStudySessionsResult(
     val studyId: Long,
 )
 
+data class StudyActionResult(
+    val studyId: Long,
+    val status: String,
+)
+
 data class UpdateParticipationRequest(
     val planned: Boolean,
 )

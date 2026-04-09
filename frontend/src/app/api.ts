@@ -9,6 +9,15 @@ export type SessionUser = {
   profileImageUrl: string | null
 }
 
+export type LoginInput = {
+  email: string
+  password: string
+}
+
+export type SignUpInput = LoginInput & {
+  nickname: string
+}
+
 export type DashboardResponse = {
   todayScheduledCount: number
   defaultStudyId: number | null
@@ -132,6 +141,11 @@ export type StudyDetail = {
   posts: FeedItem[]
 }
 
+export type StudyActionResult = {
+  studyId: number
+  status: string
+}
+
 export type AvatarSummary = {
   currentChecks: number
   totalEarnedChecks: number
@@ -251,18 +265,22 @@ type FetchOptions = Omit<RequestInit, 'headers' | 'body'> & {
   body?: unknown
 }
 
-async function request<T>(path: string, userId?: number | null, options?: FetchOptions): Promise<T> {
+async function request<T>(path: string, _userId?: number | null, options?: FetchOptions): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(userId ? { 'X-Demo-User-Id': String(userId) } : {}),
     },
     body: options?.body === undefined ? undefined : JSON.stringify(options.body),
   })
 
   if (!response.ok) {
     throw new Error(await readErrorMessage(response))
+  }
+
+  if (response.status === 204) {
+    return undefined as T
   }
 
   return response.json() as Promise<T>
@@ -297,13 +315,24 @@ async function readErrorMessage(response: Response) {
 }
 
 export const api = {
-  demoLogin() {
-    return request<SessionUser>('/api/v1/auth/demo-login', null, {
+  login(body: LoginInput) {
+    return request<SessionUser>('/api/v1/auth/login', null, {
       method: 'POST',
-      body: {},
+      body,
     })
   },
-  getMe(userId: number) {
+  signUp(body: SignUpInput) {
+    return request<SessionUser>('/api/v1/auth/signup', null, {
+      method: 'POST',
+      body,
+    })
+  },
+  logout() {
+    return request<void>('/api/v1/auth/logout', null, {
+      method: 'POST',
+    })
+  },
+  getMe(userId?: number | null) {
     return request<SessionUser>('/api/v1/me', userId)
   },
   getUserProfile(userId: number, targetUserId: number) {
@@ -337,6 +366,18 @@ export const api = {
   },
   joinStudy(userId: number, studyId: number) {
     return request<StudyDetail>(`/api/v1/studies/${studyId}/join`, userId, {
+      method: 'POST',
+      body: {},
+    })
+  },
+  leaveStudy(userId: number, studyId: number) {
+    return request<StudyActionResult>(`/api/v1/studies/${studyId}/leave`, userId, {
+      method: 'POST',
+      body: {},
+    })
+  },
+  closeStudy(userId: number, studyId: number) {
+    return request<StudyActionResult>(`/api/v1/studies/${studyId}/close`, userId, {
       method: 'POST',
       body: {},
     })

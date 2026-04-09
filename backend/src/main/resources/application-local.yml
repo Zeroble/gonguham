@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: ${GONGUHAM_DB_URL:jdbc:postgresql://localhost:5432/gonguham}
+    driver-class-name: org.postgresql.Driver
+    username: ${GONGUHAM_DB_USERNAME:gonguham}
+    password: ${GONGUHAM_DB_PASSWORD:gonguham}

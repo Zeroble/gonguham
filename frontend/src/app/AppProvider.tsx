@@ -12,6 +12,15 @@ type AppToast = {
   message: string
 }
 
+type CredentialsInput = {
+  email: string
+  password: string
+}
+
+type SignUpInput = CredentialsInput & {
+  nickname: string
+}
+
 type AppContextValue = {
   me: SessionUser | null
   avatarSummary: AvatarSummary | null
@@ -19,7 +28,8 @@ type AppContextValue = {
   activeProfileUserId: number | null
   isBooting: boolean
   toast: AppToast | null
-  loginDemo: () => Promise<SessionUser>
+  login: (input: CredentialsInput) => Promise<SessionUser>
+  signUp: (input: SignUpInput) => Promise<SessionUser>
   logout: () => void
   refreshMe: () => Promise<SessionUser | null>
   refreshAvatarSummary: () => Promise<AvatarSummary | null>
@@ -30,15 +40,9 @@ type AppContextValue = {
   showToast: (message: string) => void
 }
 
-const SESSION_KEY = 'gonguham-demo-user-id'
-
 const AppContext = createContext<AppContextValue | null>(null)
 
 export function AppProvider({ children }: PropsWithChildren) {
-  const [sessionUserId, setSessionUserId] = useState<number | null>(() => {
-    const raw = window.localStorage.getItem(SESSION_KEY)
-    return raw ? Number(raw) : null
-  })
   const [activeProfileUserId, setActiveProfileUserId] = useState<number | null>(null)
   const [me, setMe] = useState<SessionUser | null>(null)
   const [avatarSummary, setAvatarSummary] = useState<AvatarSummary | null>(null)
@@ -46,31 +50,24 @@ export function AppProvider({ children }: PropsWithChildren) {
   const [toast, setToast] = useState<AppToast | null>(null)
   const toastIdRef = useRef(0)
   const toastTimerRef = useRef<number | null>(null)
+  const sessionUserId = me?.id ?? null
 
   useEffect(() => {
     let cancelled = false
 
     async function bootstrap() {
-      if (!sessionUserId) {
-        setMe(null)
-        setIsBooting(false)
-        return
-      }
-
       setIsBooting(true)
+
       try {
-        const [next, nextAvatarSummary] = await Promise.all([
-          api.getMe(sessionUserId),
-          api.getAvatarSummary(sessionUserId),
-        ])
+        const next = await api.getMe()
+        const nextAvatarSummary = await api.getAvatarSummary(next.id)
+
         if (!cancelled) {
           setMe(next)
           setAvatarSummary(nextAvatarSummary)
         }
       } catch {
         if (!cancelled) {
-          setSessionUserId(null)
-          window.localStorage.removeItem(SESSION_KEY)
           setActiveProfileUserId(null)
           setMe(null)
           setAvatarSummary(null)
@@ -87,7 +84,7 @@ export function AppProvider({ children }: PropsWithChildren) {
     return () => {
       cancelled = true
     }
-  }, [sessionUserId])
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -97,30 +94,38 @@ export function AppProvider({ children }: PropsWithChildren) {
     }
   }, [])
 
-  async function loginDemo() {
-    const user = await api.demoLogin()
+  async function hydrateAfterAuth(user: SessionUser) {
     const nextAvatarSummary = await api.getAvatarSummary(user.id)
-    window.localStorage.setItem(SESSION_KEY, String(user.id))
-    setSessionUserId(user.id)
     setMe(user)
     setAvatarSummary(nextAvatarSummary)
     setIsBooting(false)
     return user
   }
 
+  async function login(input: CredentialsInput) {
+    const user = await api.login(input)
+    return hydrateAfterAuth(user)
+  }
+
+  async function signUp(input: SignUpInput) {
+    const user = await api.signUp(input)
+    return hydrateAfterAuth(user)
+  }
+
   function logout() {
-    window.localStorage.removeItem(SESSION_KEY)
-    setSessionUserId(null)
+    void api.logout().catch(() => undefined)
     setActiveProfileUserId(null)
     setMe(null)
     setAvatarSummary(null)
+    setIsBooting(false)
   }
 
   async function refreshMe() {
     if (!sessionUserId) {
       return null
     }
-    const user = await api.getMe(sessionUserId)
+
+    const user = await api.getMe()
     setMe(user)
     return user
   }
@@ -129,6 +134,7 @@ export function AppProvider({ children }: PropsWithChildren) {
     if (!sessionUserId) {
       return null
     }
+
     const nextAvatarSummary = await api.getAvatarSummary(sessionUserId)
     setAvatarSummary(nextAvatarSummary)
     return nextAvatarSummary
@@ -172,7 +178,8 @@ export function AppProvider({ children }: PropsWithChildren) {
         activeProfileUserId,
         isBooting,
         toast,
-        loginDemo,
+        login,
+        signUp,
         logout,
         refreshMe,
         refreshAvatarSummary,

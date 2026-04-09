@@ -53,7 +53,8 @@
 - Spring Data JPA
 - Spring Security
 - Spring OAuth2 Client
-- H2 Database
+- PostgreSQL
+- Flyway
 
 ### Frontend
 
@@ -113,10 +114,6 @@ cd C:\Users\dlals\Desktop\GONGUHAM\backend
 
 - `GET /api/v1/health`
 
-H2 콘솔:
-
-- `http://localhost:8080/h2-console`
-
 ### 2. 프론트엔드 실행
 
 ```powershell
@@ -166,9 +163,8 @@ npm run lint
 
 ## 데이터베이스 및 시드 데이터
 
-현재 DB는 H2 메모리 DB입니다.
-
-- 서버를 재시작하면 데이터가 초기화됩니다.
+- 로컬 기본 DB는 PostgreSQL입니다.
+- Flyway가 스키마를 관리합니다.
 - 시작 시 `Seeder`가 데모 사용자, 스터디, 회차, 게시글, 아바타 아이템을 주입합니다.
 
 데모 흐름 예시:

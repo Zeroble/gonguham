@@ -95,7 +95,9 @@ class StudyService(
         val tags = studyTagRepository.findAllByStudyId(studyId).map { it.name }
         val sessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(studyId)
         val posts = postRepository.findAllByStudyIdOrderByCreatedAtDesc(studyId)
-        val joined = studyMembershipRepository.findByStudyIdAndUserId(studyId, user.id!!) != null
+        val joined =
+            studyMembershipRepository.findByStudyIdAndUserId(studyId, user.id!!)
+                ?.status == MembershipStatus.ACTIVE
 
         return StudyDetailResponse(
             studyId = study.id!!,
@@ -211,6 +213,14 @@ class StudyService(
         val existingSessions = studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(studyId)
         val normalizedUpdates = normalizeSessionUpdates(study, existingSessions, request)
 
+        // Move session numbers out of the way first so swaps do not violate the
+        // unique `(study_id, session_no)` constraint while updates are flushed.
+        normalizedUpdates.forEachIndexed { index, update ->
+            update.source.sessionNo = -(index + 1)
+        }
+        studySessionRepository.saveAll(normalizedUpdates.map { it.source })
+        studySessionRepository.flush()
+
         normalizedUpdates.forEachIndexed { index, update ->
             update.source.sessionNo = index + 1
             update.source.title = if (update.sessionType == SessionType.BREAK) BREAK_TITLE else update.title
@@ -237,6 +247,9 @@ class StudyService(
     @Transactional
     fun joinStudy(user: User, studyId: Long): StudyDetailResponse {
         val study = getStudy(studyId)
+        if (study.status != StudyStatus.OPEN) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "종료된 스터디에는 참여할 수 없습니다.")
+        }
         val existing = studyMembershipRepository.findByStudyIdAndUserId(studyId, user.id!!)
         if (existing == null) {
             val currentCount = studyMembershipRepository.countByStudyIdAndStatus(studyId, MembershipStatus.ACTIVE)
@@ -273,6 +286,33 @@ class StudyService(
             }
 
         return studyDetail(user, studyId)
+    }
+
+    @Transactional
+    fun leaveStudy(user: User, studyId: Long): StudyActionResult {
+        val membership = activeMembership(studyId, user.id!!)
+        if (membership.role == MembershipRole.LEADER) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "스터디장은 스터디 종료를 이용해주세요.")
+        }
+
+        membership.status = MembershipStatus.LEFT
+        studyMembershipRepository.save(membership)
+
+        return StudyActionResult(studyId = studyId, status = MembershipStatus.LEFT.name)
+    }
+
+    @Transactional
+    fun closeStudy(user: User, studyId: Long): StudyActionResult {
+        ensureLeader(studyId, user.id!!)
+        val study = getStudy(studyId)
+        study.status = StudyStatus.CLOSED
+        studyRepository.save(study)
+
+        val memberships = studyMembershipRepository.findAllByStudyIdAndStatus(studyId, MembershipStatus.ACTIVE)
+        memberships.forEach { it.status = MembershipStatus.LEFT }
+        studyMembershipRepository.saveAll(memberships)
+
+        return StudyActionResult(studyId = studyId, status = StudyStatus.CLOSED.name)
     }
 
     @Transactional
@@ -596,17 +636,23 @@ class StudyService(
     }
 
     private fun ensureMember(studyId: Long, userId: Long) {
+        activeMembership(studyId, userId)
+    }
+
+    private fun ensureLeader(studyId: Long, userId: Long) {
+        val membership = activeMembership(studyId, userId)
+        if (membership.role != MembershipRole.LEADER) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "스터디장만 처리할 수 있습니다.")
+        }
+    }
+
+    private fun activeMembership(studyId: Long, userId: Long): StudyMembership {
         val membership = studyMembershipRepository.findByStudyIdAndUserId(studyId, userId)
         if (membership == null || membership.status != MembershipStatus.ACTIVE) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "스터디 멤버만 이용할 수 있습니다.")
         }
-    }
 
-    private fun ensureLeader(studyId: Long, userId: Long) {
-        val membership = studyMembershipRepository.findByStudyIdAndUserId(studyId, userId)
-        if (membership == null || membership.status != MembershipStatus.ACTIVE || membership.role != MembershipRole.LEADER) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "스터디장만 처리할 수 있습니다.")
-        }
+        return membership
     }
 
     private fun Post.toFeed(): StudyFeedResponse {

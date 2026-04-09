@@ -1,5 +1,6 @@
 package com.gonguham.backend.avatar
 
+import com.gonguham.backend.support.PostgresIntegrationTest
 import com.gonguham.backend.domain.AvatarCategory
 import com.gonguham.backend.user.UserRepository
 import kotlin.test.assertEquals
@@ -20,7 +21,7 @@ class AvatarServiceTests @Autowired constructor(
     private val avatarItemRepository: AvatarItemRepository,
     private val userAvatarItemRepository: UserAvatarItemRepository,
     private val userRepository: UserRepository,
-) {
+) : PostgresIntegrationTest() {
     @Test
     fun `summary and shop include paid face slots and shoes`() {
         val leader = userRepository.findById(1L).orElseThrow()

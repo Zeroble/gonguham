@@ -4,6 +4,7 @@ import com.gonguham.backend.domain.MembershipRole
 import com.gonguham.backend.domain.MembershipStatus
 import com.gonguham.backend.domain.PostType
 import com.gonguham.backend.domain.SessionType
+import com.gonguham.backend.domain.StudyStatus
 import com.gonguham.backend.study.AttendanceRepository
 import com.gonguham.backend.study.PostRepository
 import com.gonguham.backend.study.SessionParticipationRepository
@@ -33,7 +34,9 @@ class DashboardService(
     fun dashboardFor(user: User, selectedStudyId: Long? = null): DashboardResponse {
         val memberships = studyMembershipRepository.findAllByUserIdAndStatus(user.id!!, MembershipStatus.ACTIVE)
         val membershipsByStudyId = memberships.associateBy { it.studyId }
-        val studies = studyRepository.findAllById(memberships.map { it.studyId }).sortedBy { it.createdAt }
+        val studies = studyRepository.findAllById(memberships.map { it.studyId })
+            .filter { it.status == StudyStatus.OPEN }
+            .sortedBy { it.createdAt }
         val today = LocalDate.now()
         val sessions = studies.flatMap { study ->
             studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(study.id!!)

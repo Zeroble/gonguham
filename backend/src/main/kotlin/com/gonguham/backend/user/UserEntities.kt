@@ -17,10 +17,11 @@ class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     @Column(nullable = false, unique = true)
-    var kakaoId: String = "",
+    var email: String = "",
+    @Column(nullable = false)
+    var passwordHash: String = "",
     @Column(nullable = false)
     var nickname: String = "",
-    var email: String? = null,
     var profileImageUrl: String? = null,
     @Column(nullable = false)
     var totalEarnedChecks: Int = 0,
@@ -61,7 +62,8 @@ class AvatarProfile(
 )
 
 interface UserRepository : JpaRepository<User, Long> {
-    fun findByKakaoId(kakaoId: String): User?
+    fun findByEmail(email: String): User?
+    fun existsByEmail(email: String): Boolean
 }
 
 interface AvatarProfileRepository : JpaRepository<AvatarProfile, Long> {

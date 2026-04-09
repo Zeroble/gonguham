@@ -6,11 +6,13 @@ import {
   type FeedItem,
   type PostDetail,
   type SessionAttendancePanel,
+  type StudyDetail,
   type StudyHomePanel,
   type UpdateStudySessionInput,
 } from '../app/api'
 import { useApp } from '../app/useApp'
 import { ProfileNameButton } from '../features/profile/ProfileNameButton'
+import { StudyOverviewSheet } from '../features/study/StudyOverviewSheet'
 import { type AppShellOutletContext } from '../layouts/appShellDashboard'
 
 const POSTS_PER_PAGE = 5
@@ -40,6 +42,8 @@ type RenderedPostItem = {
 type SessionEditorDraft = UpdateStudySessionInput & {
   editable: boolean
 }
+
+type HomeDetailMotionDirection = 'left' | 'right'
 
 function toRenderedPosts(posts: FeedItem[]) {
   return posts.map((post) => ({
@@ -130,10 +134,12 @@ export function HomePage() {
   const currentTimelineRowRef = useRef<HTMLDivElement | null>(null)
   const postListRequestTokenRef = useRef(0)
   const postRequestTokenRef = useRef(0)
+  const overviewRequestTokenRef = useRef(0)
   const [draftTitle, setDraftTitle] = useState('')
   const [draftContent, setDraftContent] = useState('')
   const [draftType, setDraftType] = useState<'POST' | 'NOTICE'>('POST')
   const [studyPosts, setStudyPosts] = useState<RenderedPostItem[]>([])
+  const [studyPostsStudyId, setStudyPostsStudyId] = useState<number | null>(null)
   const [postPage, setPostPage] = useState(1)
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null)
   const [postDetail, setPostDetail] = useState<PostDetail | null>(null)
@@ -141,15 +147,21 @@ export function HomePage() {
   const [attendanceMap, setAttendanceMap] = useState<Record<number, string>>({})
   const [attendancePanel, setAttendancePanel] = useState<SessionAttendancePanel | null>(null)
   const [sessionDrafts, setSessionDrafts] = useState<SessionEditorDraft[]>([])
+  const [overviewStudyDetail, setOverviewStudyDetail] = useState<StudyDetail | null>(null)
   const [isPostsLoading, setIsPostsLoading] = useState(false)
   const [isPostDetailLoading, setIsPostDetailLoading] = useState(false)
   const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
   const [isSessionSaving, setIsSessionSaving] = useState(false)
+  const [isOverviewLoading, setIsOverviewLoading] = useState(false)
+  const [isStudyActionPending, setIsStudyActionPending] = useState(false)
   const [showOverview, setShowOverview] = useState(false)
   const [showPostModal, setShowPostModal] = useState(false)
   const [showComposer, setShowComposer] = useState(false)
   const [showAttendance, setShowAttendance] = useState(false)
   const [showSessionEditor, setShowSessionEditor] = useState(false)
+  const [detailMotionDirection, setDetailMotionDirection] =
+    useState<HomeDetailMotionDirection | null>(null)
+  const [detailMotionKey, setDetailMotionKey] = useState(0)
   const selectedStudyId = useMemo(() => {
     const value = Number(searchParams.get('studyId'))
     return Number.isFinite(value) && value > 0 ? value : null
@@ -177,6 +189,26 @@ export function HomePage() {
     const targetStudyId = selectedStudyId ?? dashboard.defaultStudyId
     return dashboard.studyPanels.find((panel) => panel.studyId === targetStudyId) ?? dashboard.studyPanels[0]
   }, [dashboard?.defaultStudyId, dashboard?.studyPanels, selectedStudyId])
+
+  function handleStudyCardClick(studyId: number) {
+    if (!dashboard || !activeStudy || studyId === activeStudy.studyId) {
+      return
+    }
+
+    const currentIndex = dashboard.joinedStudies.findIndex(
+      (study) => study.studyId === activeStudy.studyId,
+    )
+    const nextIndex = dashboard.joinedStudies.findIndex((study) => study.studyId === studyId)
+
+    if (currentIndex !== -1 && nextIndex !== -1 && currentIndex !== nextIndex) {
+      setDetailMotionDirection(nextIndex > currentIndex ? 'right' : 'left')
+      setDetailMotionKey((current) => current + 1)
+    } else {
+      setDetailMotionDirection(null)
+    }
+
+    setSearchParams({ studyId: String(studyId) })
+  }
 
   const hasAttendanceStarted = useMemo(
     () => activeStudy?.attendanceRoster.some((member) => member.attendanceStatus !== null) ?? false,
@@ -220,6 +252,19 @@ export function HomePage() {
     ]
   }, [activeStudy])
 
+  const preloadedStudyPosts = useMemo(
+    () => toRenderedPosts(activeStudy?.posts ?? []),
+    [activeStudy?.posts],
+  )
+
+  const currentStudyPosts = useMemo(() => {
+    if (!activeStudy) {
+      return []
+    }
+
+    return studyPostsStudyId === activeStudy.studyId ? studyPosts : preloadedStudyPosts
+  }, [activeStudy, preloadedStudyPosts, studyPosts, studyPostsStudyId])
+
   const sessionDraftRegularCount = useMemo(
     () => sessionDrafts.filter((session) => session.sessionType === 'REGULAR').length,
     [sessionDrafts],
@@ -244,19 +289,27 @@ export function HomePage() {
   }, [activeStudy?.currentSessionId, activeStudy?.studyId, renderedTimeline.length])
 
   const totalPostPages = useMemo(
-    () => Math.max(1, Math.ceil(studyPosts.length / POSTS_PER_PAGE)),
-    [studyPosts.length],
+    () => Math.max(1, Math.ceil(currentStudyPosts.length / POSTS_PER_PAGE)),
+    [currentStudyPosts.length],
   )
 
+  const currentStudyPostPage = useMemo(() => {
+    if (!activeStudy) {
+      return 1
+    }
+
+    return studyPostsStudyId === activeStudy.studyId ? postPage : 1
+  }, [activeStudy, postPage, studyPostsStudyId])
+
   const visiblePostPages = useMemo(
-    () => buildPaginationWindow(totalPostPages, postPage),
-    [postPage, totalPostPages],
+    () => buildPaginationWindow(totalPostPages, currentStudyPostPage),
+    [currentStudyPostPage, totalPostPages],
   )
 
   const pagedPosts = useMemo(() => {
-    const startIndex = (postPage - 1) * POSTS_PER_PAGE
-    return studyPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
-  }, [postPage, studyPosts])
+    const startIndex = (currentStudyPostPage - 1) * POSTS_PER_PAGE
+    return currentStudyPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
+  }, [currentStudyPostPage, currentStudyPosts])
 
   const shouldShowLeadingFirstPage = visiblePostPages.length > 0 && visiblePostPages[0] > 1
   const shouldShowLeadingEllipsis = visiblePostPages.length > 0 && visiblePostPages[0] > 2
@@ -266,13 +319,16 @@ export function HomePage() {
     visiblePostPages.length > 0 && visiblePostPages[visiblePostPages.length - 1] < totalPostPages - 1
 
   const selectedPostSummary = useMemo(
-    () => studyPosts.find((post) => typeof post.postId === 'number' && post.postId === selectedPostId) ?? null,
-    [selectedPostId, studyPosts],
+    () =>
+      currentStudyPosts.find(
+        (post) => typeof post.postId === 'number' && post.postId === selectedPostId,
+      ) ?? null,
+    [currentStudyPosts, selectedPostId],
   )
 
   useEffect(() => {
     postListRequestTokenRef.current += 1
-    setStudyPosts([])
+    overviewRequestTokenRef.current += 1
     setPostPage(1)
     postRequestTokenRef.current += 1
     setSessionDrafts([])
@@ -283,6 +339,10 @@ export function HomePage() {
     setIsPostDetailLoading(false)
     setIsCommentSubmitting(false)
     setIsSessionSaving(false)
+    setOverviewStudyDetail(null)
+    setIsOverviewLoading(false)
+    setIsStudyActionPending(false)
+    setShowOverview(false)
     setShowPostModal(false)
     setShowSessionEditor(false)
   }, [activeStudy?.studyId])
@@ -310,6 +370,7 @@ export function HomePage() {
         }
 
         setStudyPosts(toRenderedPosts(posts))
+        setStudyPostsStudyId(activeStudy.studyId)
         setPostPage(1)
       } catch (error) {
         if (cancelled || requestToken !== postListRequestTokenRef.current) {
@@ -335,6 +396,44 @@ export function HomePage() {
     await refreshDashboard()
   }
 
+  function closeOverview() {
+    overviewRequestTokenRef.current += 1
+    setShowOverview(false)
+    setOverviewStudyDetail(null)
+    setIsOverviewLoading(false)
+  }
+
+  async function openOverview() {
+    if (!sessionUserId || !activeStudy) {
+      return
+    }
+
+    const requestToken = ++overviewRequestTokenRef.current
+    setShowOverview(true)
+    setOverviewStudyDetail(null)
+    setIsOverviewLoading(true)
+
+    try {
+      const detail = await api.getStudyDetail(sessionUserId, activeStudy.studyId)
+
+      if (requestToken !== overviewRequestTokenRef.current) {
+        return
+      }
+
+      setOverviewStudyDetail(detail)
+    } catch (error) {
+      if (requestToken !== overviewRequestTokenRef.current) {
+        return
+      }
+
+      showToast(error instanceof Error ? error.message : '스터디 개요를 불러오지 못했어요.')
+    } finally {
+      if (requestToken === overviewRequestTokenRef.current) {
+        setIsOverviewLoading(false)
+      }
+    }
+  }
+
   async function loadStudyPosts(studyId: number, page = 1) {
     if (!sessionUserId) {
       return
@@ -351,6 +450,7 @@ export function HomePage() {
       }
 
       setStudyPosts(toRenderedPosts(posts))
+      setStudyPostsStudyId(studyId)
       setPostPage(page)
     } catch (error) {
       if (requestToken !== postListRequestTokenRef.current) {
@@ -607,6 +707,47 @@ export function HomePage() {
     }
   }
 
+  async function handleStudyAction() {
+    if (!sessionUserId || !activeStudy || isStudyActionPending) {
+      return
+    }
+
+    const isLeader = activeStudy.isLeader
+    const confirmed = window.confirm(
+      isLeader
+        ? '스터디를 종료하면 모든 멤버의 참여가 종료되고 목록에서도 내려갑니다. 계속할까요?'
+        : '정말 이 스터디에서 탈퇴할까요?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setIsStudyActionPending(true)
+      closeOverview()
+
+      if (isLeader) {
+        await api.closeStudy(sessionUserId, activeStudy.studyId)
+      } else {
+        await api.leaveStudy(sessionUserId, activeStudy.studyId)
+      }
+
+      await refreshDashboard()
+      showToast(isLeader ? '스터디를 종료했어요.' : '스터디에서 탈퇴했어요.')
+    } catch (error) {
+      showToast(
+        error instanceof Error
+          ? error.message
+          : isLeader
+            ? '스터디를 종료하지 못했어요.'
+            : '스터디 탈퇴에 실패했어요.',
+      )
+    } finally {
+      setIsStudyActionPending(false)
+    }
+  }
+
   if (isDashboardLoading && !dashboard) {
     return <div className="page-surface empty-surface">대시보드를 불러오는 중입니다.</div>
   }
@@ -643,7 +784,7 @@ export function HomePage() {
                     : 'home-study-card'
                 }
                 key={study.studyId}
-                onClick={() => setSearchParams({ studyId: String(study.studyId) })}
+                onClick={() => handleStudyCardClick(study.studyId)}
               >
                 <span
                   className={`study-type-badge is-${getStudyBadgeTone(study.typeLabel)}`}
@@ -661,7 +802,14 @@ export function HomePage() {
           </div>
         </aside>
 
-        <section className="home-detail">
+        <section
+          className={
+            detailMotionDirection
+              ? `home-detail is-entering-from-${detailMotionDirection}`
+              : 'home-detail'
+          }
+          key={`${activeStudy.studyId}-${detailMotionKey}`}
+        >
           <header className="home-detail__header">
             <div className="home-detail__copy">
               <h2>{activeStudy.title}</h2>
@@ -672,24 +820,32 @@ export function HomePage() {
             <div className="home-detail__actions">
               <button
                 className="soft-button"
-                onClick={() => setShowOverview(true)}
+                onClick={openOverview}
                 type="button"
               >
                 개요
               </button>
               <button
-                className="soft-button"
-                onClick={() => showToast('공유 기능은 데모에서 링크 복사로 연결할 예정이에요.')}
+                className="soft-button is-disabled"
+                disabled
+                title="공유 기능 준비 중"
                 type="button"
               >
                 공유
               </button>
               <button
-                className="soft-button"
-                onClick={() => showToast('탈퇴 기능은 이번 데모 범위에서 제외했어요.')}
+                className="danger-button"
+                disabled={isStudyActionPending}
+                onClick={handleStudyAction}
                 type="button"
               >
-                탈퇴
+                {isStudyActionPending
+                  ? activeStudy.isLeader
+                    ? '종료 중...'
+                    : '처리 중...'
+                  : activeStudy.isLeader
+                    ? '스터디 종료'
+                    : '탈퇴'}
               </button>
             </div>
           </header>
@@ -822,8 +978,8 @@ export function HomePage() {
                 </div>
 
                 <div className="home-posts-viewport">
-                  {isPostsLoading && !studyPosts.length ? (
-                    <div className="home-posts-empty">아직 게시글이 없어요</div>
+                  {isPostsLoading && !currentStudyPosts.length ? (
+                    <div className="home-posts-empty">게시글을 불러오는 중이에요</div>
                   ) : pagedPosts.length ? (
                     <div className="home-post-list">
                       {pagedPosts.map((post) => (
@@ -877,14 +1033,14 @@ export function HomePage() {
                   <div className="pagination-pages">
                     <button
                       className="pagination-ghost"
-                      disabled={postPage === 1 || !studyPosts.length}
+                      disabled={currentStudyPostPage === 1 || !currentStudyPosts.length}
                       onClick={() => setPostPage((currentPage) => Math.max(1, currentPage - 1))}
                       type="button"
                     >
                       이전
                     </button>
 
-                    {studyPosts.length ? (
+                    {currentStudyPosts.length ? (
                       <>
                         {shouldShowLeadingFirstPage ? (
                           <button
@@ -904,9 +1060,13 @@ export function HomePage() {
 
                         {visiblePostPages.map((page) => (
                           <button
-                            aria-current={page === postPage ? 'page' : undefined}
-                            className={page === postPage ? 'pagination-badge is-active' : 'pagination-badge'}
-                            disabled={page === postPage}
+                            aria-current={page === currentStudyPostPage ? 'page' : undefined}
+                            className={
+                              page === currentStudyPostPage
+                                ? 'pagination-badge is-active'
+                                : 'pagination-badge'
+                            }
+                            disabled={page === currentStudyPostPage}
                             key={page}
                             onClick={() => setPostPage(page)}
                             type="button"
@@ -937,7 +1097,7 @@ export function HomePage() {
 
                     <button
                       className="pagination-ghost"
-                      disabled={postPage === totalPostPages || !studyPosts.length}
+                      disabled={currentStudyPostPage === totalPostPages || !currentStudyPosts.length}
                       onClick={() => setPostPage((currentPage) => Math.min(totalPostPages, currentPage + 1))}
                       type="button"
                     >
@@ -1096,47 +1256,35 @@ export function HomePage() {
       {showOverview ? (
         <div
           className="modal-backdrop"
-          onClick={() => setShowOverview(false)}
+          onClick={closeOverview}
           role="presentation"
         >
           <article
-            className="modal-card overview-modal"
+            className="modal-card overview-modal study-overview-modal"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="modal-card__header">
-              <div>
-                <span className="section-kicker">스터디 개요</span>
-                <h2>{activeStudy.title}</h2>
-              </div>
+              <span className="section-kicker">스터디 개요</span>
               <button
                 className="soft-button"
-                onClick={() => setShowOverview(false)}
+                onClick={closeOverview}
                 type="button"
               >
                 닫기
               </button>
             </div>
 
-            <p className="modal-description">{activeStudy.description}</p>
-
-            <div className="info-grid">
-              <div className="info-tile">
-                <span>장소</span>
-                <strong>{activeStudy.locationText}</strong>
+            {isOverviewLoading ? (
+              <div className="study-overview-modal__state">
+                {activeStudy.title} 개요를 불러오는 중이에요.
               </div>
-              <div className="info-tile">
-                <span>운영 역할</span>
-                <strong>{activeStudy.isLeader ? '스터디장' : '멤버'}</strong>
+            ) : overviewStudyDetail ? (
+              <StudyOverviewSheet study={overviewStudyDetail} />
+            ) : (
+              <div className="study-overview-modal__state is-error">
+                스터디 개요를 불러오지 못했어요.
               </div>
-              <div className="info-tile">
-                <span>진행 일정</span>
-                <strong>{scheduleLabel}</strong>
-              </div>
-              <div className="info-tile">
-                <span>현재 게시글</span>
-                <strong>{studyPosts.length}개</strong>
-              </div>
-            </div>
+            )}
           </article>
         </div>
       ) : null}

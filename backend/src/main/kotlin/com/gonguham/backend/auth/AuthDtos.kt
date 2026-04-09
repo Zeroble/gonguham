@@ -1,7 +1,27 @@
 package com.gonguham.backend.auth
 
-data class DemoLoginRequest(
-    val nickname: String? = null,
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
+
+data class SignUpRequest(
+    @field:Email
+    @field:NotBlank
+    val email: String = "",
+    @field:NotBlank
+    @field:Size(min = 8, max = 100)
+    val password: String = "",
+    @field:NotBlank
+    @field:Size(max = 20)
+    val nickname: String = "",
+)
+
+data class LoginRequest(
+    @field:Email
+    @field:NotBlank
+    val email: String = "",
+    @field:NotBlank
+    val password: String = "",
 )
 
 data class SessionUserResponse(

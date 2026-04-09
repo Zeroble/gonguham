@@ -12,14 +12,17 @@ class CurrentUserService(
     private val userRepository: UserRepository,
 ) {
     fun currentUser(request: HttpServletRequest): User {
-        val userId = request.getHeader(HEADER_NAME)?.toLongOrNull() ?: DEFAULT_USER_ID
+        val session = request.getSession(false)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required.")
+        val userId = (session.getAttribute(SESSION_KEY) as? Number)?.toLong()
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required.")
+
         return userRepository.findById(userId).orElseThrow {
-            ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인 정보가 없습니다.")
+            ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required.")
         }
     }
 
     companion object {
-        const val HEADER_NAME = "X-Demo-User-Id"
-        const val DEFAULT_USER_ID = 1L
+        const val SESSION_KEY = "AUTH_USER_ID"
     }
 }

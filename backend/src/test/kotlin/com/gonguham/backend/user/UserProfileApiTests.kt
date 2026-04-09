@@ -1,5 +1,7 @@
 package com.gonguham.backend.user
 
+import com.gonguham.backend.common.support.CurrentUserService
+import com.gonguham.backend.support.PostgresIntegrationTest
 import com.gonguham.backend.domain.PostType
 import com.gonguham.backend.study.PostComment
 import com.gonguham.backend.study.PostCommentRepository
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockHttpSession
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
@@ -26,12 +29,12 @@ class UserProfileApiTests @Autowired constructor(
     private val postRepository: PostRepository,
     private val postCommentRepository: PostCommentRepository,
     private val userRepository: UserRepository,
-) {
+) : PostgresIntegrationTest() {
     @Test
     fun `profile endpoint returns level progress stats and avatar data`() {
         mockMvc.perform(
             get("/api/v1/users/1/profile")
-                .header("X-Demo-User-Id", 1),
+                .session(authenticatedSession()),
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.userId").value(1))
@@ -62,7 +65,7 @@ class UserProfileApiTests @Autowired constructor(
 
         mockMvc.perform(
             get("/api/v1/studies/1")
-                .header("X-Demo-User-Id", 1),
+                .session(authenticatedSession()),
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.leaderUserId").value(greaterThan(0)))
@@ -70,7 +73,7 @@ class UserProfileApiTests @Autowired constructor(
 
         mockMvc.perform(
             get("/api/v1/posts/${post.id}")
-                .header("X-Demo-User-Id", 1),
+                .session(authenticatedSession()),
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.authorUserId").value(post.authorUserId))
@@ -81,7 +84,7 @@ class UserProfileApiTests @Autowired constructor(
     fun `nickname patch validates blank and overlong values and persists success`() {
         mockMvc.perform(
             patch("/api/v1/me")
-                .header("X-Demo-User-Id", 1)
+                .session(authenticatedSession())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"nickname":"   "}"""),
         )
@@ -89,7 +92,7 @@ class UserProfileApiTests @Autowired constructor(
 
         mockMvc.perform(
             patch("/api/v1/me")
-                .header("X-Demo-User-Id", 1)
+                .session(authenticatedSession())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""{"nickname":"${"a".repeat(21)}"}"""),
         )
@@ -97,14 +100,19 @@ class UserProfileApiTests @Autowired constructor(
 
         mockMvc.perform(
             patch("/api/v1/me")
-                .header("X-Demo-User-Id", 1)
+                .session(authenticatedSession())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""{"nickname":"프로필테스트"}"""),
+                .content("""{"nickname":"ProfileTest"}"""),
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.nickname").value("프로필테스트"))
+            .andExpect(jsonPath("$.nickname").value("ProfileTest"))
 
         val updatedUser = userRepository.findById(1L).orElseThrow()
-        org.junit.jupiter.api.Assertions.assertEquals("프로필테스트", updatedUser.nickname)
+        org.junit.jupiter.api.Assertions.assertEquals("ProfileTest", updatedUser.nickname)
     }
+
+    private fun authenticatedSession(userId: Long = 1L): MockHttpSession =
+        MockHttpSession().apply {
+            setAttribute(CurrentUserService.SESSION_KEY, userId)
+        }
 }

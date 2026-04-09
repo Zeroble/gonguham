@@ -11,6 +11,6 @@ class WebConfig : WebMvcConfigurer {
             .allowedOrigins("http://localhost:5173")
             .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
             .allowedHeaders("*")
-            .exposedHeaders("X-Demo-User-Id")
+            .allowCredentials(true)
     }
 }

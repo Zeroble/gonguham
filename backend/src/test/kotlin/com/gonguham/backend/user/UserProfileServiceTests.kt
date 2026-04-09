@@ -1,5 +1,6 @@
 package com.gonguham.backend.user
 
+import com.gonguham.backend.support.PostgresIntegrationTest
 import com.gonguham.backend.domain.AttendanceStatus
 import com.gonguham.backend.domain.LocationType
 import com.gonguham.backend.domain.MembershipRole
@@ -29,6 +30,7 @@ import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
@@ -42,13 +44,15 @@ class UserProfileServiceTests @Autowired constructor(
     private val postCommentRepository: PostCommentRepository,
     private val userProfileService: UserProfileService,
     private val userRepository: UserRepository,
-) {
+    private val passwordEncoder: PasswordEncoder,
+) : PostgresIntegrationTest() {
     @Test
     fun `profile stats summarize active studies attendance streak and recent rate`() {
         val now = LocalDateTime.now()
         val user = userRepository.save(
             User(
-                kakaoId = "profile-spec-user",
+                email = "profile-spec-user@gonguham.app",
+                passwordHash = passwordEncoder.encode("profile-spec-password")!!,
                 nickname = "Spec User",
                 totalEarnedChecks = 36,
                 currentChecks = 11,
