@@ -35,7 +35,6 @@ export type StudyHomePanel = {
     sessionId: number
     roundLabel: string
     title: string
-    statusLabel: string
     nodeState: string
     scheduledAt: string
     planned: boolean
@@ -109,6 +108,7 @@ export type AvatarSummary = {
   currentChecks: number
   totalEarnedChecks: number
   level: number
+  appearance: AvatarAppearance
   equipped: {
     hair: AvatarSlot | null
     top: AvatarSlot | null
@@ -116,9 +116,18 @@ export type AvatarSummary = {
   }
 }
 
+export type AvatarAppearance = {
+  bodyAssetKey: string
+  pupilAssetKey: string
+  eyebrowAssetKey: string
+  eyelashAssetKey: string
+  mouthAssetKey: string
+}
+
 export type AvatarSlot = {
   itemId: number
   name: string
+  assetKey: string
 }
 
 export type AvatarShopItem = {
@@ -128,8 +137,20 @@ export type AvatarShopItem = {
   name: string
   description: string
   priceChecks: number
+  assetKey: string
   owned: boolean
   equipped: boolean
+}
+
+export type SaveAvatarAppearanceRequest = {
+  hairItemId: number | null
+  topItemId: number | null
+  bottomItemId: number | null
+  bodyAssetKey: string
+  pupilAssetKey: string
+  eyebrowAssetKey: string
+  eyelashAssetKey: string
+  mouthAssetKey: string
 }
 
 type FetchOptions = Omit<RequestInit, 'headers' | 'body'> & {
@@ -147,11 +168,38 @@ async function request<T>(path: string, userId?: number | null, options?: FetchO
   })
 
   if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || '요청에 실패했습니다.')
+    throw new Error(await readErrorMessage(response))
   }
 
   return response.json() as Promise<T>
+}
+
+async function readErrorMessage(response: Response) {
+  const fallback = '요청에 실패했습니다.'
+  const raw = await response.text()
+
+  if (!raw) {
+    return fallback
+  }
+
+  const contentType = response.headers.get('content-type') ?? ''
+  if (contentType.includes('application/json')) {
+    try {
+      const payload = JSON.parse(raw) as Record<string, unknown>
+      const candidates = [payload.message, payload.detail, payload.error]
+      const message = candidates.find(
+        (value): value is string => typeof value === 'string' && value.trim().length > 0,
+      )
+
+      if (message) {
+        return message
+      }
+    } catch {
+      return raw
+    }
+  }
+
+  return raw
 }
 
 export const api = {
@@ -245,6 +293,12 @@ export const api = {
     return request<AvatarSummary>('/api/v1/avatar/equip', userId, {
       method: 'POST',
       body: { itemId },
+    })
+  },
+  saveAvatarAppearance(userId: number, body: SaveAvatarAppearanceRequest) {
+    return request<AvatarSummary>('/api/v1/avatar/appearance', userId, {
+      method: 'PUT',
+      body,
     })
   },
 }

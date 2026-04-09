@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -41,4 +42,11 @@ class AvatarController(
         @RequestBody body: EquipAvatarRequest,
     ): AvatarSummaryResponse =
         avatarService.equip(currentUserService.currentUser(request), body)
+
+    @PutMapping("/appearance")
+    fun saveAppearance(
+        request: HttpServletRequest,
+        @RequestBody body: SaveAvatarAppearanceRequest,
+    ): AvatarSummaryResponse =
+        avatarService.saveAppearance(currentUserService.currentUser(request), body)
 }

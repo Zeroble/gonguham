@@ -34,7 +34,6 @@ data class TimelineSession(
     val sessionId: Long,
     val roundLabel: String,
     val title: String,
-    val statusLabel: String,
     val nodeState: String,
     val scheduledAt: String,
     val planned: Boolean,

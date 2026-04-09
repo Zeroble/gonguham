@@ -1,5 +1,6 @@
 package com.gonguham.backend.user
 
+import com.gonguham.backend.avatar.AvatarAssetCatalog
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -39,6 +40,16 @@ class AvatarProfile(
     var id: Long? = null,
     @Column(nullable = false, unique = true)
     var userId: Long = 0,
+    @Column(nullable = false)
+    var bodyAssetKey: String = AvatarAssetCatalog.DEFAULT_BODY_ASSET_KEY,
+    @Column(nullable = false)
+    var pupilAssetKey: String = AvatarAssetCatalog.DEFAULT_PUPIL_ASSET_KEY,
+    @Column(nullable = false)
+    var eyebrowAssetKey: String = AvatarAssetCatalog.DEFAULT_EYEBROW_ASSET_KEY,
+    @Column(nullable = false)
+    var eyelashAssetKey: String = AvatarAssetCatalog.DEFAULT_EYELASH_ASSET_KEY,
+    @Column(nullable = false)
+    var mouthAssetKey: String = AvatarAssetCatalog.DEFAULT_MOUTH_ASSET_KEY,
     var equippedHairItemId: Long? = null,
     var equippedTopItemId: Long? = null,
     var equippedBottomItemId: Long? = null,

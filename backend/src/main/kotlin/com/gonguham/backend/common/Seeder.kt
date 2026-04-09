@@ -1,6 +1,6 @@
 package com.gonguham.backend.common
 
-import com.gonguham.backend.avatar.AvatarItem
+import com.gonguham.backend.avatar.AvatarAssetCatalog
 import com.gonguham.backend.avatar.AvatarItemRepository
 import com.gonguham.backend.avatar.UserAvatarItem
 import com.gonguham.backend.avatar.UserAvatarItemRepository
@@ -8,8 +8,6 @@ import com.gonguham.backend.check.CheckLedger
 import com.gonguham.backend.check.CheckLedgerRepository
 import com.gonguham.backend.common.support.LevelPolicy
 import com.gonguham.backend.domain.AttendanceStatus
-import com.gonguham.backend.domain.AvatarCategory
-import com.gonguham.backend.domain.AvatarRarity
 import com.gonguham.backend.domain.CheckChangeType
 import com.gonguham.backend.domain.CheckReason
 import com.gonguham.backend.domain.LocationType
@@ -66,6 +64,7 @@ class Seeder(
         if (userRepository.count() > 0L) return
 
         val now = LocalDateTime.now()
+        val defaultAppearance = AvatarAssetCatalog.defaultAppearance()
 
         val leader = userRepository.save(
             User(
@@ -101,26 +100,14 @@ class Seeder(
             ),
         )
 
-        val items = avatarItemRepository.saveAll(
-            listOf(
-                AvatarItem(category = AvatarCategory.HAIR, name = "블랙 쇼트 레이어드", description = "짧고 단정한 스터디 기본 헤어", priceChecks = 1, rarity = AvatarRarity.BASIC, assetKey = "hair-black-short", isDefault = true),
-                AvatarItem(category = AvatarCategory.HAIR, name = "구름 레이어드 롱헤어", description = "앞·뒤·보조 파츠가 묶인 프리셋", priceChecks = 2, rarity = AvatarRarity.POINT, assetKey = "hair-cloud-long"),
-                AvatarItem(category = AvatarCategory.HAIR, name = "아이보리 리본 롱헤어", description = "포인트가 큰 시그니처 스타일", priceChecks = 3, rarity = AvatarRarity.SIGNATURE, assetKey = "hair-ribbon-long"),
-                AvatarItem(category = AvatarCategory.TOP, name = "베이지 후드 집업", description = "모각공에 잘 어울리는 기본 상의", priceChecks = 1, rarity = AvatarRarity.BASIC, assetKey = "top-hood-zip", isDefault = true),
-                AvatarItem(category = AvatarCategory.TOP, name = "민트 카라 니트", description = "차분한 인상의 포인트 상의", priceChecks = 2, rarity = AvatarRarity.POINT, assetKey = "top-mint-knit"),
-                AvatarItem(category = AvatarCategory.TOP, name = "네이비 아가일 가디건", description = "교내 분위기와 잘 맞는 시그니처 룩", priceChecks = 3, rarity = AvatarRarity.SIGNATURE, assetKey = "top-argyle-cardigan"),
-                AvatarItem(category = AvatarCategory.BOTTOM, name = "데님 팬츠", description = "데일리 기본 하의", priceChecks = 1, rarity = AvatarRarity.BASIC, assetKey = "bottom-denim", isDefault = true),
-                AvatarItem(category = AvatarCategory.BOTTOM, name = "플리츠 스커트", description = "가벼운 포인트용 하의", priceChecks = 2, rarity = AvatarRarity.POINT, assetKey = "bottom-pleats"),
-                AvatarItem(category = AvatarCategory.BOTTOM, name = "차콜 와이드 슬랙스", description = "차분한 무드의 시그니처 하의", priceChecks = 3, rarity = AvatarRarity.SIGNATURE, assetKey = "bottom-charcoal-slacks"),
-            ),
-        )
+        val items = avatarItemRepository.saveAll(AvatarAssetCatalog.buildSeedItems())
 
-        val defaultHair = items.first { it.assetKey == "hair-black-short" }
-        val ownedHair = items.first { it.assetKey == "hair-cloud-long" }
-        val defaultTop = items.first { it.assetKey == "top-hood-zip" }
-        val ownedTop = items.first { it.assetKey == "top-mint-knit" }
-        val defaultBottom = items.first { it.assetKey == "bottom-denim" }
-        val ownedBottom = items.first { it.assetKey == "bottom-pleats" }
+        val defaultHair = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_HAIR_ITEM_KEY }
+        val ownedHair = items.first { it.assetKey == "hair-06-a" }
+        val defaultTop = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_TOP_ITEM_KEY }
+        val ownedTop = items.first { it.assetKey == "top-06" }
+        val defaultBottom = items.first { it.assetKey == AvatarAssetCatalog.DEFAULT_BOTTOM_ITEM_KEY }
+        val ownedBottom = items.first { it.assetKey == "bottom-04" }
 
         userAvatarItemRepository.saveAll(
             listOf(defaultHair, ownedHair, defaultTop, ownedTop, defaultBottom, ownedBottom).map {
@@ -133,8 +120,32 @@ class Seeder(
             },
         )
 
-        avatarProfileRepository.save(AvatarProfile(userId = leader.id!!, equippedHairItemId = ownedHair.id, equippedTopItemId = ownedTop.id, equippedBottomItemId = ownedBottom.id))
-        avatarProfileRepository.save(AvatarProfile(userId = member.id!!, equippedHairItemId = defaultHair.id, equippedTopItemId = defaultTop.id, equippedBottomItemId = defaultBottom.id))
+        avatarProfileRepository.save(
+            AvatarProfile(
+                userId = leader.id!!,
+                bodyAssetKey = "body-05",
+                pupilAssetKey = "pupil-03",
+                eyebrowAssetKey = "eyebrow-02",
+                eyelashAssetKey = "eyelash-02",
+                mouthAssetKey = "mouth-04",
+                equippedHairItemId = ownedHair.id,
+                equippedTopItemId = ownedTop.id,
+                equippedBottomItemId = ownedBottom.id,
+            ),
+        )
+        avatarProfileRepository.save(
+            AvatarProfile(
+                userId = member.id!!,
+                bodyAssetKey = defaultAppearance.bodyAssetKey,
+                pupilAssetKey = defaultAppearance.pupilAssetKey,
+                eyebrowAssetKey = defaultAppearance.eyebrowAssetKey,
+                eyelashAssetKey = defaultAppearance.eyelashAssetKey,
+                mouthAssetKey = defaultAppearance.mouthAssetKey,
+                equippedHairItemId = defaultHair.id,
+                equippedTopItemId = defaultTop.id,
+                equippedBottomItemId = defaultBottom.id,
+            ),
+        )
 
         val topicStudy = studyRepository.save(
             Study(

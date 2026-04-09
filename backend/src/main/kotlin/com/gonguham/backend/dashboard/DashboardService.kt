@@ -131,15 +131,6 @@ class DashboardService(
                     sessionId = session.id!!,
                     roundLabel = "${session.sessionNo}회차",
                     title = session.title,
-                    statusLabel = when {
-                        isCurrent && planned -> "참여 예정"
-                        isCurrent -> "불참"
-                        isFuture && planned -> "참여 예정"
-                        isFuture -> "미진행"
-                        attendance?.status?.name == "PRESENT" -> "출석 완료"
-                        attendance?.status?.name == "ABSENT" -> "결석"
-                        else -> "불참"
-                    },
                     nodeState = nodeState,
                     scheduledAt = session.scheduledAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
                     planned = planned,

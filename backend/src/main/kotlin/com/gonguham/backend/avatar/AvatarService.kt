@@ -26,11 +26,18 @@ class AvatarService(
     private val userRepository: UserRepository,
 ) {
     fun summary(user: User): AvatarSummaryResponse {
-        val profile = avatarProfileRepository.findByUserId(user.id!!) ?: avatarProfileRepository.save(AvatarProfile(userId = user.id!!))
+        val profile = ensureProfile(user.id!!)
         return AvatarSummaryResponse(
             currentChecks = user.currentChecks,
             totalEarnedChecks = user.totalEarnedChecks,
             level = user.level,
+            appearance = AvatarAppearanceResponse(
+                bodyAssetKey = profile.bodyAssetKey,
+                pupilAssetKey = profile.pupilAssetKey,
+                eyebrowAssetKey = profile.eyebrowAssetKey,
+                eyelashAssetKey = profile.eyelashAssetKey,
+                mouthAssetKey = profile.mouthAssetKey,
+            ),
             equipped = EquippedAvatarResponse(
                 hair = profile.equippedHairItemId?.let(::toSlot),
                 top = profile.equippedTopItemId?.let(::toSlot),
@@ -41,7 +48,7 @@ class AvatarService(
 
     fun shop(user: User, category: String?): List<AvatarShopItemResponse> {
         val ownedIds = userAvatarItemRepository.findAllByUserId(user.id!!).map { it.avatarItemId }.toSet()
-        val profile = avatarProfileRepository.findByUserId(user.id!!)
+        val profile = ensureProfile(user.id!!)
         val items = if (category.isNullOrBlank()) {
             avatarItemRepository.findAll()
         } else {
@@ -55,11 +62,12 @@ class AvatarService(
                 name = item.name,
                 description = item.description,
                 priceChecks = item.priceChecks,
+                assetKey = item.assetKey,
                 owned = ownedIds.contains(item.id!!),
                 equipped = when (item.category) {
-                    AvatarCategory.HAIR -> profile?.equippedHairItemId == item.id
-                    AvatarCategory.TOP -> profile?.equippedTopItemId == item.id
-                    AvatarCategory.BOTTOM -> profile?.equippedBottomItemId == item.id
+                    AvatarCategory.HAIR -> profile.equippedHairItemId == item.id
+                    AvatarCategory.TOP -> profile.equippedTopItemId == item.id
+                    AvatarCategory.BOTTOM -> profile.equippedBottomItemId == item.id
                 },
             )
         }
@@ -102,7 +110,7 @@ class AvatarService(
         if (!userAvatarItemRepository.existsByUserIdAndAvatarItemId(user.id!!, request.itemId)) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "보유하지 않은 아이템입니다.")
         }
-        val profile = avatarProfileRepository.findByUserId(user.id!!) ?: avatarProfileRepository.save(AvatarProfile(userId = user.id!!))
+        val profile = ensureProfile(user.id!!)
         when (item.category) {
             AvatarCategory.HAIR -> profile.equippedHairItemId = item.id
             AvatarCategory.TOP -> profile.equippedTopItemId = item.id
@@ -112,8 +120,66 @@ class AvatarService(
         return summary(user)
     }
 
+    @Transactional
+    fun saveAppearance(user: User, request: SaveAvatarAppearanceRequest): AvatarSummaryResponse {
+        validateFreeAppearance(request)
+
+        val profile = ensureProfile(user.id!!)
+        profile.bodyAssetKey = request.bodyAssetKey
+        profile.pupilAssetKey = request.pupilAssetKey
+        profile.eyebrowAssetKey = request.eyebrowAssetKey
+        profile.eyelashAssetKey = request.eyelashAssetKey
+        profile.mouthAssetKey = request.mouthAssetKey
+        profile.equippedHairItemId = resolveOwnedItemId(user.id!!, request.hairItemId, AvatarCategory.HAIR)
+        profile.equippedTopItemId = resolveOwnedItemId(user.id!!, request.topItemId, AvatarCategory.TOP)
+        profile.equippedBottomItemId = resolveOwnedItemId(user.id!!, request.bottomItemId, AvatarCategory.BOTTOM)
+        avatarProfileRepository.save(profile)
+        return summary(user)
+    }
+
     private fun toSlot(itemId: Long): AvatarSlotResponse {
         val item = avatarItemRepository.findById(itemId).orElseThrow()
-        return AvatarSlotResponse(itemId = item.id!!, name = item.name)
+        return AvatarSlotResponse(itemId = item.id!!, name = item.name, assetKey = item.assetKey)
+    }
+
+    private fun ensureProfile(userId: Long): AvatarProfile =
+        avatarProfileRepository.findByUserId(userId) ?: avatarProfileRepository.save(AvatarProfile(userId = userId))
+
+    private fun validateFreeAppearance(request: SaveAvatarAppearanceRequest) {
+        if (!AvatarAssetCatalog.isValidBodyAssetKey(request.bodyAssetKey)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 스킨톤입니다.")
+        }
+        if (!AvatarAssetCatalog.isValidPupilAssetKey(request.pupilAssetKey)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 눈 파츠입니다.")
+        }
+        if (!AvatarAssetCatalog.isValidEyebrowAssetKey(request.eyebrowAssetKey)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 눈썹 파츠입니다.")
+        }
+        if (!AvatarAssetCatalog.isValidEyelashAssetKey(request.eyelashAssetKey)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 속눈썹 파츠입니다.")
+        }
+        if (!AvatarAssetCatalog.isValidMouthAssetKey(request.mouthAssetKey)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 입 파츠입니다.")
+        }
+    }
+
+    private fun resolveOwnedItemId(userId: Long, itemId: Long?, category: AvatarCategory): Long? {
+        if (itemId == null) {
+            return null
+        }
+
+        val item = avatarItemRepository.findById(itemId).orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "아이템을 찾을 수 없습니다.")
+        }
+
+        if (item.category != category) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 카테고리의 아이템입니다.")
+        }
+
+        if (!userAvatarItemRepository.existsByUserIdAndAvatarItemId(userId, itemId)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "보유하지 않은 아이템입니다.")
+        }
+
+        return item.id
     }
 }

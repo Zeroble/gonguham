@@ -1,5 +1,7 @@
 import { NavLink, Navigate, Outlet } from 'react-router-dom'
 import { useApp } from '../app/useApp'
+import { AvatarPreview } from '../features/avatar/AvatarPreview'
+import { summaryToRenderState } from '../features/avatar/avatarCatalog'
 
 const tabs = [
   { to: '/app/home', label: '내 스터디' },
@@ -9,7 +11,7 @@ const tabs = [
 ]
 
 export function AppShell() {
-  const { isBooting, me, logout, toast } = useApp()
+  const { avatarSummary, isBooting, me, logout, toast } = useApp()
 
   if (isBooting) {
     return <div className="fullscreen-message">공구함을 불러오는 중입니다.</div>
@@ -56,15 +58,23 @@ export function AppShell() {
 
         <div className="summary-side">
           <div className="summary-character-slot" aria-hidden="true">
-            <div className="summary-character-slot__placeholder">
-              <span>
-                커스터마이징
-                <br />
-                캐릭터가
-                <br />
-                여기 표시됨
-              </span>
-            </div>
+            {avatarSummary ? (
+              <AvatarPreview
+                className="summary-character-slot__preview"
+                size="summary"
+                state={summaryToRenderState(avatarSummary)}
+              />
+            ) : (
+              <div className="summary-character-slot__placeholder">
+                <span>
+                  커스터마이징
+                  <br />
+                  캐릭터가
+                  <br />
+                  여기 표시됨
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="summary-profile">

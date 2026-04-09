@@ -7,7 +7,6 @@ type RenderedTimelineItem = {
   sessionId: number | string
   roundLabel: string
   title: string
-  statusLabel: string
   nodeState: string
   scheduledAt: string
   planned: boolean
@@ -42,6 +41,10 @@ function getStudyBadgeTone(label: string) {
   if (label.includes('주제')) return 'topic'
   if (label.includes('반짝')) return 'flash'
   return 'mogak'
+}
+
+function getMemberCurrentChipLabel(planned: boolean) {
+  return planned ? '참여 예정' : '불참 예정'
 }
 
 function toAttendanceMap(roster: AttendanceRosterEntry[] = []) {
@@ -435,7 +438,7 @@ export function HomePage() {
                       ? hasAttendanceStarted ? '수정' : '시작'
                       : activeStudy.isLeader && isPastSession
                         ? '수정'
-                        : session.statusLabel
+                        : getMemberCurrentChipLabel(session.planned)
                     const showChip =
                       session.placeholder ||
                       isHighlighted ||
@@ -465,25 +468,6 @@ export function HomePage() {
                           onClick={() => {
                             if (activeStudy.isLeader && typeof session.sessionId === 'number' && (isHighlighted || isPastSession)) return void openAttendanceModal(session.sessionId)
                             if (isInteractive && canToggle && typeof session.sessionId === 'number') return void handleParticipation(session.sessionId, !session.planned)
-                            if (isInteractive) {
-                              // todo : move this into button 
-
-                              // if (session.placeholder) {
-                              //   return
-                              // }
-
-                              // if (activeStudy.isLeader && isHighlighted) {
-                              //   setShowAttendance(true)
-                              //   return
-                              // }
-
-                              // if (canToggle && typeof session.sessionId === 'number') {
-                              //   void handleParticipation(
-                              //     session.sessionId,
-                              //     session.statusLabel !== '참여 예정',
-                              //   )
-                              // }
-                            }
                           }}
                         >
                           <div className="home-timeline-card__meta">
