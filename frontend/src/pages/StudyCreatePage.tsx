@@ -188,15 +188,11 @@ export function StudyCreatePage() {
   )
   const visibleSessions = useMemo(() => {
     if (!scheduleReady) {
-      return normalizedForm.type !== 'TOPIC' || !sessionsDirty ? [] : sessions
-    }
-
-    if (normalizedForm.type !== 'TOPIC') {
-      return autoSessions
+      return sessionsDirty ? sessions : []
     }
 
     return sessionsDirty ? sessions : autoSessions
-  }, [autoSessions, normalizedForm.type, scheduleReady, sessions, sessionsDirty])
+  }, [autoSessions, scheduleReady, sessions, sessionsDirty])
   const regularSessionCount = useMemo(
     () => visibleSessions.filter((session) => session.sessionType === 'REGULAR').length,
     [visibleSessions],
