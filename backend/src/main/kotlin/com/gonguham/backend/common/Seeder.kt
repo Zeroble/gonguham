@@ -78,9 +78,9 @@ class Seeder(
                 nickname = "정다솔",
                 email = "leader@gonguham.app",
                 passwordHash = passwordEncoder.encode(DEFAULT_PASSWORD)!!,
-                totalEarnedChecks = 27,
-                currentChecks = 14,
-                level = levelPolicy.levelFor(27),
+                totalEarnedChecks = 120,
+                currentChecks = 100,
+                level = levelPolicy.levelFor(120),
                 createdAt = now.minusDays(20),
             ),
         )

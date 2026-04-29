@@ -306,7 +306,7 @@ export function StudyCreatePage() {
           session.sessionType === 'REGULAR' && !session.title.trim(),
       )
     ) {
-      showToast('吏꾪뻾 ?뚯감 ?쒕ぉ???낅젰?댁＜?몄슂.')
+      showToast('진행 회차 제목을 입력해주세요.')
       return
     }
 

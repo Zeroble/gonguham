@@ -588,7 +588,7 @@ class StudyService(
             val parsedScheduledAt = try {
                 LocalDateTime.parse(session.scheduledAt)
             } catch (_: DateTimeParseException) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?뚯감 ?좎쭨 ?뺤떇???щ컮瑜댁? ?딆뒿?덈떎.")
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "회차 날짜 형식이 올바르지 않습니다.")
             }
 
             PlannedSessionUpdate(
@@ -600,17 +600,17 @@ class StudyService(
         }.sortedBy { it.scheduledAt }
 
         if (normalized.none { it.sessionType == SessionType.REGULAR }) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "吏꾪뻾 ?뚯감??理쒖냼 1媛??댁긽 ?덉뼱???⑸땲??")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "진행 회차는 최소 1개 이상 있어야 합니다.")
         }
 
         normalized.forEach { update ->
             val scheduledDate = update.scheduledAt.toLocalDate()
             val scheduledDateChanged = update.source.scheduledAt.toLocalDate() != scheduledDate
             if (scheduledDateChanged && (scheduledDate.isBefore(study.startDate) || scheduledDate.isAfter(study.endDate))) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?뚯감 ?좎쭨???댁쁺 湲곌컙 ?덉뿉 ?덉뼱???⑸땲??")
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "회차 날짜는 운영 기간 안에 있어야 합니다.")
             }
             if (update.sessionType == SessionType.REGULAR && update.title.isBlank()) {
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "吏꾪뻾 ?뚯감 ?쒕ぉ???낅젰?댁＜?몄슂.")
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "진행 회차 제목을 입력해주세요.")
             }
 
             val sourceTitle =
@@ -639,10 +639,10 @@ class StudyService(
 
         val currentSession = resolveOpenRegularSession(
             studySessionRepository.findAllByStudyIdOrderBySessionNoAsc(session.studyId),
-        ) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?꾩옱 吏꾪뻾 ???뚯감???놁뒿?덈떎.")
+        ) ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 진행 중인 회차가 없습니다.")
 
         if (session.id != currentSession.id) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "?꾩옱 ?뚯감留? ?ㅽ꽣???쒖옉???덉뒿?덈떎.")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "현재 회차만 출석을 시작할 수 있습니다.")
         }
 
         if (LocalDateTime.now().isBefore(session.scheduledAt.minusMinutes(LEADER_START_WINDOW_MINUTES))) {

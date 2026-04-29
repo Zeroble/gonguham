@@ -612,7 +612,7 @@ export function HomePage() {
         (session) => session.sessionType === 'REGULAR' && !session.title.trim(),
       )
     ) {
-      showToast('吏꾪뻾 ?뚯감 ?쒕ぉ???낅젰?댁＜?몄슂.')
+      showToast('진행 회차 제목을 입력해주세요.')
       return
     }
 
@@ -838,14 +838,14 @@ export function HomePage() {
               >
                 개요
               </button>
-              <button
+              {/* <button
                 className="soft-button is-disabled"
                 disabled
                 title="공유 기능 준비 중"
                 type="button"
               >
                 공유
-              </button>
+              </button> */}
               <button
                 className="danger-button"
                 disabled={isStudyActionPending}
@@ -982,7 +982,7 @@ export function HomePage() {
             <aside className="board-column">
               <section className="home-notice-card">
                 <div className="home-card__header">
-                    <span className="section-kicker">공지</span>
+                  <span className="section-kicker">공지</span>
                   {activeStudy.notice ? (
                     <span className="home-card__meta">{activeStudy.notice.createdAt}</span>
                   ) : null}
@@ -1142,421 +1142,431 @@ export function HomePage() {
             </aside>
           </div>
         </section>
-      </div>
+      </div >
 
-      {showSessionEditor ? (
-        <div
-          className="modal-backdrop"
-          onClick={closeSessionEditor}
-          role="presentation"
-        >
-          <article
-            className="modal-card session-editor-modal"
-            onClick={(event) => event.stopPropagation()}
+      {
+        showSessionEditor ? (
+          <div
+            className="modal-backdrop"
+            onClick={closeSessionEditor}
+            role="presentation"
           >
-            <div className="modal-card__header">
-              <div>
-                <span className="section-kicker">회차 수정</span>
-                <h2>{activeStudy.title}</h2>
-                <p className="modal-description">
-                  출석이 마감된 완료 회차는 잠금 상태로 보여요.
-                </p>
+            <article
+              className="modal-card session-editor-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="modal-card__header">
+                <div>
+                  <span className="section-kicker">회차 수정</span>
+                  <h2>{activeStudy.title}</h2>
+                  <p className="modal-description">
+                    출석이 마감된 완료 회차는 잠금 상태로 보여요.
+                  </p>
+                </div>
+                <button
+                  className="soft-button"
+                  onClick={closeSessionEditor}
+                  type="button"
+                >
+                  닫기
+                </button>
               </div>
-              <button
-                className="soft-button"
-                onClick={closeSessionEditor}
-                type="button"
-              >
-                닫기
-              </button>
-            </div>
 
-            <div className="session-builder-actions session-editor-summary">
-              <span className="count-badge">진행 {sessionDraftRegularCount}개</span>
-              {sessionDraftBreakCount ? (
-                <span className="count-badge is-warm">휴차 {sessionDraftBreakCount}개</span>
-              ) : null}
-            </div>
-
-            <div className="session-plan-list session-editor-list">
-              {sessionDrafts.map((session, index) => {
-                const isBreak = session.sessionType === 'BREAK'
-                const cardClassName = [
-                  'session-plan-card',
-                  isBreak ? 'is-break' : '',
-                  !session.editable ? 'is-locked' : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')
-
-                return (
-                  <article className={cardClassName} key={session.sessionId}>
-                    <div className="session-plan-card__header">
-                      <div>
-                        <span className="field-label">{index + 1}회차</span>
-                        {!session.editable ? (
-                          <strong className="session-editor-lock-label">완료 회차</strong>
-                        ) : null}
-                      </div>
-
-                      <div className="filter-chip-row">
-                        <button
-                          className={
-                            !isBreak ? 'filter-chip is-active' : 'filter-chip'
-                          }
-                          disabled={!session.editable}
-                          onClick={() =>
-                            handleSessionDraftTypeChange(session.sessionId, 'REGULAR')
-                          }
-                          type="button"
-                        >
-                          진행
-                        </button>
-                        <button
-                          className={
-                            isBreak ? 'filter-chip is-active warm' : 'filter-chip warm'
-                          }
-                          disabled={!session.editable}
-                          onClick={() =>
-                            handleSessionDraftTypeChange(session.sessionId, 'BREAK')
-                          }
-                          type="button"
-                        >
-                          휴차
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="session-plan-card__body">
-                      <label className="field-block">
-                        <span className="field-label">일시</span>
-                        <input
-                          className="field-control"
-                          disabled={!session.editable}
-                          onChange={(event) =>
-                            updateSessionDraft(session.sessionId, {
-                              scheduledAt: event.target.value,
-                            })
-                          }
-                          type="datetime-local"
-                          value={session.scheduledAt}
-                        />
-                      </label>
-
-                      <label className="field-block">
-                        <span className="field-label">회차 제목</span>
-                        <input
-                          className="field-control"
-                          disabled={!session.editable || isBreak}
-                          onChange={(event) =>
-                            updateSessionDraft(session.sessionId, {
-                              title: event.target.value,
-                            })
-                          }
-                          value={isBreak ? BREAK_TITLE : session.title}
-                        />
-                      </label>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-
-            <div className="session-editor-footer">
-              <button className="soft-button" onClick={closeSessionEditor} type="button">
-                취소
-              </button>
-              <button
-                className="primary-button"
-                disabled={isSessionSaving}
-                onClick={handleSessionEditorSave}
-                type="button"
-              >
-                {isSessionSaving ? '저장 중...' : '저장'}
-              </button>
-            </div>
-          </article>
-        </div>
-      ) : null}
-
-      {showOverview ? (
-        <div
-          className="modal-backdrop"
-          onClick={closeOverview}
-          role="presentation"
-        >
-          <article
-            className="modal-card overview-modal study-overview-modal"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="modal-card__header">
-              <span className="section-kicker">스터디 개요</span>
-              <button
-                className="soft-button"
-                onClick={closeOverview}
-                type="button"
-              >
-                닫기
-              </button>
-            </div>
-
-            {isOverviewLoading ? (
-              <div className="study-overview-modal__state">
-                {activeStudy.title} 개요를 불러오는 중이에요.
-              </div>
-            ) : overviewStudyDetail ? (
-              <StudyOverviewSheet study={overviewStudyDetail} />
-            ) : (
-              <div className="study-overview-modal__state is-error">
-                스터디 개요를 불러오지 못했어요.
-              </div>
-            )}
-          </article>
-        </div>
-      ) : null}
-
-      {showPostModal ? (
-        <div
-          className="modal-backdrop"
-          onClick={closePostModal}
-          role="presentation"
-        >
-          <article
-            className="modal-card post-detail-modal"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="modal-card__header">
-              <div>
-                <span className="section-kicker">게시글 상세</span>
-                <h2>{postDetail?.title ?? selectedPostSummary?.title ?? '게시글'}</h2>
-                {postDetail ? (
-                  <div className="post-detail-meta">
-                    <ProfileNameButton
-                      className="profile-name-button is-inline"
-                      nickname={postDetail.authorNickname}
-                      userId={postDetail.authorUserId}
-                    />
-                    <time>{postDetail.createdAt}</time>
-                  </div>
+              <div className="session-builder-actions session-editor-summary">
+                <span className="count-badge">진행 {sessionDraftRegularCount}개</span>
+                {sessionDraftBreakCount ? (
+                  <span className="count-badge is-warm">휴차 {sessionDraftBreakCount}개</span>
                 ) : null}
               </div>
-              <button
-                className="soft-button"
-                onClick={closePostModal}
-                type="button"
-              >
-                닫기
-              </button>
-            </div>
 
-            {isPostDetailLoading ? (
-              <div className="post-detail-loading">게시글을 불러오는 중이에요.</div>
-            ) : postDetail ? (
-              <div className="post-detail-layout">
-                <section className="post-detail-body">
-                  <span className="section-kicker">본문</span>
-                  <div className="post-detail-body__content">
-                    <p>{postDetail.content}</p>
-                  </div>
-                </section>
+              <div className="session-plan-list session-editor-list">
+                {sessionDrafts.map((session, index) => {
+                  const isBreak = session.sessionType === 'BREAK'
+                  const cardClassName = [
+                    'session-plan-card',
+                    isBreak ? 'is-break' : '',
+                    !session.editable ? 'is-locked' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')
 
-                <section className="post-comment-composer post-comment-composer-panel">
-                  <div className="post-comments-panel__header">
-                    <span className="section-kicker">댓글 작성</span>
-                  </div>
+                  return (
+                    <article className={cardClassName} key={session.sessionId}>
+                      <div className="session-plan-card__header">
+                        <div>
+                          <span className="field-label">{index + 1}회차</span>
+                          {!session.editable ? (
+                            <strong className="session-editor-lock-label">완료 회차</strong>
+                          ) : null}
+                        </div>
 
-                  <textarea
-                    className="field-control textarea-field post-comment-textarea"
-                    disabled={isCommentSubmitting}
-                    onChange={(event) => setCommentDraft(event.target.value)}
-                    placeholder="댓글을 입력하세요"
-                    value={commentDraft}
-                  />
-
-                  <div className="post-comment-composer__footer">
-                    <button
-                      className="primary-button"
-                      disabled={isCommentSubmitting || !commentDraft.trim()}
-                      onClick={handleCreateComment}
-                      type="button"
-                    >
-                      댓글 등록
-                    </button>
-                  </div>
-                </section>
-
-                <section className="post-comments-panel">
-                  <div className="post-comments-panel__header">
-                    <span className="section-kicker">댓글</span>
-                    <span className="home-card__meta">{postDetail.comments.length}개</span>
-                  </div>
-
-                  <div className="post-comments-list">
-                    {postDetail.comments.length ? (
-                      postDetail.comments.map((comment) => (
-                        <article className="post-comment-row" key={comment.commentId}>
-                          <div className="post-comment-row__meta">
-                            <ProfileNameButton
-                              className="profile-name-button is-inline is-strong"
-                              nickname={comment.authorNickname}
-                              userId={comment.authorUserId}
-                            />
-                            <time>{comment.createdAt}</time>
-                          </div>
-                          <p>{comment.content}</p>
-                        </article>
-                      ))
-                    ) : (
-                      <div className="post-comments-empty">
-                        아직 댓글이 없어요. 첫 댓글을 남겨보세요.
+                        <div className="filter-chip-row">
+                          <button
+                            className={
+                              !isBreak ? 'filter-chip is-active' : 'filter-chip'
+                            }
+                            disabled={!session.editable}
+                            onClick={() =>
+                              handleSessionDraftTypeChange(session.sessionId, 'REGULAR')
+                            }
+                            type="button"
+                          >
+                            진행
+                          </button>
+                          <button
+                            className={
+                              isBreak ? 'filter-chip is-active warm' : 'filter-chip warm'
+                            }
+                            disabled={!session.editable}
+                            onClick={() =>
+                              handleSessionDraftTypeChange(session.sessionId, 'BREAK')
+                            }
+                            type="button"
+                          >
+                            휴차
+                          </button>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </section>
-              </div>
-            ) : null}
-          </article>
-        </div>
-      ) : null}
 
-      {showComposer ? (
-        <div
-          className="modal-backdrop"
-          onClick={() => setShowComposer(false)}
-          role="presentation"
-        >
-          <article
-            className="modal-card composer-modal"
-            onClick={(event) => event.stopPropagation()}
+                      <div className="session-plan-card__body">
+                        <label className="field-block">
+                          <span className="field-label">일시</span>
+                          <input
+                            className="field-control"
+                            disabled={!session.editable}
+                            onChange={(event) =>
+                              updateSessionDraft(session.sessionId, {
+                                scheduledAt: event.target.value,
+                              })
+                            }
+                            type="datetime-local"
+                            value={session.scheduledAt}
+                          />
+                        </label>
+
+                        <label className="field-block">
+                          <span className="field-label">회차 제목</span>
+                          <input
+                            className="field-control"
+                            disabled={!session.editable || isBreak}
+                            onChange={(event) =>
+                              updateSessionDraft(session.sessionId, {
+                                title: event.target.value,
+                              })
+                            }
+                            value={isBreak ? BREAK_TITLE : session.title}
+                          />
+                        </label>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+
+              <div className="session-editor-footer">
+                <button className="soft-button" onClick={closeSessionEditor} type="button">
+                  취소
+                </button>
+                <button
+                  className="primary-button"
+                  disabled={isSessionSaving}
+                  onClick={handleSessionEditorSave}
+                  type="button"
+                >
+                  {isSessionSaving ? '저장 중...' : '저장'}
+                </button>
+              </div>
+            </article>
+          </div>
+        ) : null
+      }
+
+      {
+        showOverview ? (
+          <div
+            className="modal-backdrop"
+            onClick={closeOverview}
+            role="presentation"
           >
-            <div className="modal-card__header">
-              <div>
-                <span className="section-kicker">게시글 작성</span>
-                <h2>스터디 보드에 글 남기기</h2>
+            <article
+              className="modal-card overview-modal study-overview-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="modal-card__header">
+                <span className="section-kicker">스터디 개요</span>
+                <button
+                  className="soft-button"
+                  onClick={closeOverview}
+                  type="button"
+                >
+                  닫기
+                </button>
               </div>
-              <button
-                className="soft-button"
-                onClick={() => setShowComposer(false)}
-                type="button"
-              >
-                닫기
-              </button>
-            </div>
 
-            <div className="composer-layout">
-              <select
-                className="field-control"
-                onChange={(event) => setDraftType(event.target.value as 'POST' | 'NOTICE')}
-                value={draftType}
-              >
-                <option value="POST">게시글</option>
-                {activeStudy.isLeader ? <option value="NOTICE">공지</option> : null}
-              </select>
-              <input
-                className="field-control"
-                onChange={(event) => setDraftTitle(event.target.value)}
-                placeholder="제목"
-                value={draftTitle}
-              />
-              <textarea
-                className="field-control textarea-field"
-                onChange={(event) => setDraftContent(event.target.value)}
-                placeholder="내용을 입력해 주세요."
-                value={draftContent}
-              />
-              <button className="primary-button" onClick={handleCreatePost} type="button">
-                등록
-              </button>
-            </div>
-          </article>
-        </div>
-      ) : null}
-
-      {showAttendance ? (
-        <div
-          className="modal-backdrop"
-          onClick={() => {
-            setAttendancePanel(null)
-            setShowAttendance(false)
-          }}
-          role="presentation"
-        >
-          <article
-            className="modal-card attendance-modal"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="modal-card__header">
-              <div>
-                <span className="section-kicker">출석 체크</span>
-                <h2>{attendancePanel?.sessionLabel ?? activeStudy.attendanceSessionLabel ?? '이번 회차'}</h2>
-              </div>
-              <button
-                className="soft-button"
-                onClick={() => {
-                  setAttendancePanel(null)
-                  setShowAttendance(false)
-                }}
-                type="button"
-              >
-                닫기
-              </button>
-            </div>
-
-            <div className="attendance-list">
-              {(attendancePanel?.roster ?? activeStudy.attendanceRoster).map((member) => (
-                <div className="attendance-row" key={member.userId}>
-                  <div className="attendance-row__member">
-                    <ProfileNameButton
-                      className="profile-name-button is-inline is-strong"
-                      nickname={member.nickname}
-                      userId={member.userId}
-                    />
-                  </div>
-
-                  <div className="attendance-actions">
-                    <button
-                      className={
-                        attendanceMap[member.userId] === 'PRESENT'
-                          ? 'attendance-chip is-present is-selected'
-                          : 'attendance-chip is-present'
-                      }
-                      onClick={() =>
-                        setAttendanceMap((current) => ({
-                          ...current,
-                          [member.userId]: 'PRESENT',
-                        }))
-                      }
-                      type="button"
-                    >
-                      출석
-                    </button>
-                    <button
-                      className={
-                        attendanceMap[member.userId] === 'ABSENT'
-                          ? 'attendance-chip is-absent is-selected'
-                          : 'attendance-chip is-absent'
-                      }
-                      onClick={() =>
-                        setAttendanceMap((current) => ({
-                          ...current,
-                          [member.userId]: 'ABSENT',
-                        }))
-                      }
-                      type="button"
-                    >
-                      결석
-                    </button>
-                  </div>
+              {isOverviewLoading ? (
+                <div className="study-overview-modal__state">
+                  {activeStudy.title} 개요를 불러오는 중이에요.
                 </div>
-              ))}
-            </div>
+              ) : overviewStudyDetail ? (
+                <StudyOverviewSheet study={overviewStudyDetail} />
+              ) : (
+                <div className="study-overview-modal__state is-error">
+                  스터디 개요를 불러오지 못했어요.
+                </div>
+              )}
+            </article>
+          </div>
+        ) : null
+      }
 
-            <button className="primary-button" onClick={handleAttendanceSubmit} type="button">
-              출석 체크 완료
-            </button>
-          </article>
-        </div>
-      ) : null}
-    </section>
+      {
+        showPostModal ? (
+          <div
+            className="modal-backdrop"
+            onClick={closePostModal}
+            role="presentation"
+          >
+            <article
+              className="modal-card post-detail-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="modal-card__header">
+                <div>
+                  <span className="section-kicker">게시글 상세</span>
+                  <h2>{postDetail?.title ?? selectedPostSummary?.title ?? '게시글'}</h2>
+                  {postDetail ? (
+                    <div className="post-detail-meta">
+                      <ProfileNameButton
+                        className="profile-name-button is-inline"
+                        nickname={postDetail.authorNickname}
+                        userId={postDetail.authorUserId}
+                      />
+                      <time>{postDetail.createdAt}</time>
+                    </div>
+                  ) : null}
+                </div>
+                <button
+                  className="soft-button"
+                  onClick={closePostModal}
+                  type="button"
+                >
+                  닫기
+                </button>
+              </div>
+
+              {isPostDetailLoading ? (
+                <div className="post-detail-loading">게시글을 불러오는 중이에요.</div>
+              ) : postDetail ? (
+                <div className="post-detail-layout">
+                  <section className="post-detail-body">
+                    <span className="section-kicker">본문</span>
+                    <div className="post-detail-body__content">
+                      <p>{postDetail.content}</p>
+                    </div>
+                  </section>
+
+                  <section className="post-comment-composer post-comment-composer-panel">
+                    <div className="post-comments-panel__header">
+                      <span className="section-kicker">댓글 작성</span>
+                    </div>
+
+                    <textarea
+                      className="field-control textarea-field post-comment-textarea"
+                      disabled={isCommentSubmitting}
+                      onChange={(event) => setCommentDraft(event.target.value)}
+                      placeholder="댓글을 입력하세요"
+                      value={commentDraft}
+                    />
+
+                    <div className="post-comment-composer__footer">
+                      <button
+                        className="primary-button"
+                        disabled={isCommentSubmitting || !commentDraft.trim()}
+                        onClick={handleCreateComment}
+                        type="button"
+                      >
+                        댓글 등록
+                      </button>
+                    </div>
+                  </section>
+
+                  <section className="post-comments-panel">
+                    <div className="post-comments-panel__header">
+                      <span className="section-kicker">댓글</span>
+                      <span className="home-card__meta">{postDetail.comments.length}개</span>
+                    </div>
+
+                    <div className="post-comments-list">
+                      {postDetail.comments.length ? (
+                        postDetail.comments.map((comment) => (
+                          <article className="post-comment-row" key={comment.commentId}>
+                            <div className="post-comment-row__meta">
+                              <ProfileNameButton
+                                className="profile-name-button is-inline is-strong"
+                                nickname={comment.authorNickname}
+                                userId={comment.authorUserId}
+                              />
+                              <time>{comment.createdAt}</time>
+                            </div>
+                            <p>{comment.content}</p>
+                          </article>
+                        ))
+                      ) : (
+                        <div className="post-comments-empty">
+                          아직 댓글이 없어요. 첫 댓글을 남겨보세요.
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                </div>
+              ) : null}
+            </article>
+          </div>
+        ) : null
+      }
+
+      {
+        showComposer ? (
+          <div
+            className="modal-backdrop"
+            onClick={() => setShowComposer(false)}
+            role="presentation"
+          >
+            <article
+              className="modal-card composer-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="modal-card__header">
+                <div>
+                  <span className="section-kicker">게시글 작성</span>
+                  <h2>스터디 보드에 글 남기기</h2>
+                </div>
+                <button
+                  className="soft-button"
+                  onClick={() => setShowComposer(false)}
+                  type="button"
+                >
+                  닫기
+                </button>
+              </div>
+
+              <div className="composer-layout">
+                <select
+                  className="field-control"
+                  onChange={(event) => setDraftType(event.target.value as 'POST' | 'NOTICE')}
+                  value={draftType}
+                >
+                  <option value="POST">게시글</option>
+                  {activeStudy.isLeader ? <option value="NOTICE">공지</option> : null}
+                </select>
+                <input
+                  className="field-control"
+                  onChange={(event) => setDraftTitle(event.target.value)}
+                  placeholder="제목"
+                  value={draftTitle}
+                />
+                <textarea
+                  className="field-control textarea-field"
+                  onChange={(event) => setDraftContent(event.target.value)}
+                  placeholder="내용을 입력해 주세요."
+                  value={draftContent}
+                />
+                <button className="primary-button" onClick={handleCreatePost} type="button">
+                  등록
+                </button>
+              </div>
+            </article>
+          </div>
+        ) : null
+      }
+
+      {
+        showAttendance ? (
+          <div
+            className="modal-backdrop"
+            onClick={() => {
+              setAttendancePanel(null)
+              setShowAttendance(false)
+            }}
+            role="presentation"
+          >
+            <article
+              className="modal-card attendance-modal"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="modal-card__header">
+                <div>
+                  <span className="section-kicker">출석 체크</span>
+                  <h2>{attendancePanel?.sessionLabel ?? activeStudy.attendanceSessionLabel ?? '이번 회차'}</h2>
+                </div>
+                <button
+                  className="soft-button"
+                  onClick={() => {
+                    setAttendancePanel(null)
+                    setShowAttendance(false)
+                  }}
+                  type="button"
+                >
+                  닫기
+                </button>
+              </div>
+
+              <div className="attendance-list">
+                {(attendancePanel?.roster ?? activeStudy.attendanceRoster).map((member) => (
+                  <div className="attendance-row" key={member.userId}>
+                    <div className="attendance-row__member">
+                      <ProfileNameButton
+                        className="profile-name-button is-inline is-strong"
+                        nickname={member.nickname}
+                        userId={member.userId}
+                      />
+                    </div>
+
+                    <div className="attendance-actions">
+                      <button
+                        className={
+                          attendanceMap[member.userId] === 'PRESENT'
+                            ? 'attendance-chip is-present is-selected'
+                            : 'attendance-chip is-present'
+                        }
+                        onClick={() =>
+                          setAttendanceMap((current) => ({
+                            ...current,
+                            [member.userId]: 'PRESENT',
+                          }))
+                        }
+                        type="button"
+                      >
+                        출석
+                      </button>
+                      <button
+                        className={
+                          attendanceMap[member.userId] === 'ABSENT'
+                            ? 'attendance-chip is-absent is-selected'
+                            : 'attendance-chip is-absent'
+                        }
+                        onClick={() =>
+                          setAttendanceMap((current) => ({
+                            ...current,
+                            [member.userId]: 'ABSENT',
+                          }))
+                        }
+                        type="button"
+                      >
+                        결석
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button className="primary-button" onClick={handleAttendanceSubmit} type="button">
+                출석 체크 완료
+              </button>
+            </article>
+          </div>
+        ) : null
+      }
+    </section >
   )
 }

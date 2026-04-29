@@ -171,7 +171,7 @@ class DashboardService(
                     authorUserId = it.authorUserId,
                     title = it.title,
                     content = it.content,
-                    authorNickname = usersById[it.authorUserId]?.nickname ?: "?????놁쓬",
+                    authorNickname = usersById[it.authorUserId]?.nickname ?: "알 수 없음",
                     createdAt = it.createdAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
                 )
             },
@@ -181,7 +181,7 @@ class DashboardService(
                     authorUserId = it.authorUserId,
                     title = it.title,
                     content = it.content,
-                    authorNickname = usersById[it.authorUserId]?.nickname ?: "?????놁쓬",
+                    authorNickname = usersById[it.authorUserId]?.nickname ?: "알 수 없음",
                     createdAt = it.createdAt.format(DateTimeFormatter.ofPattern("MM.dd HH:mm")),
                 )
             },
@@ -191,7 +191,7 @@ class DashboardService(
                 members.map { memberItem ->
                     AttendanceRosterItem(
                         userId = memberItem.userId,
-                        nickname = usersById[memberItem.userId]?.nickname ?: "?????놁쓬",
+                        nickname = usersById[memberItem.userId]?.nickname ?: "알 수 없음",
                         planned = participationMap[memberItem.userId]?.planned ?: false,
                         attendanceStatus = attendanceMap[memberItem.userId]?.status?.name,
                     )
